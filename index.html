@@ -62,7 +62,7 @@ body{font-family:Arial,sans-serif;background:#F8FAFC;min-height:100vh}
 .st-onleave{background:#FEF3C7;color:#92400E}
 /* DASH ROWS */
 .panel-search-wrap{margin-bottom:12px}
-.panel-search{width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 14px;font-size:13px;color:#0F172A;outline:none;font-family:Arial,sans-serif}
+.panel-search{width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:8px 14px;font-size:13px;color:#0F172A;outline:none;font-family:Arial,sans-serif}.panel-search:focus{border-color:#D97757}.dash-filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.dash-filter-bar .panel-search{flex:1;min-width:160px;width:auto}.dash-filter-sel{font-size:12px;border:1.5px solid #E2E8F0;border-radius:8px;padding:7px 10px;color:#0F172A;outline:none;cursor:pointer;font-family:Arial,sans-serif;background:#fff}.dash-filter-sel:focus{border-color:#D97757}.dash-group-header{font-size:11px;font-weight:700;color:#0F172A;text-transform:uppercase;letter-spacing:0.05em;padding:10px 0 6px;border-bottom:2px solid #D97757;margin-bottom:4px;display:flex;align-items:center;gap:8px}.dash-group-count{font-size:11px;font-weight:500;color:#94A3B8;text-transform:none;letter-spacing:0}
 .panel-search:focus{border-color:#D97757}
 .dash-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F1F5F9;cursor:default}
 .dash-row:last-child{border-bottom:none}
@@ -149,7 +149,7 @@ tr:hover td{background:#FAFBFC}
 .modal.xlg{width:900px}
 .mhdr{background:linear-gradient(135deg,#0F172A,#1E293B);padding:16px 22px;border-bottom:2px solid #D97757;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:space-between}
 .mhdr h2{font-size:15px;font-weight:700;color:#fff}
-.mhdr-close{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:4px 10px;color:#fff;cursor:pointer;font-family:Arial,sans-serif;font-size:12px}
+.mhdr-close{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:6px;padding:4px 10px;color:#fff;cursor:pointer;font-family:Arial,sans-serif;font-size:12px}.mhdr-edit{background:rgba(217,119,87,0.25);border:1px solid rgba(217,119,87,0.5);border-radius:6px;padding:4px 10px;color:#fff;cursor:pointer;font-family:Arial,sans-serif;font-size:12px;font-weight:600}.mhdr-edit:hover{background:rgba(217,119,87,0.45)}
 .mbody{padding:18px 22px}
 .mfoot{display:flex;gap:8px;justify-content:flex-end;padding:12px 22px;border-top:1px solid #F1F5F9;background:#F8FAFC;border-radius:0 0 14px 14px}
 .fl{margin-bottom:13px}
@@ -229,14 +229,35 @@ tr:hover td{background:#FAFBFC}
 <div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><button class="oacc" id="btnAddCred">+ Add credential</button></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by</th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
 <div class="view" id="view_users"><div class="sec-hdr"><div><h2>User Management</h2><p style="font-size:12px;color:#64748B;margin-top:3px">Only listed users can sign in.</p></div><button class="oacc" id="btnAddUser">+ Add user</button></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
 </div>
-<div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
-<div class="mbg" id="memberDetailModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Member Access</h2><button class="mhdr-close" id="btnCloseMemberDetail">Close</button></div><div class="detail-hdr"><div class="detail-av" id="detailMemberAv"></div><div><div style="display:flex;align-items:center;gap:8px"><div class="detail-name" id="detailMemberName"></div><span id="detailMemberStatus"></span></div><div class="detail-sub" id="detailMemberSub"></div></div></div><div class="mbody" style="padding-top:8px"><div id="detailAccessList"></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px"><button class="oblue" id="btnOffboardFromDetail" style="color:#EF4444;border-color:#FEE2E2">&#128683; Offboard member</button><button class="oacc" id="detailAddAccess">+ Add access</button></div></div></div></div>
+<div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><div style="display:flex;gap:8px"><button class="mhdr-edit" id="btnEditToolFromDetail">&#9998; Edit</button><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
+<div class="mbg" id="memberDetailModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Member Access</h2><div style="display:flex;gap:8px"><button class="mhdr-edit" id="btnEditMemberFromDetail">&#9998; Edit</button><button class="mhdr-close" id="btnCloseMemberDetail">Close</button></div></div><div class="detail-hdr"><div class="detail-av" id="detailMemberAv"></div><div><div style="display:flex;align-items:center;gap:8px"><div class="detail-name" id="detailMemberName"></div><span id="detailMemberStatus"></span></div><div class="detail-sub" id="detailMemberSub"></div></div></div><div class="mbody" style="padding-top:8px"><div id="detailAccessList"></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px"><button class="oblue" id="btnOffboardFromDetail" style="color:#EF4444;border-color:#FEE2E2">&#128683; Offboard member</button><button class="oacc" id="detailAddAccess">+ Add access</button></div></div></div></div>
 <div class="mbg" id="memberModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="memberModalTitle">Add member</h2></div><div class="mbody"><input type="hidden" id="mId"><div class="fl"><label>Full name</label><input type="text" id="mName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email</label><input type="email" id="mEmail" placeholder="jan@cd-commerce.de"></div><div class="fl2"><div class="fl" style="margin-bottom:0"><label>Department</label><select id="mDept"><option value="">Select...</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select></div><div class="fl" style="margin-bottom:0"><label>Status</label><select id="mStatus"><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div></div><div class="err" id="mErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelMember">Cancel</button><button class="oacc" id="btnSaveMember">Save member</button></div></div></div>
 <div class="mbg" id="addToolModal" style="display:none"><div class="modal sm"><div class="mhdr"><h2>Add new tool</h2></div><div class="mbody"><div class="ibox">This tool will appear in all dropdowns across the app.</div><div class="fl"><label>Tool name</label><input type="text" id="newToolName" placeholder="e.g. Semrush, Jungle Scout..."></div><div class="err" id="newToolErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelNewTool">Cancel</button><button class="oacc" id="btnSaveNewTool">Add tool</button></div></div></div>
 <div class="mbg" id="credModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="credModalTitle">Add credential</h2></div><div class="mbody"><input type="hidden" id="credEditId"><div class="fl"><label>Tool</label><select id="cToolSel"></select></div><div id="credFormRows"></div><div style="margin-top:8px"><button class="btn-add-row" id="btnAddCredRow">+ Add another login for this tool</button></div><div class="err" id="cErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelCred">Cancel</button><button class="oacc" id="btnSaveCred">Save</button></div></div></div>
 <div class="mbg" id="batchModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>Add access entries</h2></div><div class="mbody"><div class="fl"><label>Member</label><select id="batchMemberSel"><option value="">— Select member —</option></select></div><div id="batchRowsContainer"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddBatchRow">+ Add another tool</button></div><div class="err" id="batchErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelBatch">Cancel</button><button class="oacc" id="btnSaveBatch">Save all entries</button></div></div></div>
 <div class="mbg" id="groupAccessModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>&#128101; Group access — assign by department</h2></div><div class="mbody"><div class="ibox">All <strong>active</strong> members in the selected department will receive access. Members who already have a tool will be skipped.</div><div class="fl"><label>Department</label><select id="groupDeptSel"><option value="">— Select department —</option></select></div><div id="groupToolRows"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddGroupRow">+ Add another tool</button></div><div class="err" id="groupErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelGroupAccess">Cancel</button><button class="oacc" id="btnSaveGroupAccess">Assign to department</button></div></div></div>
 <div class="mbg" id="userModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Add user</h2></div><div class="mbody"><div class="ibox">This person will be able to sign in with the assigned role.</div><div class="fl"><label>Full name (optional)</label><input type="text" id="uName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email address</label><input type="email" id="uEmail" placeholder="jan@cd-commerce.de"></div><div class="fl"><label>Role</label><select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select></div><div class="err" id="uErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelUser">Cancel</button><button class="oacc" id="btnSaveUser">Add user</button></div></div></div>
+<!-- TOOL EDIT MODAL -->
+<div class="mbg" id="toolEditModal" style="display:none"><div class="modal wide">
+<div class="mhdr"><h2 id="teModalTitle">Edit tool info</h2><button class="mhdr-close" id="btnCancelToolEdit">Cancel</button></div>
+<div class="mbody">
+<div class="fl"><label>Tool name</label><input type="text" id="teName" placeholder="Tool name"></div>
+<div class="fl2">
+<div class="fl" style="margin-bottom:0"><label>Category</label><input type="text" id="teCategory" placeholder="e.g. Amazon Analytics"></div>
+<div class="fl" style="margin-bottom:0"><label>Department</label><input type="text" id="teDept" placeholder="e.g. Marketing / R&D"></div>
+</div>
+<div class="fl"><label>URL</label><input type="text" id="teURL" placeholder="https://..."></div>
+<div class="fl3">
+<div class="fl" style="margin-bottom:0"><label>Paid / Free</label><select id="tePaid"><option value="">Select...</option><option value="Paid">Paid</option><option value="Free">Free</option><option value="Freemium">Freemium</option><option value="Pay-per-use">Pay-per-use</option></select></div>
+<div class="fl" style="margin-bottom:0"><label>Approx. Monthly Cost</label><input type="text" id="teCost" placeholder="e.g. €29"></div>
+<div class="fl" style="margin-bottom:0"><label>Subscription Model</label><input type="text" id="teSub" placeholder="e.g. Monthly"></div>
+</div>
+<div class="fl"><label>Owner / Manager</label><input type="text" id="teOwner" placeholder="e.g. Jan / Michael"></div>
+<div class="fl"><label>Primary Use / Notes</label><textarea id="teNotes" rows="3" placeholder="What is this tool used for?"></textarea></div>
+<div class="err" id="teErr"></div>
+</div>
+<div class="mfoot"><button class="oblue" id="btnCancelToolEdit2" onclick="document.getElementById('toolEditModal').style.display='none'">Cancel</button><button class="oacc" id="btnSaveToolEdit">Save changes</button></div>
+</div></div>
 <div class="toast" id="toast"></div>
 <script>
 
@@ -408,64 +429,219 @@ tr:hover td{background:#FAFBFC}
   function renderByMember(){
     var el=document.getElementById('dpanel_byMember');
     var q=(memberFilter.search||'').toLowerCase();
-    var filtered=members.filter(function(m){return !q||m.name.toLowerCase().indexOf(q)>-1||m.dept.toLowerCase().indexOf(q)>-1;});
-    var bar='<div class="panel-search-wrap"><input class="panel-search" id="dashMemberSearch" placeholder="&#128269; Search members..." value="'+eh(memberFilter.search||'')+'"></div>';
-    if(!filtered.length){el.innerHTML=bar+'<div class="empty">No members found.</div>';wirePS('dashMemberSearch','memberSearch');return;}
-    el.innerHTML=bar+filtered.map(function(m){
-      var st=m.status||'Active';
-      var ua=access.filter(function(a){return a.member_id===m.id;});
-      var chips=ua.map(function(a){return '<span class="dash-tool-chip">'+eh(a.tool_name)+'<button class="chip-rm" data-aid="'+a.id+'" data-mname="'+eh(m.name)+'" data-tname="'+eh(a.tool_name)+'">&#10005;</button></span>';}).join('');
-      return '<div class="dash-row"><div class="member-click" data-mid="'+m.id+'"><div class="av-sm '+(st==='Offboarded'?'av-off':'')+'">'+eh(m.initials)+'</div><div><div class="dash-name">'+eh(m.name)+'</div><div class="dash-sub">'+eh(m.dept)+'</div></div></div>'
-        +'<div class="dash-tools">'+(chips||'<span class="no-access">No access recorded</span>')+'</div>'
-        +'<div class="dash-count-wrap"><span class="st-pill st-'+st.toLowerCase().replace(' ','-')+'">'+eh(st)+'</span><span class="dash-count">'+ua.length+' tool'+(ua.length!==1?'s':'')+'</span><button class="add-access-btn" data-mid="'+m.id+'">+ Add access</button></div></div>';
-    }).join('');
-    wirePS('dashMemberSearch','memberSearch');
+    var fDept=document.getElementById('pmFilterDept')?document.getElementById('pmFilterDept').value:'';
+    var fStatus=document.getElementById('pmFilterStatus')?document.getElementById('pmFilterStatus').value:'';
+    var groupBy=document.getElementById('pmGroupBy')?document.getElementById('pmGroupBy').value:'none';
+
+    var filtered=members.filter(function(m){
+      return(!q||m.name.toLowerCase().indexOf(q)>-1||m.dept.toLowerCase().indexOf(q)>-1)
+        &&(!fDept||(m.dept||'')===fDept)
+        &&(!fStatus||(m.status||'Active')===fStatus);
+    });
+
+    // Get unique depts for filter dropdown
+    var depts=[...new Set(members.map(function(m){return m.dept;}))].filter(Boolean).sort();
+
+    var bar='<div class="dash-filter-bar">'
+      +'<input class="panel-search" id="dashMemberSearch" placeholder="&#128269; Search members..." value="'+eh(memberFilter.search||'')+'">'
+      +'<select class="dash-filter-sel" id="pmFilterDept"><option value="">All departments</option>'+depts.map(function(d){return'<option value="'+eh(d)+'" '+(fDept===d?'selected':'')+'>'+eh(d)+'</option>';}).join('')+'</select>'
+      +'<select class="dash-filter-sel" id="pmFilterStatus"><option value="">All statuses</option><option value="Active" '+(fStatus==='Active'?'selected':'')+'>Active</option><option value="Offboarded" '+(fStatus==='Offboarded'?'selected':'')+'>Offboarded</option></select>'
+      +'<select class="dash-filter-sel" id="pmGroupBy"><option value="none" '+(groupBy==='none'?'selected':'')+'>No grouping</option><option value="dept" '+(groupBy==='dept'?'selected':'')+'>Group by Department</option><option value="status" '+(groupBy==='status'?'selected':'')+'>Group by Status</option></select>'
+      +'</div>';
+
+    if(!filtered.length){el.innerHTML=bar+'<div class="empty">No members match your filters.</div>';wireFilterBar('pm');return;}
+
+    var rows='';
+    if(groupBy==='dept'){
+      var groups={};filtered.forEach(function(m){var k=m.dept||'No department';if(!groups[k])groups[k]=[];groups[k].push(m);});
+      Object.keys(groups).sort().forEach(function(g){
+        rows+='<div class="dash-group-header">'+eh(g)+' <span class="dash-group-count">'+groups[g].length+' member'+(groups[g].length!==1?'s':'')+'</span></div>';
+        rows+=groups[g].map(function(m){return memberDashRow(m);}).join('');
+      });
+    } else if(groupBy==='status'){
+      var statuses=['Active','Offboarded'];
+      statuses.forEach(function(st){
+        var grp=filtered.filter(function(m){return(m.status||'Active')===st;});
+        if(!grp.length)return;
+        rows+='<div class="dash-group-header"><span class="st-pill st-'+st.toLowerCase()+'">'+eh(st)+'</span> <span class="dash-group-count">'+grp.length+' member'+(grp.length!==1?'s':'')+'</span></div>';
+        rows+=grp.map(function(m){return memberDashRow(m);}).join('');
+      });
+    } else {
+      rows=filtered.map(function(m){return memberDashRow(m);}).join('');
+    }
+
+    el.innerHTML=bar+rows;
+    wireFilterBar('pm');
     el.querySelectorAll('.chip-rm').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();if(confirm('Remove '+btn.getAttribute('data-tname')+' for '+btn.getAttribute('data-mname')+'?'))removeAccessEntry(btn.getAttribute('data-aid'));});});
     el.querySelectorAll('.member-click').forEach(function(d){d.addEventListener('click',function(){openMemberDetailModal(d.getAttribute('data-mid'));});});
     el.querySelectorAll('.add-access-btn').forEach(function(b){b.addEventListener('click',function(){openBatchModalForMember(b.getAttribute('data-mid'));});});
   }
 
+  function memberDashRow(m){
+    var st=m.status||'Active';
+    var ua=access.filter(function(a){return a.member_id===m.id;});
+    var chips=ua.map(function(a){return'<span class="dash-tool-chip">'+eh(a.tool_name)+'<button class="chip-rm" data-aid="'+a.id+'" data-mname="'+eh(m.name)+'" data-tname="'+eh(a.tool_name)+'">&#10005;</button></span>';}).join('');
+    return'<div class="dash-row"><div class="member-click" data-mid="'+m.id+'"><div class="av-sm '+(st==='Offboarded'?'av-off':'')+'">'+eh(m.initials)+'</div><div><div class="dash-name">'+eh(m.name)+'</div><div class="dash-sub">'+eh(m.dept)+'</div></div></div><div class="dash-tools">'+(chips||'<span class="no-access">No access recorded</span>')+'</div><div class="dash-count-wrap"><span class="st-pill st-'+st.toLowerCase().replace(' ','-')+'">'+eh(st)+'</span><span class="dash-count">'+ua.length+' tool'+(ua.length!==1?'s':'')+'</span><button class="add-access-btn" data-mid="'+m.id+'">+ Add access</button></div></div>';
+  }
+
   function renderByTool(){
     var el=document.getElementById('dpanel_byTool');
     var q=(toolFilter.search||'').toLowerCase();
+    var fCat=document.getElementById('ptFilterCat')?document.getElementById('ptFilterCat').value:'';
+    var fPaid=document.getElementById('ptFilterPaid')?document.getElementById('ptFilterPaid').value:'';
+    var fDept=document.getElementById('ptFilterDept')?document.getElementById('ptFilterDept').value:'';
+    var groupBy=document.getElementById('ptGroupBy')?document.getElementById('ptGroupBy').value:'none';
+
+    // Build tool map from access entries
     var toolMap={};
-    access.forEach(function(a){if(q&&a.tool_name.toLowerCase().indexOf(q)===-1)return;if(!toolMap[a.tool_name])toolMap[a.tool_name]=[];var m=getMember(a.member_id);if(m)toolMap[a.tool_name].push({member:m,entry:a});});
-    var bar='<div class="panel-search-wrap"><input class="panel-search" id="dashToolSearch" placeholder="&#128269; Search tools..." value="'+eh(toolFilter.search||'')+'"></div>';
-    var tools=Object.keys(toolMap).sort();
-    if(!tools.length){el.innerHTML=bar+'<div class="empty">No tools found.</div>';wirePS('dashToolSearch','toolSearch');return;}
-    el.innerHTML=bar+tools.map(function(t){
+    access.forEach(function(a){
+      if(!toolMap[a.tool_name])toolMap[a.tool_name]=[];
+      var m=getMember(a.member_id);if(m)toolMap[a.tool_name].push({member:m,entry:a});
+    });
+
+    // Filter tools
+    var tools=Object.keys(toolMap).filter(function(t){
+      var info=getToolInfo(t)||{};
+      var matchQ=!q||t.toLowerCase().indexOf(q)>-1;
+      var matchCat=!fCat||(info.category||'')===fCat;
+      var matchPaid=!fPaid||(info.paid_free||'')===fPaid;
+      var matchDept=!fDept||(info.dept||'').toLowerCase().indexOf(fDept.toLowerCase())>-1;
+      return matchQ&&matchCat&&matchPaid&&matchDept;
+    }).sort();
+
+    // Get unique values for filter dropdowns
+    var allCats=[...new Set(Object.keys(toolMap).map(function(t){return(getToolInfo(t)||{}).category||'';}).filter(Boolean))].sort();
+    var allPaids=[...new Set(Object.keys(toolMap).map(function(t){return(getToolInfo(t)||{}).paid_free||'';}).filter(Boolean))].sort();
+    var allDepts=[...new Set(Object.keys(toolMap).map(function(t){return(getToolInfo(t)||{}).dept||'';}).filter(Boolean))].sort();
+
+    var bar='<div class="dash-filter-bar">'
+      +'<input class="panel-search" id="dashToolSearch" placeholder="&#128269; Search tools..." value="'+eh(toolFilter.search||'')+'">'
+      +'<select class="dash-filter-sel" id="ptFilterCat"><option value="">All categories</option>'+allCats.map(function(c){return'<option value="'+eh(c)+'" '+(fCat===c?'selected':'')+'>'+eh(c)+'</option>';}).join('')+'</select>'
+      +'<select class="dash-filter-sel" id="ptFilterPaid"><option value="">All types</option>'+allPaids.map(function(p){return'<option value="'+eh(p)+'" '+(fPaid===p?'selected':'')+'>'+eh(p)+'</option>';}).join('')+'</select>'
+      +'<select class="dash-filter-sel" id="ptFilterDept"><option value="">All departments</option>'+allDepts.map(function(d){return'<option value="'+eh(d)+'" '+(fDept===d?'selected':'')+'>'+eh(d)+'</option>';}).join('')+'</select>'
+      +'<select class="dash-filter-sel" id="ptGroupBy"><option value="none" '+(groupBy==='none'?'selected':'')+'>No grouping</option><option value="category" '+(groupBy==='category'?'selected':'')+'>Group by Category</option><option value="dept" '+(groupBy==='dept'?'selected':'')+'>Group by Department</option><option value="paid" '+(groupBy==='paid'?'selected':'')+'>Group by Paid/Free</option></select>'
+      +'</div>';
+
+    if(!tools.length){el.innerHTML=bar+'<div class="empty">No tools match your filters.</div>';wireFilterBar('pt');return;}
+
+    var rows='';
+    function toolRow(t){
       var items=toolMap[t];var info=getToolInfo(t);
-      var avs=items.map(function(i){return '<div class="av-xs av-clickable" data-mid="'+i.member.id+'" title="'+eh(i.member.name)+'">'+eh(i.member.initials)+'</div>';}).join('');
-      return '<div class="dash-row tool-row-click" data-tool="'+eh(t)+'"><div class="dash-toolname">'+eh(t)+'<span class="tool-cat-tag">'+(info?eh(info.category):'')+'</span></div><div class="dash-avatars">'+avs+'</div><div class="dash-count">'+items.length+' user'+(items.length!==1?'s':'')+'</div></div>';
-    }).join('');
-    wirePS('dashToolSearch','toolSearch');
+      var avs=items.map(function(i){return'<div class="av-xs av-clickable" data-mid="'+i.member.id+'" title="'+eh(i.member.name)+'">'+eh(i.member.initials)+'</div>';}).join('');
+      return'<div class="dash-row tool-row-click" data-tool="'+eh(t)+'"><div class="dash-toolname">'+eh(t)+'<span class="tool-cat-tag">'+(info?eh(info.category):'')+'</span></div><div class="dash-avatars">'+avs+'</div><div class="dash-count">'+items.length+' user'+(items.length!==1?'s':'')+'</div></div>';
+    }
+
+    if(groupBy==='category'){
+      var groups={};tools.forEach(function(t){var k=(getToolInfo(t)||{}).category||'Uncategorised';if(!groups[k])groups[k]=[];groups[k].push(t);});
+      Object.keys(groups).sort().forEach(function(g){rows+='<div class="dash-group-header">'+eh(g)+' <span class="dash-group-count">'+groups[g].length+' tool'+(groups[g].length!==1?'s':'')+'</span></div>';rows+=groups[g].map(toolRow).join('');});
+    } else if(groupBy==='dept'){
+      var groups={};tools.forEach(function(t){var k=(getToolInfo(t)||{}).dept||'No department';if(!groups[k])groups[k]=[];groups[k].push(t);});
+      Object.keys(groups).sort().forEach(function(g){rows+='<div class="dash-group-header">'+eh(g)+' <span class="dash-group-count">'+groups[g].length+' tool'+(groups[g].length!==1?'s':'')+'</span></div>';rows+=groups[g].map(toolRow).join('');});
+    } else if(groupBy==='paid'){
+      var groups={};tools.forEach(function(t){var k=(getToolInfo(t)||{}).paid_free||'Unknown';if(!groups[k])groups[k]=[];groups[k].push(t);});
+      Object.keys(groups).sort().forEach(function(g){rows+='<div class="dash-group-header">'+eh(g)+' <span class="dash-group-count">'+groups[g].length+' tool'+(groups[g].length!==1?'s':'')+'</span></div>';rows+=groups[g].map(toolRow).join('');});
+    } else {
+      rows=tools.map(toolRow).join('');
+    }
+
+    el.innerHTML=bar+rows;
+    wireFilterBar('pt');
     el.querySelectorAll('.av-clickable').forEach(function(av){av.addEventListener('click',function(e){e.stopPropagation();openMemberDetailModal(av.getAttribute('data-mid'));});});
     el.querySelectorAll('.tool-row-click').forEach(function(r){r.addEventListener('click',function(){openToolDetailModal(r.getAttribute('data-tool'));});});
   }
 
   function renderByCred(){
     var el=document.getElementById('dpanel_byCred');
+    var fTool=document.getElementById('pcFilterTool')?document.getElementById('pcFilterTool').value:'';
+    var fType=document.getElementById('pcFilterType')?document.getElementById('pcFilterType').value:'';
+    var groupBy=document.getElementById('pcGroupBy')?document.getElementById('pcGroupBy').value:'tool';
+
+    // Build tool→creds map
     var toolMap={};
     credentials.forEach(function(c){if(!toolMap[c.tool_name])toolMap[c.tool_name]=[];toolMap[c.tool_name].push(c);});
-    var tools=Object.keys(toolMap).sort();
-    if(!tools.length){el.innerHTML='<div class="empty">No credentials saved yet.</div>';return;}
-    el.innerHTML=tools.map(function(t){
-      var creds=toolMap[t];
-      var rows=creds.map(function(c){var users=access.filter(function(a){return a.cred_id===c.id;});var avs=users.map(function(a){var m=getMember(a.member_id);return m?'<div class="av-xs av-clickable" data-mid="'+m.id+'" title="'+eh(m.name)+'">'+eh(m.initials)+'</div>':'';}).join('');return '<div class="cred-row"><span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span><span class="cred-user">'+eh(c.username)+'</span><div class="dash-avatars" style="flex:1">'+avs+'</div><span class="cred-count">'+users.length+' user'+(users.length!==1?'s':'')+'</span></div>';}).join('');
-      return '<div class="tool-cred-block"><div class="tool-cred-name tool-row-click" data-tool="'+eh(t)+'">'+eh(t)+'</div>'+rows+'</div>';
-    }).join('');
+    var allTools=Object.keys(toolMap).sort();
+
+    // Filter credentials
+    var filteredCreds=credentials.filter(function(c){
+      return(!fTool||c.tool_name===fTool)&&(!fType||c.type===fType);
+    });
+
+    var bar='<div class="dash-filter-bar">'
+      +'<select class="dash-filter-sel" id="pcFilterTool"><option value="">All tools</option>'+allTools.map(function(t){return'<option value="'+eh(t)+'" '+(fTool===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select>'
+      +'<select class="dash-filter-sel" id="pcFilterType"><option value="">All types</option><option value="individual" '+(fType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(fType==='shared'?'selected':'')+'>Shared</option></select>'
+      +'<select class="dash-filter-sel" id="pcGroupBy"><option value="tool" '+(groupBy==='tool'?'selected':'')+'>Group by Tool</option><option value="type" '+(groupBy==='type'?'selected':'')+'>Group by Type</option></select>'
+      +'</div>';
+
+    if(!filteredCreds.length){el.innerHTML=bar+'<div class="empty">No credentials match your filters.</div>';wireFilterBar('pc');return;}
+
+    function credRow(c){
+      var users=access.filter(function(a){return a.cred_id===c.id;});
+      var avs=users.map(function(a){var m=getMember(a.member_id);return m?'<div class="av-xs av-clickable" data-mid="'+m.id+'" title="'+eh(m.name)+'">'+eh(m.initials)+'</div>':'';}).join('');
+      return'<div class="cred-row"><span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span><span class="cred-user">'+eh(c.username)+'</span>'+(c.owner?'<span style="font-size:11px;color:#D97757;font-weight:600">'+eh(c.owner)+'</span>':'')+'<div class="dash-avatars" style="flex:1">'+avs+'</div><span class="cred-count">'+users.length+' user'+(users.length!==1?'s':'')+'</span></div>';
+    }
+
+    var rows='';
+    if(groupBy==='tool'){
+      // Group by tool
+      var toolGroups={};
+      filteredCreds.forEach(function(c){if(!toolGroups[c.tool_name])toolGroups[c.tool_name]=[];toolGroups[c.tool_name].push(c);});
+      Object.keys(toolGroups).sort().forEach(function(t){
+        rows+='<div class="tool-cred-block"><div class="tool-cred-name tool-row-click" data-tool="'+eh(t)+'">'+eh(t)+' <span class="dash-group-count">'+toolGroups[t].length+' credential'+(toolGroups[t].length!==1?'s':'')+'</span></div>'+toolGroups[t].map(credRow).join('')+'</div>';
+      });
+    } else {
+      // Group by type
+      ['individual','shared'].forEach(function(type){
+        var grp=filteredCreds.filter(function(c){return c.type===type;});
+        if(!grp.length)return;
+        // Sub-group by tool within each type
+        var subGroups={};grp.forEach(function(c){if(!subGroups[c.tool_name])subGroups[c.tool_name]=[];subGroups[c.tool_name].push(c);});
+        rows+='<div class="dash-group-header"><span class="cred-badge '+(type==='shared'?'shared':'indiv')+'">'+eh(type)+'</span> <span class="dash-group-count">'+grp.length+' credential'+(grp.length!==1?'s':'')+'</span></div>';
+        Object.keys(subGroups).sort().forEach(function(t){
+          rows+='<div class="tool-cred-block" style="margin-left:12px"><div class="tool-cred-name tool-row-click" data-tool="'+eh(t)+'">'+eh(t)+'</div>'+subGroups[t].map(credRow).join('')+'</div>';
+        });
+      });
+    }
+
+    el.innerHTML=bar+rows;
+    wireFilterBar('pc');
     el.querySelectorAll('.av-clickable').forEach(function(av){av.addEventListener('click',function(){openMemberDetailModal(av.getAttribute('data-mid'));});});
     el.querySelectorAll('.tool-row-click').forEach(function(r){r.addEventListener('click',function(){openToolDetailModal(r.getAttribute('data-tool'));});});
   }
 
   function wirePS(elId,fk){
     var el=document.getElementById(elId);if(!el)return;
-    el.addEventListener('input',function(){if(fk==='memberSearch')memberFilter.search=el.value;else toolFilter.search=el.value;if(fk==='memberSearch')renderByMember();else renderByTool();});
+    el.addEventListener('input',function(){
+      if(fk==='memberSearch')memberFilter.search=el.value;
+      else toolFilter.search=el.value;
+      if(fk==='memberSearch')renderByMember();else renderByTool();
+    });
     el.focus();el.setSelectionRange(el.value.length,el.value.length);
+  }
+
+  function wireFilterBar(panel){
+    if(panel==='pm'){
+      var s=document.getElementById('dashMemberSearch');
+      if(s){s.addEventListener('input',function(){memberFilter.search=s.value;renderByMember();});s.focus();s.setSelectionRange(s.value.length,s.value.length);}
+      var d=document.getElementById('pmFilterDept');if(d)d.addEventListener('change',renderByMember);
+      var st=document.getElementById('pmFilterStatus');if(st)st.addEventListener('change',renderByMember);
+      var g=document.getElementById('pmGroupBy');if(g)g.addEventListener('change',renderByMember);
+    } else if(panel==='pt'){
+      var s=document.getElementById('dashToolSearch');
+      if(s){s.addEventListener('input',function(){toolFilter.search=s.value;renderByTool();});s.focus();s.setSelectionRange(s.value.length,s.value.length);}
+      var c=document.getElementById('ptFilterCat');if(c)c.addEventListener('change',renderByTool);
+      var p=document.getElementById('ptFilterPaid');if(p)p.addEventListener('change',renderByTool);
+      var d=document.getElementById('ptFilterDept');if(d)d.addEventListener('change',renderByTool);
+      var g=document.getElementById('ptGroupBy');if(g)g.addEventListener('change',renderByTool);
+    } else if(panel==='pc'){
+      var t=document.getElementById('pcFilterTool');if(t)t.addEventListener('change',renderByCred);
+      var ty=document.getElementById('pcFilterType');if(ty)ty.addEventListener('change',renderByCred);
+      var g=document.getElementById('pcGroupBy');if(g)g.addEventListener('change',renderByCred);
+    }
   }
 
   // ── TOOL DETAIL MODAL ──
   function openToolDetailModal(toolName){
+    document.getElementById('toolDetailModal').setAttribute('data-tool',toolName);
     var info=getToolInfo(toolName)||{name:toolName,category:'',dept:'',url:'',paid_free:'',cost:'',sub_model:'',access_type:'',owner:'',notes:''};
     var users=access.filter(function(a){return a.tool_name===toolName;});
     document.getElementById('tdName').textContent=info.name;
@@ -939,6 +1115,58 @@ tr:hover td{background:#FAFBFC}
   function toggleUserRole(id,cur){var newRole=cur==='admin'?'member':'admin';if(!confirm('Change to '+newRole+'?'))return;setLoading(true);sbUpdate('allowed_users',id,{role:newRole}).then(function(){return sbGet('allowed_users');}).then(function(data){allowedUsers=Array.isArray(data)?data:[];setLoading(false);renderUserList();showToast('Role updated');}).catch(function(){setLoading(false);});}
   function delUser(id){var u=allowedUsers.find(function(x){return x.id===id;});if(!confirm('Remove '+(u?u.email:'this user')+'?'))return;setLoading(true);sbDelete('allowed_users',id).then(function(){return sbGet('allowed_users');}).then(function(data){allowedUsers=Array.isArray(data)?data:[];setLoading(false);renderUserList();showToast('User removed');}).catch(function(){setLoading(false);});}
 
+  // ── TOOL EDIT MODAL ──
+  var editingToolName = null;
+
+  function openToolEditModal(toolName){
+    editingToolName = toolName;
+    var info = getToolInfo(toolName) || {};
+    document.getElementById('teModalTitle').textContent = 'Edit tool info — ' + toolName;
+    document.getElementById('teName').value = info.name || toolName;
+    document.getElementById('teCategory').value = info.category || '';
+    document.getElementById('teDept').value = info.dept || '';
+    document.getElementById('teURL').value = info.url || '';
+    document.getElementById('tePaid').value = info.paid_free || '';
+    document.getElementById('teCost').value = info.cost || '';
+    document.getElementById('teSub').value = info.sub_model || '';
+    document.getElementById('teOwner').value = info.owner || '';
+    document.getElementById('teNotes').value = info.notes || '';
+    showErr('teErr','');
+    document.getElementById('toolEditModal').style.display='flex';
+  }
+
+  function saveToolEdit(){
+    // Update the tool info in TOOL_CATALOGUE in memory
+    var name = document.getElementById('teName').value.trim();
+    if(!name){showErr('teErr','Tool name is required.');return;}
+    var updated = {
+      name: name,
+      category: document.getElementById('teCategory').value.trim(),
+      dept: document.getElementById('teDept').value.trim(),
+      url: document.getElementById('teURL').value.trim(),
+      paid_free: document.getElementById('tePaid').value.trim(),
+      cost: document.getElementById('teCost').value.trim(),
+      sub_model: document.getElementById('teSub').value.trim(),
+      owner: document.getElementById('teOwner').value.trim(),
+      notes: document.getElementById('teNotes').value.trim()
+    };
+    // Find and update in catalogue
+    var idx = TOOL_CATALOGUE.findIndex(function(t){return t.name.toLowerCase()===editingToolName.toLowerCase();});
+    if(idx > -1){
+      TOOL_CATALOGUE[idx] = Object.assign(TOOL_CATALOGUE[idx], updated);
+    } else {
+      // It's a custom tool — just update display name in customTools
+      var ci = customTools.indexOf(editingToolName);
+      if(ci > -1) customTools[ci] = name;
+      try{localStorage.setItem('cd_custom_tools',JSON.stringify(customTools));}catch(e){}
+    }
+    document.getElementById('toolEditModal').style.display='none';
+    renderToolList();
+    showToast('Tool info updated');
+    // Re-open tool detail with updated info
+    openToolDetailModal(name);
+  }
+
   // ── INIT ──
   document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('btnDoSetup').addEventListener('click',doSetup);
@@ -990,11 +1218,24 @@ tr:hover td{background:#FAFBFC}
     // Modals
     document.getElementById('btnCloseMemberDetail').addEventListener('click',function(){document.getElementById('memberDetailModal').style.display='none';});
     document.getElementById('memberDetailModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+    document.getElementById('btnEditMemberFromDetail').addEventListener('click',function(){
+      var mid=document.getElementById('memberDetailModal').getAttribute('data-mid');
+      document.getElementById('memberDetailModal').style.display='none';
+      if(mid)openMemberModal(mid);
+    });
     document.getElementById('btnCloseToolDetail').addEventListener('click',function(){document.getElementById('toolDetailModal').style.display='none';});
     document.getElementById('toolDetailModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+    document.getElementById('btnEditToolFromDetail').addEventListener('click',function(){
+      var toolName=document.getElementById('toolDetailModal').getAttribute('data-tool');
+      document.getElementById('toolDetailModal').style.display='none';
+      if(toolName)openToolEditModal(toolName);
+    });
     document.getElementById('btnOffboardFromDetail').addEventListener('click',function(){var mid=document.getElementById('memberDetailModal').getAttribute('data-mid');if(mid)offboardMember(mid);});
     // Users
     document.getElementById('btnAddUser').addEventListener('click',openUserModal);
+    document.getElementById('btnSaveToolEdit').addEventListener('click',saveToolEdit);
+    document.getElementById('btnCancelToolEdit').addEventListener('click',function(){document.getElementById('toolEditModal').style.display='none';});
+    document.getElementById('toolEditModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
     document.getElementById('btnSaveUser').addEventListener('click',saveUser);
     document.getElementById('btnCancelUser').addEventListener('click',function(){document.getElementById('userModal').style.display='none';});
     document.getElementById('userModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
