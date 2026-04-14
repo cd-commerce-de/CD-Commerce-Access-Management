@@ -19,16 +19,24 @@
   --shadow-lg:0 12px 32px rgba(15,23,42,0.12);
 }
 body{font-family:'Inter',sans-serif;background:var(--cd-n50);min-height:100vh}
+
+/* LOGIN */
 #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0F172A 0%,#1E293B 60%,#0F172A 100%)}
 .login-card{background:#fff;border-radius:20px;padding:48px 40px;width:420px;max-width:95vw;text-align:center;box-shadow:0 24px 48px rgba(15,23,42,0.25)}
 .login-logo{margin-bottom:28px}
 .login-logo img{height:36px}
 .login-title{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;color:#0F172A;margin-bottom:6px}
-.login-sub{font-size:14px;color:var(--cd-n500);margin-bottom:32px}
-.google-btn{width:100%;padding:13px 20px;border:1.5px solid var(--cd-n200);border-radius:10px;background:#fff;cursor:pointer;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:#0F172A;display:flex;align-items:center;justify-content:center;gap:12px;transition:all 0.15s;text-decoration:none}
-.google-btn:hover{background:var(--cd-n50);border-color:var(--cd-n300);box-shadow:var(--shadow-sm)}
-.google-icon{width:20px;height:20px;flex-shrink:0}
-.login-error{font-size:12px;color:var(--cd-error);margin-top:14px;background:#FEE2E2;border-radius:8px;padding:10px 14px;display:none;line-height:1.6}
+.login-sub{font-size:14px;color:var(--cd-n500);margin-bottom:28px}
+.login-form{text-align:left}
+.login-form label{font-size:11px;font-weight:600;color:var(--cd-n500);text-transform:uppercase;letter-spacing:0.05em;font-family:'Poppins',sans-serif;display:block;margin-bottom:5px}
+.login-form input{width:100%;font-size:14px;font-family:'Inter',sans-serif;border:1.5px solid var(--cd-n200);border-radius:10px;padding:11px 14px;color:var(--cd-primary);outline:none;margin-bottom:14px}
+.login-form input:focus{border-color:var(--cd-accent);box-shadow:0 0 0 3px rgba(217,119,87,0.12)}
+.login-btn{width:100%;padding:13px;border:none;border-radius:10px;background:var(--cd-accent);cursor:pointer;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:#fff;margin-top:4px;transition:background 0.15s}
+.login-btn:hover{background:var(--cd-accent-dark)}
+.login-error{font-size:12px;color:var(--cd-error);margin-top:12px;background:#FEE2E2;border-radius:8px;padding:10px 14px;display:none;line-height:1.6;text-align:left}
+.login-hint{font-size:11px;color:var(--cd-n400);margin-top:16px;line-height:1.6}
+
+/* MAIN APP */
 #mainApp{display:none}
 .app-header{background:linear-gradient(135deg,#0F172A,#1E293B);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-bottom:3px solid var(--cd-accent)}
 .header-left{display:flex;align-items:center;gap:16px}
@@ -38,7 +46,6 @@ body{font-family:'Inter',sans-serif;background:var(--cd-n50);min-height:100vh}
 .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .user-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border-radius:100px;padding:5px 12px 5px 5px}
 .user-avatar{width:26px;height:26px;border-radius:50%;background:var(--cd-accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:'Poppins',sans-serif;overflow:hidden;flex-shrink:0}
-.user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .user-name{font-size:13px;color:rgba(255,255,255,0.85);font-family:'Poppins',sans-serif;font-weight:500}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:7px 13px;font-size:12px;font-family:'Poppins',sans-serif;font-weight:500;cursor:pointer;color:rgba(255,255,255,0.75)}
 .btn-ghost:hover{background:rgba(255,255,255,0.07)}
@@ -77,8 +84,7 @@ tr:hover td{background:var(--cd-n50)}
 .badge-revoked{background:#FEE2E2;color:#991B1B}
 .tool-tag{display:inline-block;background:var(--cd-accent-subtle);color:var(--cd-accent-dark);border:1px solid var(--cd-accent-border);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:500;margin-right:3px;margin-bottom:2px}
 .changed-by{font-size:11px;color:var(--cd-n500);display:flex;align-items:center;gap:5px}
-.changed-by-avatar{width:20px;height:20px;border-radius:50%;background:var(--cd-n200);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--cd-n700);overflow:hidden;flex-shrink:0}
-.changed-by-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.changed-by-avatar{width:20px;height:20px;border-radius:50%;background:var(--cd-accent-subtle);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--cd-accent-dark);overflow:hidden;flex-shrink:0}
 .action-btn{background:none;border:none;cursor:pointer;color:var(--cd-n400);font-size:14px;padding:3px 5px;border-radius:6px}
 .action-btn:hover{color:var(--cd-primary);background:var(--cd-n100)}
 .action-btn.del:hover{color:var(--cd-error);background:#FEE2E2}
@@ -89,7 +95,6 @@ tr:hover td{background:var(--cd-n50)}
 .changelog-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--cd-n100);font-size:12px;font-family:'Inter',sans-serif;color:var(--cd-n700)}
 .changelog-row:last-child{border-bottom:none}
 .changelog-avatar{width:22px;height:22px;border-radius:50%;background:var(--cd-accent-subtle);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--cd-accent-dark);flex-shrink:0;overflow:hidden}
-.changelog-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .changelog-time{color:var(--cd-n400);margin-left:auto;white-space:nowrap;font-size:11px}
 .cl-add{color:var(--cd-success);font-weight:600}
 .cl-edit{color:var(--cd-warning);font-weight:600}
@@ -128,28 +133,40 @@ tr:hover td{background:var(--cd-n50)}
 .bulk-label{font-size:11px;color:var(--cd-n500);margin-bottom:8px;font-weight:600;font-family:'Poppins',sans-serif;text-transform:uppercase;letter-spacing:0.05em}
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--cd-primary);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-family:'Poppins',sans-serif;font-weight:500;z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none;border-left:3px solid var(--cd-accent);box-shadow:var(--shadow-lg)}
 .toast.show{opacity:1}
+
+/* MANAGE USERS MODAL */
+.user-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cd-n100);font-size:13px}
+.user-row:last-child{border-bottom:none}
+.user-row-email{flex:1;color:var(--cd-n700)}
+.user-row-name{width:140px;color:var(--cd-primary);font-weight:500}
+.remove-user-btn{background:none;border:none;cursor:pointer;color:var(--cd-n400);font-size:13px;padding:3px 6px;border-radius:6px}
+.remove-user-btn:hover{color:var(--cd-error);background:#FEE2E2}
+.add-user-row{display:flex;gap:8px;margin-top:12px}
+.add-user-row input{flex:1;font-size:13px;font-family:'Inter',sans-serif;border:1px solid var(--cd-n200);border-radius:10px;padding:8px 12px;color:var(--cd-primary);background:#fff;outline:none}
+.add-user-row input:focus{border-color:var(--cd-accent);box-shadow:0 0 0 3px rgba(217,119,87,0.12)}
 </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo"><img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAPoA+gDASIAAhEBAxEB/8QAGQABAQEBAQEAAAAAAAAAAAAAAAMCAQQI/8QAKhABAQACAQMDBAICAwEAAAAAAAECEQMSITETUVIyQWFxIoEzQiORoUP/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/xAAZEQEBAQEBAQAAAAAAAAAAAAAAARFBMSH/2gAMAwEAAhEDEQA/APjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJN3UWw45J/KbolqI9HRh8Tow+K4a84vePG+OyeeFx7+YhrAAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASbuoN4ZTH7boKceHTN3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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=" alt="CD Commerce"/></div>
     <div class="login-title">Access Management</div>
     <div class="login-sub">Sign in to manage and track team access</div>
-    <a class="google-btn" id="googleLoginBtn" href="#">
-      <svg class="google-icon" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      Continue with Google
-    </a>
+    <div class="login-form">
+      <label>Email address</label>
+      <input type="email" id="loginEmail" placeholder="you@cdcommerce.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <label>Name</label>
+      <input type="text" id="loginName" placeholder="Your full name" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="login-btn" onclick="doLogin()">Sign in</button>
+    </div>
     <div class="login-error" id="loginError"></div>
+    <div class="login-hint">Enter your CD Commerce email and name to sign in. No password required.</div>
   </div>
 </div>
 
+<!-- MAIN APP -->
 <div id="mainApp">
   <div class="app-header">
     <div class="header-left">
@@ -316,117 +333,114 @@ tr:hover td{background:var(--cd-n50)}
 <div class="toast" id="toast"></div>
 
 <script>
-const CLIENT_ID='766697036957-127jvrgrkf2matnprk6nuff1phi7gpf5.apps.googleusercontent.com';
-const REDIRECT_URI='https://cd-commerce-de.github.io/CD-Commerce-Access-Management/';
+// ── APPROVED USERS ──
+// Add your team's email addresses here. Only these emails can log in.
+// To add someone: add their email and name inside the curly braces below.
+const APPROVED_USERS = {
+  'jan@cdcommerce.com':       'Jan',
+  'michael@cdcommerce.com':   'Michael',
+  'thomas@cdcommerce.com':    'Thomas',
+  'franz@cdcommerce.com':     'Franz',
+  'jonathan@cdcommerce.com':  'Jonathan',
+  'christoph@cdcommerce.com': 'Christoph',
+  'daniel@cdcommerce.com':    'Daniel',
+  'aimee@cdcommerce.com':     'Aimee',
+  'jess@cdcommerce.com':      'Jess',
+  'leah@cdcommerce.com':      'Leah',
+  'rio@cdcommerce.com':       'Rio',
+  'ilwyn@cdcommerce.com':     'Ilwyn',
+  'drixcy@cdcommerce.com':    'Drixcy',
+  'denis@cdcommerce.com':     'Denis',
+  'arif@cdcommerce.com':      'Arif',
+  'veronica@cdcommerce.com':  'Veronica',
+};
 
-// ── GOOGLE OAUTH2 REDIRECT FLOW ──
-// Builds the Google login URL and redirects the browser directly — no popups, no scripts needed
-function buildGoogleAuthURL(){
-  const params=new URLSearchParams({
-    client_id:CLIENT_ID,
-    redirect_uri:REDIRECT_URI,
-    response_type:'token',
-    scope:'openid email profile',
-    prompt:'select_account'
-  });
-  return 'https://accounts.google.com/o/oauth2/v2/auth?'+params.toString();
+let currentUser = null;
+let data = [], nextId = 1, editingId = null, selectedTools = [], bulkData = [], changelog = [];
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const nameInput = document.getElementById('loginName').value.trim();
+  const err = document.getElementById('loginError');
+
+  if (!email) { err.textContent = 'Please enter your email address.'; err.style.display = 'block'; return; }
+  if (!nameInput) { err.textContent = 'Please enter your name.'; err.style.display = 'block'; return; }
+
+  // Check if email is in approved list OR accept any @cdcommerce.com email
+  const isApproved = APPROVED_USERS[email] || email.endsWith('@cdcommerce.com');
+  if (!isApproved) {
+    err.textContent = 'Access denied. Only CD Commerce team members can sign in.';
+    err.style.display = 'block';
+    return;
+  }
+
+  err.style.display = 'none';
+  const initials = nameInput.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  loginSuccess({ name: nameInput, email: email, initials: initials, avatar: null });
 }
 
-document.getElementById('googleLoginBtn').href=buildGoogleAuthURL();
-
-// ── HANDLE REDIRECT BACK FROM GOOGLE ──
-// After login Google redirects back to this page with #access_token=... in the URL
-function handleOAuthCallback(){
-  const hash=window.location.hash;
-  if(!hash||!hash.includes('access_token')) return false;
-  const params=new URLSearchParams(hash.substring(1));
-  const token=params.get('access_token');
-  if(!token) return false;
-  // Clean the URL so the token isn't visible
-  history.replaceState(null,'',window.location.pathname);
-  // Fetch user info from Google
-  fetch('https://www.googleapis.com/oauth2/v3/userinfo',{
-    headers:{Authorization:'Bearer '+token}
-  })
-  .then(r=>r.json())
-  .then(u=>{
-    loginSuccess({
-      name:u.name,
-      email:u.email,
-      avatar:u.picture,
-      initials:(u.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)
-    });
-  })
-  .catch(()=>showLoginError('Could not retrieve your Google profile. Please try again.'));
-  return true;
-}
-
-function showLoginError(msg){
-  const el=document.getElementById('loginError');
-  el.textContent=msg;el.style.display='block';
-}
-
-let currentUser=null;
-let data=[],nextId=1,editingId=null,selectedTools=[],bulkData=[],changelog=[];
-
-function loginSuccess(user){
-  currentUser=user;
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('mainApp').style.display='block';
-  const av=document.getElementById('headerAvatar');
-  av.innerHTML=user.avatar?'<img src="'+user.avatar+'"/>':user.initials;
-  document.getElementById('headerName').textContent=user.name;
+function loginSuccess(user) {
+  currentUser = user;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'block';
+  const av = document.getElementById('headerAvatar');
+  av.textContent = user.initials;
+  document.getElementById('headerName').textContent = user.name;
   render();
-  logChange('login',null,user.name+' signed in',user);
+  logChange('login', null, user.name + ' signed in', user);
 }
 
-function logout(){
-  if(!confirm('Sign out?'))return;
-  currentUser=null;
-  document.getElementById('mainApp').style.display='none';
-  document.getElementById('loginScreen').style.display='flex';
+function logout() {
+  if (!confirm('Sign out?')) return;
+  currentUser = null;
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginError').style.display = 'none';
 }
 
 // ── CHANGELOG ──
-function logChange(action,entry,message,user){
-  changelog.unshift({action,entry,message,user:user||currentUser,time:new Date()});
-  if(changelog.length>100)changelog.pop();
+function logChange(action, entry, message, user) {
+  changelog.unshift({ action, entry, message, user: user || currentUser, time: new Date() });
+  if (changelog.length > 100) changelog.pop();
   renderChangelog();
 }
-function formatTime(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
-function renderChangelog(){
-  const el=document.getElementById('changelog');
-  const entries=changelog.filter(c=>c.action!=='login').slice(0,30);
-  if(!entries.length){el.innerHTML='<div class="empty-log">No entry changes recorded yet.</div>';return;}
-  el.innerHTML=entries.map(c=>{
-    const cls=c.action==='add'?'cl-add':c.action==='edit'?'cl-edit':'cl-delete';
-    const label=c.action==='add'?'Added':c.action==='edit'?'Edited':'Deleted';
-    const av=c.user?.avatar?'<img src="'+c.user.avatar+'"/>':(c.user?.initials||'?');
-    return'<div class="changelog-row"><div class="changelog-avatar">'+av+'</div><span><span class="'+cls+'">'+label+':</span> '+escHtml(c.message)+'</span><span class="changelog-time">'+escHtml(c.user?.name||'')+'&nbsp;&middot;&nbsp;'+formatTime(c.time)+'</span></div>';
+function formatTime(d) { return d.toLocaleDateString('en-GB', {day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}); }
+function renderChangelog() {
+  const el = document.getElementById('changelog');
+  const entries = changelog.filter(c => c.action !== 'login').slice(0, 30);
+  if (!entries.length) { el.innerHTML = '<div class="empty-log">No entry changes recorded yet.</div>'; return; }
+  el.innerHTML = entries.map(c => {
+    const cls = c.action==='add' ? 'cl-add' : c.action==='edit' ? 'cl-edit' : 'cl-delete';
+    const label = c.action==='add' ? 'Added' : c.action==='edit' ? 'Edited' : 'Deleted';
+    return '<div class="changelog-row">' +
+      '<div class="changelog-avatar">' + escHtml(c.user?.initials||'?') + '</div>' +
+      '<span><span class="' + cls + '">' + label + ':</span> ' + escHtml(c.message) + '</span>' +
+      '<span class="changelog-time">' + escHtml(c.user?.name||'') + '&nbsp;&middot;&nbsp;' + formatTime(c.time) + '</span>' +
+      '</div>';
   }).join('');
 }
-function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── RENDER ──
-function statusBadge(s){const m={'Active':'badge-active','To Review':'badge-review','Revoked':'badge-revoked'};return'<span class="badge '+(m[s]||'badge-review')+'">'+s+'</span>';}
-function formatDate(d){if(!d)return'';const p=d.split('-');if(p.length!==3)return d;const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mo[parseInt(p[1])-1]+' '+parseInt(p[2]);}
-function changedByCell(r){
-  if(!r.changedBy)return'<span style="color:var(--cd-n400);font-size:11px;">&#8212;</span>';
-  const u=r.changedBy;
-  const av=u.avatar?'<img src="'+u.avatar+'"/>':(u.initials||'?');
-  return'<div class="changed-by"><div class="changed-by-avatar">'+av+'</div><span>'+escHtml(u.name)+'</span></div>';
+function statusBadge(s) { const m={'Active':'badge-active','To Review':'badge-review','Revoked':'badge-revoked'}; return '<span class="badge '+(m[s]||'badge-review')+'">'+s+'</span>'; }
+function formatDate(d) { if(!d)return''; const p=d.split('-'); if(p.length!==3)return d; const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return mo[parseInt(p[1])-1]+' '+parseInt(p[2]); }
+function changedByCell(r) {
+  if (!r.changedBy) return '<span style="color:var(--cd-n400);font-size:11px;">&#8212;</span>';
+  return '<div class="changed-by"><div class="changed-by-avatar">' + escHtml(r.changedBy.initials||'?') + '</div><span>' + escHtml(r.changedBy.name) + '</span></div>';
 }
-function renderMetrics(){
-  const total=data.length,active=data.filter(r=>r.status==='Active').length,
+function renderMetrics() {
+  const total=data.length, active=data.filter(r=>r.status==='Active').length,
     review=data.filter(r=>r.status==='To Review').length,
     people=[...new Set(data.map(r=>r.name))].length;
-  document.getElementById('metrics').innerHTML=
+  document.getElementById('metrics').innerHTML =
     '<div class="metric"><div class="metric-label">Total entries</div><div class="metric-value">'+total+'</div></div>'+
     '<div class="metric"><div class="metric-label">Team members</div><div class="metric-value">'+people+'</div></div>'+
     '<div class="metric"><div class="metric-label">Active</div><div class="metric-value green">'+active+'</div></div>'+
     '<div class="metric"><div class="metric-label">To review</div><div class="metric-value amber">'+review+'</div></div>';
 }
-function renderTable(){
+function renderTable() {
   const search=document.getElementById('search').value.toLowerCase();
   const dept=document.getElementById('filterDept').value;
   const status=document.getElementById('filterStatus').value;
@@ -542,13 +556,6 @@ document.getElementById('bulkBg').addEventListener('click',function(e){if(e.targ
 document.getElementById('search').addEventListener('input',renderTable);
 document.getElementById('filterDept').addEventListener('change',renderTable);
 document.getElementById('filterStatus').addEventListener('change',renderTable);
-
-// ── RUN ON LOAD ──
-// Check if Google just redirected back with a token
-if(!handleOAuthCallback()){
-  // Not a redirect — show the login screen normally
-  document.getElementById('loginScreen').style.display='flex';
-}
 </script>
 </body>
 </html>
