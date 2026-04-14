@@ -193,6 +193,9 @@ tr:hover td{background:#FAFBFC}
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#0F172A;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none;border-left:3px solid #D97757}
 .toast.on{opacity:1}
 .toast.warn{border-left-color:#F59E0B}
+.btn-add-row{width:100%;padding:10px;border:2px dashed #D97757;border-radius:10px;background:#FFFBF9;color:#D97757;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-add-row:hover{background:#FDF2EE;border-color:#C4623F;color:#C4623F}
+.btn-add-row::before{content:"\002B";font-size:16px;font-weight:700}
 
 </style>
 </head>
@@ -215,8 +218,8 @@ tr:hover td{background:#FAFBFC}
 <div class="mbg" id="memberModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="memberModalTitle">Add member</h2></div><div class="mbody"><input type="hidden" id="mId"><div class="fl"><label>Full name</label><input type="text" id="mName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email</label><input type="email" id="mEmail" placeholder="jan@cd-commerce.de"></div><div class="fl2"><div class="fl" style="margin-bottom:0"><label>Department</label><select id="mDept"><option value="">Select...</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select></div><div class="fl" style="margin-bottom:0"><label>Status</label><select id="mStatus"><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div></div><div class="err" id="mErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelMember">Cancel</button><button class="oacc" id="btnSaveMember">Save member</button></div></div></div>
 <div class="mbg" id="addToolModal" style="display:none"><div class="modal sm"><div class="mhdr"><h2>Add new tool</h2></div><div class="mbody"><div class="ibox">This tool will be added to all dropdowns across the app.</div><div class="fl"><label>Tool name</label><input type="text" id="newToolName" placeholder="e.g. Semrush, Jungle Scout..."></div><div class="err" id="newToolErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelNewTool">Cancel</button><button class="oacc" id="btnSaveNewTool">Add tool</button></div></div></div>
 <div class="mbg" id="credModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="credModalTitle">Add credential</h2></div><div class="mbody"><input type="hidden" id="cId"><div class="fl"><label>Tool</label><select id="cToolSel"></select></div><div class="fl"><label>Username / Email</label><input type="text" id="cUsername" placeholder="e.g. team@cd-commerce.de"></div><div class="fl"><label>Type</label><select id="cType"><option value="individual">Individual</option><option value="shared">Shared</option></select></div><div class="err" id="cErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelCred">Cancel</button><button class="oacc" id="btnSaveCred">Save credential</button></div></div></div>
-<div class="mbg" id="batchModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>Add access entries</h2><button class="oblue sm" id="btnAddBatchRow" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#fff">+ Add tool</button></div><div class="mbody"><div class="fl"><label>Member</label><select id="batchMemberSel"><option value="">— Select member —</option></select></div><div id="batchRowsContainer"></div><div class="err" id="batchErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelBatch">Cancel</button><button class="oacc" id="btnSaveBatch">Save all entries</button></div></div></div>
-<div class="mbg" id="groupAccessModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>&#128101; Group access — assign by department</h2><button class="oblue sm" id="btnAddGroupRow" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#fff">+ Add tool</button></div><div class="mbody"><div class="ibox">Select a department. All <strong>active</strong> members in that department will receive the selected tool access. Members who already have access to a tool will be skipped automatically.</div><div class="fl"><label>Department</label><select id="groupDeptSel"><option value="">— Select department —</option></select></div><div id="groupToolRows"></div><div class="err" id="groupErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelGroupAccess">Cancel</button><button class="oacc" id="btnSaveGroupAccess">Assign to department</button></div></div></div>
+<div class="mbg" id="batchModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>Add access entries</h2></div><div class="mbody"><div class="fl"><label>Member</label><select id="batchMemberSel"><option value="">— Select member —</option></select></div><div id="batchRowsContainer"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddBatchRow">+ Add another tool</button></div><div class="err" id="batchErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelBatch">Cancel</button><button class="oacc" id="btnSaveBatch">Save all entries</button></div></div></div>
+<div class="mbg" id="groupAccessModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>&#128101; Group access — assign by department</h2></div><div class="mbody"><div class="ibox">Select a department. All <strong>active</strong> members in that department will receive the selected tool access. Members who already have access to a tool will be skipped automatically.</div><div class="fl"><label>Department</label><select id="groupDeptSel"><option value="">— Select department —</option></select></div><div id="groupToolRows"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddGroupRow">+ Add another tool</button></div><div class="err" id="groupErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelGroupAccess">Cancel</button><button class="oacc" id="btnSaveGroupAccess">Assign to department</button></div></div></div>
 <div class="mbg" id="userModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Add user</h2></div><div class="mbody"><div class="ibox">This person will be able to sign in with the assigned role.</div><div class="fl"><label>Full name (optional)</label><input type="text" id="uName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email address</label><input type="email" id="uEmail" placeholder="jan@cd-commerce.de"></div><div class="fl"><label>Role</label><select id="uRole"><option value="member">Member — can view and edit data</option><option value="admin">Admin — can also manage users</option></select></div><div class="err" id="uErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelUser">Cancel</button><button class="oacc" id="btnSaveUser">Add user</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -275,10 +278,30 @@ tr:hover td{background:#FAFBFC}
   function boot(){
     setLoading(true);
     try{var s=localStorage.getItem('cd_custom_tools');if(s)customTools=JSON.parse(s);}catch(e){}
+    // Check for saved session
+    var savedSession=null;
+    try{var ss=localStorage.getItem('cd_session');if(ss)savedSession=JSON.parse(ss);}catch(e){}
     sbGet('allowed_users').then(function(data){
-      setLoading(false);
       allowedUsers=Array.isArray(data)?data:[];
-      showScreen(allowedUsers.length?'loginScreen':'setupScreen');
+      if(!allowedUsers.length){setLoading(false);showScreen('setupScreen');return;}
+      // If we have a saved session, verify email still in allowed_users then auto-login
+      if(savedSession&&savedSession.email){
+        var stillAllowed=allowedUsers.find(function(u){return u.email===savedSession.email;});
+        if(stillAllowed){
+          currentUser=Object.assign({},savedSession,{role:stillAllowed.role||'member'});
+          document.getElementById('loginScreen').style.display='none';
+          document.getElementById('app').style.display='block';
+          document.getElementById('uav').textContent=currentUser.initials;
+          document.getElementById('uname').textContent=currentUser.name;
+          var badge=document.getElementById('roleBadge');
+          badge.textContent=currentUser.role==='admin'?'Admin':'Member';
+          badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
+          document.getElementById('tab_users').style.display=currentUser.role==='admin'?'inline-block':'none';
+          loadAllData();
+          return;
+        }
+      }
+      setLoading(false);showScreen('loginScreen');
     }).catch(function(){setLoading(false);showScreen('setupScreen');});
   }
 
@@ -318,6 +341,7 @@ tr:hover td{background:#FAFBFC}
       if(!Array.isArray(data)||!data.length){err.textContent='Access denied. Contact an admin.';err.style.display='block';return;}
       var user=data[0];
       currentUser={name:name,email:email,initials:ini(name),role:user.role||'member'};
+      try{localStorage.setItem('cd_session',JSON.stringify(currentUser));}catch(e){}
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('app').style.display='block';
       document.getElementById('uav').textContent=currentUser.initials;
@@ -332,6 +356,7 @@ tr:hover td{background:#FAFBFC}
 
   function logout(){
     if(!confirm('Sign out?'))return;
+    try{localStorage.removeItem('cd_session');}catch(e){}
     currentUser=null;members=[];credentials=[];access=[];allowedUsers=[];
     document.getElementById('app').style.display='none';
     document.getElementById('loginScreen').style.display='flex';
