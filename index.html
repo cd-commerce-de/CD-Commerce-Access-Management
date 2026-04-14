@@ -6,6 +6,7 @@
 <title>CD Commerce Access Management</title>
 <style>
 
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#F8FAFC;min-height:100vh}
 #setupScreen,#loginScreen{min-height:100vh;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#0F172A,#1E293B)}
@@ -43,7 +44,7 @@ body{font-family:Arial,sans-serif;background:#F8FAFC;min-height:100vh}
 .main-tab:hover{color:#0F172A}
 .view{display:none;padding:18px 24px}
 /* METRICS */
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
 .mc{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #E2E8F0;transition:all 0.15s;cursor:pointer}
 .mc:hover{border-color:#D97757;box-shadow:0 4px 12px rgba(217,119,87,0.15);transform:translateY(-1px)}
 .mc-l{font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px}
@@ -171,7 +172,7 @@ tr:hover td{background:#FAFBFC}
 .detail-sub{font-size:12px;color:#64748B;margin-top:2px}
 .detail-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F1F5F9}
 .detail-row:last-child{border-bottom:none}
-.detail-tool{font-size:13px;font-weight:600;color:#0F172A;flex:1}
+.detail-tool{font-size:13px;font-weight:600;color:#0F172A;flex:1;cursor:default}.detail-tool.tool-link{cursor:pointer;color:#D97757;text-decoration:underline;text-underline-offset:2px}
 .detail-meta{display:flex;align-items:center;gap:8px}
 .detail-cred{font-size:11px;color:#64748B}
 .detail-rm{font-size:12px;font-weight:600;color:#EF4444;background:none;border:1px solid #FEE2E2;border-radius:6px;padding:3px 8px;cursor:pointer;font-family:Arial,sans-serif}
@@ -197,6 +198,21 @@ tr:hover td{background:#FAFBFC}
 .btn-add-row:hover{background:#FDF2EE;border-color:#C4623F;color:#C4623F}
 .btn-add-row::before{content:"\002B";font-size:16px;font-weight:700}
 
+
+/* GROUPED CREDENTIALS */
+.cred-group-row{background:#F8FAFC;cursor:pointer}
+.cred-group-row:hover td{background:#F1F5F9}
+.cred-group-row td{border-bottom:1px solid #E2E8F0;font-size:13px;padding:10px 14px}
+.cred-child-row td{padding:8px 14px;font-size:12px;border-bottom:1px solid #F8FAFC;background:#fff}
+.cred-child-row:hover td{background:#FAFBFC}
+.cred-expand-icon{font-size:10px;color:#94A3B8;margin-right:6px;display:inline-block;transition:transform 0.15s}
+/* CRED FORM ROWS */
+.cred-form-row{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px;margin-bottom:8px}
+.cred-form-row:first-child{margin-top:0}
+/* ADD ANOTHER ROW BUTTON */
+.btn-add-row{width:100%;padding:10px;border:2px dashed #D97757;border-radius:10px;background:#FFFBF9;color:#D97757;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-add-row:hover{background:#FDF2EE;border-color:#C4623F;color:#C4623F}
+
 </style>
 </head>
 <body>
@@ -206,51 +222,44 @@ tr:hover td{background:#FAFBFC}
 <div id="app" style="display:none">
 <div class="hdr"><div class="hdr-left"><img class="hdr-logo" src="data:image/png;base64,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" alt="CD Commerce"><div class="hdr-div"></div><h1>CD Commerce Access Management</h1></div><div class="hdr-right"><div class="upill"><div class="uav" id="uav"></div><span class="uname" id="uname"></span></div><span class="role-badge" id="roleBadge"></span><button class="hbtn" id="btnLogout">Sign out</button></div></div>
 <div class="main-nav"><button class="main-tab on" id="tab_dashboard">&#128202; Dashboard</button><button class="main-tab" id="tab_access">&#128274; Access Entries</button><button class="main-tab" id="tab_members">&#128100; Members</button><button class="main-tab" id="tab_tools">&#128295; Tools</button><button class="main-tab" id="tab_credentials">&#128273; Credentials</button><button class="main-tab" id="tab_users" style="display:none">&#9881; User Management</button></div>
-<div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc"><div class="mc-l">Total members</div><div class="mc-v" id="dash_members">0</div><div class="mc-hint">Click to view all &#8594;</div></div><div class="mc"><div class="mc-l">Active</div><div class="mc-v" id="dash_active">0</div><div class="mc-hint">Click to filter &#8594;</div></div><div class="mc"><div class="mc-l">Offboarded</div><div class="mc-v" id="dash_offboarded">0</div><div class="mc-hint">Click to filter &#8594;</div></div><div class="mc"><div class="mc-l">Access entries</div><div class="mc-v" id="dash_access">0</div><div class="mc-hint">Click to view &#8594;</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
+<div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc"><div class="mc-l">Total members</div><div class="mc-v" id="dash_members">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Active</div><div class="mc-v" id="dash_active">0</div><div class="mc-hint">Click to filter &#8594;</div></div><div class="mc"><div class="mc-l">Offboarded</div><div class="mc-v" id="dash_offboarded">0</div><div class="mc-hint">Click to filter &#8594;</div></div><div class="mc"><div class="mc-l">Access entries</div><div class="mc-v" id="dash_access">0</div><div class="mc-hint">Click to view &#8594;</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per Credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
 <div class="view" id="view_access"><div class="sec-hdr"><h2>Access Entries</h2><div class="sec-hdr-right"><button class="oblue" id="btnGroupAccess">&#128101; Group access</button><button class="oacc" id="btnAddAccess">+ Add access</button></div></div><div class="tbox"><table><thead><tr><th>Member</th><th>Tool</th><th>Credential</th><th>Access type</th><th>Added by</th><th></th></tr></thead><tbody id="accessTableBody"></tbody></table></div></div>
 <div class="view" id="view_members"><div class="sec-hdr"><h2>Team Members</h2><button class="oacc" id="btnAddMember">+ Add member</button></div><div class="filter-bar"><input id="mfSearch" placeholder="&#128269; Search name, email, department..."><select id="mfDept"><option value="">All departments</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select><select id="mfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Access</th><th>Actions</th></tr></thead><tbody id="memberTableBody"></tbody></table></div></div>
 <div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><button class="oacc" id="btnAddTool">+ Add tool</button></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Cost</th><th>Users</th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
-<div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><button class="oacc" id="btnAddCred">+ Add credential</button></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Username / Email</th><th>Type</th><th>Used by</th><th></th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
+<div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><button class="oacc" id="btnAddCred">+ Add credential</button></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by</th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
 <div class="view" id="view_users"><div class="sec-hdr"><div><h2>User Management</h2><p style="font-size:12px;color:#64748B;margin-top:3px">Only listed users can sign in.</p></div><button class="oacc" id="btnAddUser">+ Add user</button></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
 </div>
-<div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Approx. Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription Model</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
+<div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
 <div class="mbg" id="memberDetailModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Member Access</h2><button class="mhdr-close" id="btnCloseMemberDetail">Close</button></div><div class="detail-hdr"><div class="detail-av" id="detailMemberAv"></div><div><div style="display:flex;align-items:center;gap:8px"><div class="detail-name" id="detailMemberName"></div><span id="detailMemberStatus"></span></div><div class="detail-sub" id="detailMemberSub"></div></div></div><div class="mbody" style="padding-top:8px"><div id="detailAccessList"></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px"><button class="oblue" id="btnOffboardFromDetail" style="color:#EF4444;border-color:#FEE2E2">&#128683; Offboard member</button><button class="oacc" id="detailAddAccess">+ Add access</button></div></div></div></div>
 <div class="mbg" id="memberModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="memberModalTitle">Add member</h2></div><div class="mbody"><input type="hidden" id="mId"><div class="fl"><label>Full name</label><input type="text" id="mName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email</label><input type="email" id="mEmail" placeholder="jan@cd-commerce.de"></div><div class="fl2"><div class="fl" style="margin-bottom:0"><label>Department</label><select id="mDept"><option value="">Select...</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select></div><div class="fl" style="margin-bottom:0"><label>Status</label><select id="mStatus"><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div></div><div class="err" id="mErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelMember">Cancel</button><button class="oacc" id="btnSaveMember">Save member</button></div></div></div>
-<div class="mbg" id="addToolModal" style="display:none"><div class="modal sm"><div class="mhdr"><h2>Add new tool</h2></div><div class="mbody"><div class="ibox">This tool will be added to all dropdowns across the app.</div><div class="fl"><label>Tool name</label><input type="text" id="newToolName" placeholder="e.g. Semrush, Jungle Scout..."></div><div class="err" id="newToolErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelNewTool">Cancel</button><button class="oacc" id="btnSaveNewTool">Add tool</button></div></div></div>
-<div class="mbg" id="credModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="credModalTitle">Add credential</h2></div><div class="mbody"><input type="hidden" id="cId"><div class="fl"><label>Tool</label><select id="cToolSel"></select></div><div class="fl"><label>Username / Email</label><input type="text" id="cUsername" placeholder="e.g. team@cd-commerce.de"></div><div class="fl"><label>Type</label><select id="cType"><option value="individual">Individual</option><option value="shared">Shared</option></select></div><div class="err" id="cErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelCred">Cancel</button><button class="oacc" id="btnSaveCred">Save credential</button></div></div></div>
+<div class="mbg" id="addToolModal" style="display:none"><div class="modal sm"><div class="mhdr"><h2>Add new tool</h2></div><div class="mbody"><div class="ibox">This tool will appear in all dropdowns across the app.</div><div class="fl"><label>Tool name</label><input type="text" id="newToolName" placeholder="e.g. Semrush, Jungle Scout..."></div><div class="err" id="newToolErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelNewTool">Cancel</button><button class="oacc" id="btnSaveNewTool">Add tool</button></div></div></div>
+<div class="mbg" id="credModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="credModalTitle">Add credential</h2></div><div class="mbody"><input type="hidden" id="credEditId"><div class="fl"><label>Tool</label><select id="cToolSel"></select></div><div id="credFormRows"></div><div style="margin-top:8px"><button class="btn-add-row" id="btnAddCredRow">+ Add another login for this tool</button></div><div class="err" id="cErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelCred">Cancel</button><button class="oacc" id="btnSaveCred">Save</button></div></div></div>
 <div class="mbg" id="batchModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>Add access entries</h2></div><div class="mbody"><div class="fl"><label>Member</label><select id="batchMemberSel"><option value="">— Select member —</option></select></div><div id="batchRowsContainer"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddBatchRow">+ Add another tool</button></div><div class="err" id="batchErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelBatch">Cancel</button><button class="oacc" id="btnSaveBatch">Save all entries</button></div></div></div>
-<div class="mbg" id="groupAccessModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>&#128101; Group access — assign by department</h2></div><div class="mbody"><div class="ibox">Select a department. All <strong>active</strong> members in that department will receive the selected tool access. Members who already have access to a tool will be skipped automatically.</div><div class="fl"><label>Department</label><select id="groupDeptSel"><option value="">— Select department —</option></select></div><div id="groupToolRows"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddGroupRow">+ Add another tool</button></div><div class="err" id="groupErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelGroupAccess">Cancel</button><button class="oacc" id="btnSaveGroupAccess">Assign to department</button></div></div></div>
-<div class="mbg" id="userModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Add user</h2></div><div class="mbody"><div class="ibox">This person will be able to sign in with the assigned role.</div><div class="fl"><label>Full name (optional)</label><input type="text" id="uName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email address</label><input type="email" id="uEmail" placeholder="jan@cd-commerce.de"></div><div class="fl"><label>Role</label><select id="uRole"><option value="member">Member — can view and edit data</option><option value="admin">Admin — can also manage users</option></select></div><div class="err" id="uErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelUser">Cancel</button><button class="oacc" id="btnSaveUser">Add user</button></div></div></div>
+<div class="mbg" id="groupAccessModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2>&#128101; Group access — assign by department</h2></div><div class="mbody"><div class="ibox">All <strong>active</strong> members in the selected department will receive access. Members who already have a tool will be skipped.</div><div class="fl"><label>Department</label><select id="groupDeptSel"><option value="">— Select department —</option></select></div><div id="groupToolRows"></div><div style="margin-top:10px"><button class="btn-add-row" id="btnAddGroupRow">+ Add another tool</button></div><div class="err" id="groupErr" style="margin-top:8px"></div></div><div class="mfoot"><button class="oblue" id="btnCancelGroupAccess">Cancel</button><button class="oacc" id="btnSaveGroupAccess">Assign to department</button></div></div></div>
+<div class="mbg" id="userModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Add user</h2></div><div class="mbody"><div class="ibox">This person will be able to sign in with the assigned role.</div><div class="fl"><label>Full name (optional)</label><input type="text" id="uName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email address</label><input type="email" id="uEmail" placeholder="jan@cd-commerce.de"></div><div class="fl"><label>Role</label><select id="uRole"><option value="member">Member</option><option value="admin">Admin</option></select></div><div class="err" id="uErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelUser">Cancel</button><button class="oacc" id="btnSaveUser">Add user</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script>
 
 (function() {
   var SUPA_URL = 'https://ooxjxbzjhkxgwlaxbdmc.supabase.co';
   var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veGp4YnpqaGt4Z3dsYXhiZG1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNDU3OTksImV4cCI6MjA5MTcyMTc5OX0.RoRHEcBU1XjA_hYMQ3tj7O_MSMc8Gx-z6JR1SB1P7lA';
-
-  // ── TOOL CATALOGUE (from masterlist) ──
   var TOOL_CATALOGUE = [{"name": "Amazon Business", "category": "Amazon Marketplace", "dept": "Operations / Admin", "url": "https://www.amazon.com/business", "paid_free": "Pay-per-use", "cost": "Variable", "sub_model": "Transaction-based", "access_type": "Individual", "owner": "Daniel", "notes": "B2B orders, office supplies, samples"}, {"name": "Amazon Seller Central", "category": "Amazon Marketplace", "dept": "Marketing / R&D / Operations", "url": "https://sellercentral.amazon.com/", "paid_free": "Paid", "cost": "\u20ac39.99", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Michael", "notes": "Core e-commerce platform for listing, orders, compliance, advertising"}, {"name": "Kaufland", "category": "E-commerce Platform", "dept": "Marketing / Operations", "url": "https://kaufland.de/", "paid_free": "Paid", "cost": "\u20ac50", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Michael", "notes": "Marketplace sales & performance"}, {"name": "OTTO", "category": "E-commerce Platform", "dept": "Marketing / Operations", "url": "https://www.otto.de/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Michael", "notes": "Marketplace sales, compliance, returns"}, {"name": "Shopify", "category": "E-commerce Platform", "dept": "Marketing / Customer Support", "url": "https://www.shopify.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Shared", "owner": "Thomas / Jan", "notes": "Online shop management"}, {"name": "eBay", "category": "E-commerce Platform", "dept": "Marketing / Operations", "url": "https://www.ebay.com/", "paid_free": "Paid", "cost": "\u20ac50", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Michael", "notes": "Marketplace sales & operations"}, {"name": "ASINSIGHT", "category": "Amazon Analytics", "dept": "Marketing / R&D", "url": "https://www.asinsight.com", "paid_free": "Paid", "cost": "\u20ac50\u2013100", "sub_model": "Monthly / Annual", "access_type": "Shared", "owner": "Michael / Christoph", "notes": "Organic rank tracking, detailed market data"}, {"name": "DataDive", "category": "Amazon Analytics", "dept": "Marketing / R&D", "url": "https://datadive.tools/", "paid_free": "Paid", "cost": "\u20ac77", "sub_model": "Monthly / Annual", "access_type": "Shared", "owner": "Michael / Ilwyn", "notes": "Niche research, listing optimization, rank tracking"}, {"name": "Datarova", "category": "Amazon Analytics", "dept": "Marketing / R&D", "url": "https://www.datarova.com/", "paid_free": "Paid", "cost": "\u20ac100", "sub_model": "Monthly / Annual", "access_type": "Shared", "owner": "Michael / Franz", "notes": "Keyword research, rank & niche trend tracking"}, {"name": "Getida", "category": "FBA Reimbursements", "dept": "Finance / Operations", "url": "https://www.getida.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Annual", "access_type": "Shared", "owner": "Jan / Jess", "notes": "FBA reimbursement tracking"}, {"name": "Getida", "category": "FBA Reimbursements", "dept": "Finance", "url": "https://www.getida.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Annual", "access_type": "Shared", "owner": "Jan / Jess", "notes": "(see also Operations row)"}, {"name": "Gorilla ROI", "category": "Amazon Data Integration", "dept": "IT / Operations", "url": "https://www.gorillaroi.com/", "paid_free": "Paid", "cost": "\u20ac50", "sub_model": "Monthly", "access_type": "Individual", "owner": "Jonathan", "notes": "Amazon data feed into Google Sheets"}, {"name": "Helium 10", "category": "Amazon Analytics", "dept": "Marketing / R&D", "url": "https://www.helium10.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Shared", "owner": "Michael / Ilwyn", "notes": "Keyword research, listing creation, rank tracking"}, {"name": "Keepa", "category": "Amazon Price Tracking", "dept": "Marketing / R&D", "url": "https://keepa.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Shared", "owner": "Michael / Veronica", "notes": "Price & BSR analysis"}, {"name": "SellerSprite", "category": "Amazon Analytics", "dept": "Marketing / R&D", "url": "https://www.sellersprite.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Shared", "owner": "Michael", "notes": "Keyword & competitor research, market screening"}, {"name": "Sellerboard", "category": "Amazon Profitability", "dept": "Finance / Marketing / Operations", "url": "https://www.sellerboard.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan", "notes": "P&L tracking, COGS updates, automated emails"}, {"name": "Sellerfox", "category": "Amazon Analytics", "dept": "Marketing", "url": "https://sellerfox.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Shared", "owner": "Michael / Ilwyn", "notes": "KPI & product performance tracking"}, {"name": "Shophunter", "category": "Amazon Research", "dept": "Marketing", "url": "https://shophunter.io/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Thomas", "notes": "Revenue check for online shops"}, {"name": "Shophunter.io", "category": "Amazon Research", "dept": "Marketing", "url": "https://shophunter.io/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Revenue check for online shops"}, {"name": "SellerSonar", "category": "", "dept": "", "url": "", "paid_free": "", "cost": "", "sub_model": "Monthly", "access_type": "Shared", "owner": "", "notes": ""}, {"name": "Smart Scout", "category": "Amazon Research", "dept": "R&D", "url": "https://www.smartscout.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Shared", "owner": "Christoph", "notes": "Competitor check, new product ideas"}, {"name": "Cursor", "category": "AI Code Editor", "dept": "IT", "url": "https://cursor.com/", "paid_free": "Paid", "cost": "\u20ac20", "sub_model": "Monthly", "access_type": "Individual", "owner": "Jonathan", "notes": "AI-assisted code development"}, {"name": "Docker", "category": "Containerization", "dept": "IT", "url": "https://www.docker.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "App containerization & deployment"}, {"name": "Facebook Ads Manager", "category": "Paid Advertising", "dept": "Marketing", "url": "https://www.facebook.com/adsmanager/", "paid_free": "Paid", "cost": "Variable", "sub_model": "Monthly", "access_type": "Individual", "owner": "Thomas", "notes": "Facebook ad campaign management"}, {"name": "Google Ads", "category": "Paid Advertising", "dept": "Marketing", "url": "https://ads.google.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Thomas", "notes": "Google search & display campaigns"}, {"name": "Klaviyo", "category": "Email Marketing", "dept": "Marketing", "url": "https://www.klaviyo.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Thomas", "notes": "Email campaigns for online shop customers"}, {"name": "LangChain", "category": "AI Framework", "dept": "IT", "url": "https://www.langchain.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "AI orchestration for internal pipelines"}, {"name": "LangGraph", "category": "AI Framework", "dept": "IT", "url": "https://www.langchain.com/langgraph", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Agent workflow automation"}, {"name": "LangSmith", "category": "AI Monitoring", "dept": "IT", "url": "https://smith.langchain.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "AI debugging & monitoring"}, {"name": "Lovable", "category": "AI App Builder", "dept": "IT", "url": "https://lovable.dev/", "paid_free": "Free", "cost": "\u2014", "sub_model": "Free", "access_type": "Individual", "owner": "Jonathan", "notes": "Rapid AI app prototyping"}, {"name": "Memberspot", "category": "LMS / Training", "dept": "HR / All Departments", "url": "https://memberspot.de/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Shared", "owner": "Daniel / Christoph", "notes": "Training videos, SOPs, onboarding"}, {"name": "OpenAI (ChatGPT)", "category": "AI Assistant", "dept": "All Departments", "url": "https://chat.openai.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Christoph", "notes": "Daily tasks, text creation, research, listing copy"}, {"name": "OpenAI API", "category": "AI API", "dept": "IT", "url": "https://openai.com/index/openai-api/", "paid_free": "Pay-per-use", "cost": "Usage-based", "sub_model": "Usage-based", "access_type": "Individual", "owner": "Jonathan", "notes": "API calls for internal automation tools"}, {"name": "Sourcing Warrior", "category": "Sourcing Training", "dept": "Procurement", "url": "https://www.sourcing-warrior.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Shared", "owner": "Aimee", "notes": "Sourcing platform \u2014 low active users"}, {"name": "promptfolder", "category": "AI Prompt Management", "dept": "Content / Marketing", "url": "https://www.promptfolder.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "AI prompt library \u2014 evaluate ROI"}, {"name": "Discord / Midjourney", "category": "AI Image Generation", "dept": "Creatives / Content", "url": "https://discord.com/", "paid_free": "Paid", "cost": "\u20ac10\u201330", "sub_model": "Monthly", "access_type": "Shared", "owner": "Franz / Thomas", "notes": "AI-generated product images"}, {"name": "AMZ Designkit", "category": "Amazon Design", "dept": "Creatives / Content", "url": "https://amzdesignkit.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "One-time", "access_type": "Individual", "owner": "Franz / Thomas", "notes": "Amazon listing design templates"}, {"name": "Adobe Creative Suite", "category": "Design Software", "dept": "Creatives / Content", "url": "https://account.adobe.com/", "paid_free": "Paid", "cost": "\u20ac20.99\u201352.99", "sub_model": "Monthly / Annual", "access_type": "Individual", "owner": "Franz / Arif", "notes": "Photoshop, Acrobat, illustration, photo editing"}, {"name": "Adobe Express", "category": "Graphic Design", "dept": "Creatives / Content", "url": "https://www.adobe.com/express/", "paid_free": "Paid", "cost": "\u20ac9.99", "sub_model": "Monthly / Annual", "access_type": "Individual", "owner": "Franz", "notes": "Quick design tasks"}, {"name": "Adobe Stock", "category": "Stock Media", "dept": "Creatives / Content", "url": "https://stock.adobe.com/", "paid_free": "Paid", "cost": "\u20ac29.99", "sub_model": "Monthly / Annual", "access_type": "Individual", "owner": "Franz", "notes": "Stock images for content"}, {"name": "Behance", "category": "Design Inspiration", "dept": "Creatives / Content", "url": "https://www.behance.net/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Franz / Thomas", "notes": "Creative inspiration & portfolio reference"}, {"name": "Blender", "category": "3D Modeling", "dept": "Creatives / Content", "url": "https://www.blender.org/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Arif", "notes": "3D rendering for product visuals"}, {"name": "Canva", "category": "Graphic Design", "dept": "Creatives / Content", "url": "https://www.canva.com/", "paid_free": "Paid", "cost": "\u20ac12.99", "sub_model": "Monthly / Annual", "access_type": "Shared", "owner": "Franz / Michael", "notes": "Image creation, A+ content, social media graphics"}, {"name": "Capcut", "category": "Video Editing", "dept": "Creatives / Content", "url": "https://www.capcut.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Thomas", "notes": "Short video cutting"}, {"name": "Epidemic Sound", "category": "Music Licensing", "dept": "Creatives / Content", "url": "https://www.epidemicsound.com/", "paid_free": "Paid", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Shared", "owner": "Denis / Thomas", "notes": "Licensed background music for videos"}, {"name": "Freepik", "category": "Stock Graphics", "dept": "Creatives / Content", "url": "https://www.freepik.com/", "paid_free": "Paid", "cost": "\u20ac99", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "Vector graphics & stock images"}, {"name": "IStock / iStockphoto", "category": "Stock Photography", "dept": "Creatives / Content", "url": "https://www.istockphoto.com/", "paid_free": "Paid", "cost": "\u20ac19\u201349", "sub_model": "Monthly", "access_type": "Shared", "owner": "Franz / Daniel", "notes": "Stock images"}, {"name": "Loom", "category": "Video Recording", "dept": "Collaboration", "url": "https://www.loom.com/", "paid_free": "Paid", "cost": "\u20ac9.99", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jonathan / Jan", "notes": "Screen recordings, training walkthroughs"}, {"name": "Unsplash", "category": "Stock Photography", "dept": "Creatives / Content", "url": "https://unsplash.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "Free stock images"}, {"name": "YouTube", "category": "Video Platform", "dept": "Marketing / Content", "url": "https://www.youtube.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Shared", "owner": "Thomas / Franz", "notes": "Learning, content publishing"}, {"name": "Zoom", "category": "Video Conferencing", "dept": "All Departments", "url": "https://zoom.us/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Shared", "owner": "Drixcy / Christoph", "notes": "Team and supplier video calls"}, {"name": "colormagic", "category": "Color Palette Tool", "dept": "Creatives / Content", "url": "https://colormagic.app/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "Color palette generation \u2014 evaluate ROI"}, {"name": "iloveimg", "category": "Image Editing", "dept": "Creatives / Content", "url": "https://www.iloveimg.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "Image compression & conversion"}, {"name": "pixelbin", "category": "Image Optimization", "dept": "Creatives / Content", "url": "https://www.pixelbin.io/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "Quick image customization"}, {"name": "speekly.io", "category": "Transcription", "dept": "Marketing / Content", "url": "https://www.speekly.io/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Video/audio transcription"}, {"name": "Digistore 24", "category": "Digital Sales", "dept": "Marketing", "url": "https://www.digistore24.com/", "paid_free": "Paid", "cost": "Variable", "sub_model": "Transaction-based", "access_type": "Individual", "owner": "Daniel", "notes": "Digital product sales funnel"}, {"name": "Facebook", "category": "Social Media", "dept": "Marketing", "url": "https://www.facebook.com/", "paid_free": "\u2014", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Shared", "owner": "Thomas / Daniel", "notes": "Brand presence on Facebook"}, {"name": "Facebook Ad Library", "category": "Ad Research", "dept": "Marketing", "url": "https://www.facebook.com/ads/library/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Thomas", "notes": "Competitor ad inspiration for dropshipping"}, {"name": "Facebook Messenger", "category": "Messaging", "dept": "Marketing", "url": "https://www.messenger.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Thomas", "notes": "Dropshipping coach communication"}, {"name": "Facebook Messenger", "category": "Customer Messaging", "dept": "Customer Support / Marketing", "url": "https://www.messenger.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Thomas", "notes": "Brand customer messaging"}, {"name": "Google Analytics", "category": "Web Analytics", "dept": "Marketing", "url": "https://analytics.google.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Thomas", "notes": "Website traffic & campaign analysis"}, {"name": "Google Tag Assistant", "category": "Tag Debugging", "dept": "Marketing", "url": "https://tagassistant.google.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Thomas", "notes": "Tag validation & debugging"}, {"name": "Google Tag Manager", "category": "Tag Management", "dept": "Marketing", "url": "https://tagmanager.google.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Thomas", "notes": "Website tag deployment"}, {"name": "Instagram", "category": "Social Media", "dept": "Marketing", "url": "https://www.instagram.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Thomas", "notes": "Brand social media & influencer outreach"}, {"name": "Looker Studio", "category": "Data Visualization", "dept": "Marketing / IT", "url": "https://lookerstudio.google.com/", "paid_free": "Paid", "cost": "\u20ac10\u201320/user", "sub_model": "Monthly", "access_type": "Individual", "owner": "Ilwyn / Michael", "notes": "KPI dashboards (SQP, etc.)"}, {"name": "QR Track", "category": "QR Code Tracking", "dept": "Marketing", "url": "https://qrtrack.app/", "paid_free": "Paid", "cost": "\u20ac99", "sub_model": "Monthly", "access_type": "Individual", "owner": "Michael", "notes": "Postcard QR tracking"}, {"name": "Wir-machen-druck.de", "category": "Print Services", "dept": "Admin / Marketing", "url": "https://www.wir-machen-druck.de/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Postcards, pool chemistry guides printing"}, {"name": "lets-sell.com", "category": "E-commerce Service", "dept": "Marketing", "url": "https://www.lets-sell.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Packaging orders & invoice download"}, {"name": "my.paths", "category": "Landing Page / QR", "dept": "Marketing", "url": "Not directly available", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Franz", "notes": "Landing page & QR code creation"}, {"name": "sendcloud", "category": "Shipping Integration", "dept": "Marketing / Operations", "url": "https://www.sendcloud.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Shipping label & tracking integration"}, {"name": "windsor.ai", "category": "Marketing Analytics", "dept": "IT / Marketing", "url": "https://www.windsor.ai/", "paid_free": "Paid", "cost": "118.0", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Marketing attribution & analytics"}, {"name": "Alibaba", "category": "China Sourcing", "dept": "Procurement", "url": "https://www.alibaba.com/", "paid_free": "Free", "cost": "Variable", "sub_model": "Transaction-based", "access_type": "Shared", "owner": "Aimee", "notes": "Main China sourcing platform"}, {"name": "EZT Online", "category": "Customs & HS Codes", "dept": "Procurement / R&D", "url": "https://www.ezt-online.de/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Christoph", "notes": "HS code lookup for customs"}, {"name": "Global Sources", "category": "B2B Marketplace", "dept": "Procurement", "url": "https://www.globalsources.com/", "paid_free": "Paid", "cost": "\u20ac99", "sub_model": "Annual", "access_type": "Individual", "owner": "Aimee", "notes": "Alternative China sourcing"}, {"name": "India Mart", "category": "B2B Marketplace", "dept": "Procurement", "url": "https://www.indiamart.com/", "paid_free": "Paid", "cost": "\u20ac5", "sub_model": "Monthly", "access_type": "Individual", "owner": "Aimee", "notes": "India sourcing"}, {"name": "Inoxmare", "category": "Supplier Portal", "dept": "Procurement", "url": "https://www.inoxmare.com/", "paid_free": "Paid", "cost": "Variable", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jess / Leah", "notes": "Supplier PD orders & reorders"}, {"name": "Jumingo", "category": "Freight Comparison", "dept": "Procurement / Logistics", "url": "https://www.jumingo.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Aimee", "notes": "Shipping rate comparison & booking"}, {"name": "Made In China", "category": "B2B Marketplace", "dept": "Procurement", "url": "https://www.made-in-china.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Aimee", "notes": "China sourcing alternative"}, {"name": "V Trust", "category": "Quality Inspection", "dept": "Procurement", "url": "https://www.v-trust.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jess / Leah", "notes": "3rd party quality control inspections"}, {"name": "WeChat", "category": "Supplier Communication", "dept": "Procurement", "url": "https://www.wechat.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Aimee", "notes": "China supplier communication"}, {"name": "WhatsApp", "category": "Supplier Communication", "dept": "Procurement / All", "url": "https://www.whatsapp.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Aimee", "notes": "Supplier & internal team messaging"}, {"name": "scribehow.com", "category": "Process Documentation", "dept": "Operations / Procurement", "url": "https://scribehow.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "SOP creation with screenshots"}, {"name": "Asia Logistics", "category": "Freight Services", "dept": "Logistics", "url": "https://asia-logistics.de/en/", "paid_free": "Pay-per-use", "cost": "Variable", "sub_model": "Service-based", "access_type": "Shared", "owner": "Jan / Aimee", "notes": "China-Germany shipping rates"}, {"name": "DCGLogistics", "category": "Freight Services", "dept": "Logistics", "url": "https://www.dcglogistics.com/", "paid_free": "Pay-per-use", "cost": "Variable", "sub_model": "Service-based", "access_type": "Shared", "owner": "Jess / Leah", "notes": "PFS shipment monitoring & freight booking"}, {"name": "DHL Gro\u00dfkundenportal", "category": "Shipping Portal", "dept": "Logistics", "url": "https://www.dhl.de/de/geschaeftskunden.html", "paid_free": "Pay-per-use", "cost": "Variable", "sub_model": "Service-based", "access_type": "Individual", "owner": "Daniel", "notes": "DHL corporate shipping, research orders"}, {"name": "Accountone", "category": "Accounting Software", "dept": "Finance", "url": "https://www.accountone.de/", "paid_free": "Paid", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jan", "notes": "Monthly data entry for tax advisor"}, {"name": "American Express", "category": "Corporate Card", "dept": "Finance", "url": "https://www.americanexpress.com/", "paid_free": "Paid", "cost": "Annual fee", "sub_model": "Annual", "access_type": "Individual", "owner": "Daniel", "notes": "Bank statements, direct debits"}, {"name": "Odoo", "category": "ERP / Finance", "dept": "Finance", "url": "https://www.odoo.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Rio", "notes": "Invoice encoding, financial management"}, {"name": "PayPal", "category": "Online Payments", "dept": "Finance", "url": "https://www.paypal.com/", "paid_free": "Paid", "cost": "\u20ac99", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Refunds, debits, financial accounting"}, {"name": "Wise", "category": "International Transfers", "dept": "Finance", "url": "https://wise.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Freelancer salaries, currency transfers"}, {"name": "XE.com (Exchange Rates)", "category": "Currency Tool", "dept": "Finance", "url": "https://www.xe.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Shared", "owner": "Jan / Aimee", "notes": "Live exchange rate reference"}, {"name": "exali.de", "category": "Business Insurance", "dept": "Admin / Finance", "url": "https://www.exali.de/", "paid_free": "Paid", "cost": "\u2014", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Professional liability insurance"}, {"name": "online.steueragenten.de", "category": "Tax & Accounting", "dept": "Finance", "url": "https://online.steueragenten.de/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Financial accounting upload & editing"}, {"name": "protal.rundfunkbeitrag.de", "category": "Broadcasting Fee", "dept": "Admin / Finance", "url": "https://portal.rundfunkbeitrag.de/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Daniel", "notes": "German broadcasting fee management"}, {"name": "DPMA", "category": "Patent / Trademark", "dept": "Compliance", "url": "https://www.dpma.de/", "paid_free": "Pay-per-use", "cost": "Variable", "sub_model": "Per registration", "access_type": "Shared", "owner": "Michael / Christoph", "notes": "Trademark research & registration"}, {"name": "EARportal (WEEE)", "category": "EPR Compliance", "dept": "Compliance", "url": "https://www.ear-system.de/ear-online/", "paid_free": "Paid", "cost": "\u20ac200\u2013500/yr", "sub_model": "Annual", "access_type": "Individual", "owner": "Kimberly", "notes": "WEEE EPR registration & reporting (Germany)"}, {"name": "ebiomeld.de / BAUA", "category": "Chemical Reporting", "dept": "Compliance", "url": "https://ebiomeld.de/DE/bmv_node", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Kimberly", "notes": "Chemicals EPR reporting (Germany)"}, {"name": "leko.eco", "category": "Packaging EPR", "dept": "Compliance", "url": "https://www.leko.eco/", "paid_free": "Paid", "cost": "\u20ac50", "sub_model": "Monthly", "access_type": "Individual", "owner": "Kimberly", "notes": "Packaging EPR reporting (France)"}, {"name": "reclay.de", "category": "Recycling Compliance", "dept": "Compliance", "url": "https://www.reclay.de/", "paid_free": "Paid", "cost": "\u2014", "sub_model": "Monthly", "access_type": "Individual", "owner": "Kimberly", "notes": "Packaging EPR service provider (Germany)"}, {"name": "verpackungregister.org", "category": "Packaging Compliance", "dept": "Compliance", "url": "https://www.verpackungregister.org/", "paid_free": "Paid", "cost": "\u2014", "sub_model": "Monthly", "access_type": "Individual", "owner": "Kimberly", "notes": "Packaging EPR reporting (Germany)"}, {"name": "OnlineJobs.ph", "category": "Recruitment", "dept": "HR", "url": "https://www.onlinejobs.ph/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Philippines-based recruitment"}, {"name": "SV-Meldeportal", "category": "Social Security", "dept": "Admin / HR", "url": "https://app.sv-meldeportal.de/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Daniel", "notes": "Electronic sick notes (Germany)"}, {"name": "Upwork", "category": "Freelance Platform", "dept": "HR", "url": "https://www.upwork.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Shared", "owner": "Thomas / Daniel", "notes": "Freelancer hiring \u2014 possible duplicate entries"}, {"name": "ClickUp", "category": "Project Management", "dept": "All Departments", "url": "https://app.clickup.com/", "paid_free": "Paid", "cost": "\u20ac5\u201312/user", "sub_model": "Monthly / Annual", "access_type": "Shared", "owner": "Jan / Drixcy", "notes": "Task management, project tracking, PoTracker"}, {"name": "DeepL", "category": "Translation", "dept": "All Departments", "url": "https://www.deepl.com/", "paid_free": "Paid", "cost": "\u20ac5.99", "sub_model": "Monthly / Annual", "access_type": "Shared", "owner": "Jan / Aimee", "notes": "Daily translation for all teams"}, {"name": "Fathom", "category": "Meeting Recorder", "dept": "Collaboration", "url": "https://usefathom.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Meeting transcription & recordings"}, {"name": "LastPass", "category": "Password Manager", "dept": "IT / Security", "url": "https://www.lastpass.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Drixcy", "notes": "Company-wide password sharing & security"}, {"name": "Slack", "category": "Team Communication", "dept": "All Departments", "url": "https://slack.com/", "paid_free": "Paid", "cost": "\u20ac50", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Drixcy", "notes": "Primary internal communication platform"}, {"name": "Benoli.eu", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.benoli.eu/", "paid_free": "Pay-per-use", "cost": "Variable", "sub_model": "Per purchase", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "Hygi.de", "category": "Cleaning Supplies", "dept": "Admin", "url": "https://www.hygi.de/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Office cleaning products"}, {"name": "KKverpackungen.de", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.kkverpackungen.de/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "Karton.eu", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.karton.eu/", "paid_free": "Paid", "cost": "Variable", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "KartonPlus.de", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.kartonplus.de/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "Placetel", "category": "Cloud Telephony", "dept": "Customer Support / Admin", "url": "https://www.placetel.de/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Daniel", "notes": "Cloud phone system for office"}, {"name": "katron.com", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.katron.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "rgshop.de", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.rgshop.de/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "smileypack.de", "category": "Packaging Supplier", "dept": "Admin / Operations", "url": "https://www.smileypack.de/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Cardboard packaging orders"}, {"name": "tchibo.de", "category": "Office Marketplace", "dept": "Admin", "url": "https://www.tchibo.de/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Office orders & supplies"}, {"name": "AWS RDS", "category": "Cloud Database", "dept": "IT", "url": "https://aws.amazon.com/rds/", "paid_free": "Pay-per-use", "cost": "Usage-based", "sub_model": "Usage-based", "access_type": "Individual", "owner": "Jonathan", "notes": "Managed cloud relational database"}, {"name": "Ansible", "category": "IT Automation", "dept": "IT", "url": "Not directly available", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Server configuration management"}, {"name": "BrightData", "category": "Data Collection", "dept": "IT", "url": "https://brightdata.com/", "paid_free": "Pay-per-use", "cost": "Usage-based", "sub_model": "Usage-based", "access_type": "Individual", "owner": "Jonathan", "notes": "Web scraping infrastructure"}, {"name": "Express.js", "category": "Backend Framework", "dept": "IT", "url": "https://expressjs.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Node.js REST API framework"}, {"name": "FastAPI", "category": "Backend Framework", "dept": "IT", "url": "https://fastapi.tiangolo.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Python REST API framework"}, {"name": "GitHub", "category": "Code Repository", "dept": "IT", "url": "https://github.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Jonathan", "notes": "Version control & code storage"}, {"name": "Grafana", "category": "Operations Dashboard", "dept": "Operations / IT", "url": "https://grafana.com/", "paid_free": "Paid", "cost": "\u20ac49", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Warehouse monitoring dashboard"}, {"name": "IIS", "category": "Web Server", "dept": "IT", "url": "Not directly available", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Windows web server (IIS)"}, {"name": "JavaScript", "category": "Programming Language", "dept": "IT", "url": "Not directly available", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Core web scripting language"}, {"name": "NGINX", "category": "Web Server", "dept": "IT", "url": "https://nginx.org/en/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Reverse proxy & static file server"}, {"name": "Node.js", "category": "Runtime Environment", "dept": "IT", "url": "https://nodejs.org/en", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "JavaScript server runtime"}, {"name": "Playwright", "category": "Web Automation", "dept": "IT", "url": "https://playwright.dev/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Browser automation & scraping"}, {"name": "PostgREST", "category": "API Layer", "dept": "IT", "url": "https://docs.postgrest.org/en/v14/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Instant REST API over PostgreSQL"}, {"name": "PostgreSQL", "category": "Database", "dept": "IT", "url": "https://www.postgresql.org/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Relational database for internal tools"}, {"name": "Python", "category": "Programming Language", "dept": "IT", "url": "https://www.python.org/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Backend scripting & automation"}, {"name": "React", "category": "Frontend Framework", "dept": "IT", "url": "https://react.dev/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "UI library for web apps"}, {"name": "TailwindCSS", "category": "CSS Framework", "dept": "IT", "url": "https://tailwindcss.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Utility-first CSS framework"}, {"name": "TypeScript", "category": "Programming Language", "dept": "IT", "url": "https://www.typescriptlang.org/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Typed JavaScript superset"}, {"name": "VS Code", "category": "Code Editor", "dept": "IT", "url": "https://code.visualstudio.com/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Source code editing"}, {"name": "Vite", "category": "Build Tool", "dept": "IT", "url": "https://vite.dev/", "paid_free": "Free", "cost": "\u2014", "sub_model": "\u2014", "access_type": "Individual", "owner": "Jonathan", "notes": "Frontend build tooling"}, {"name": "SageMailer / Noblebyte", "category": "Review Management", "dept": "Customer Support", "url": "https://sagemailer.com/", "paid_free": "Paid", "cost": "\u20ac39", "sub_model": "Monthly", "access_type": "Individual", "owner": "Daniel", "notes": "Amazon feedback tracking, review alerts"}, {"name": "Trustpilot", "category": "Review Management", "dept": "Customer Support", "url": "https://www.trustpilot.com/", "paid_free": "Paid", "cost": "\u20ac29", "sub_model": "Monthly", "access_type": "Shared", "owner": "Daniel / Thomas", "notes": "Customer review collection & management"}, {"name": "eDesk", "category": "Customer Support Platform", "dept": "Customer Support", "url": "https://www.edesk.com/", "paid_free": "Paid", "cost": "\u20ac19", "sub_model": "Monthly", "access_type": "Individual", "owner": "Rita", "notes": "E-commerce email support ticketing"}, {"name": "AutoCAD", "category": "CAD Software", "dept": "R&D", "url": "https://www.autodesk.com/products/autocad/overview", "paid_free": "Paid", "cost": "\u20ac235", "sub_model": "Monthly / Annual", "access_type": "Individual", "owner": "Veronica", "notes": "Carton layout & packaging design"}, {"name": "JTL", "category": "ERP / E-commerce Ops", "dept": "Operations", "url": "https://www.jtl-software.de/", "paid_free": "Paid", "cost": "Variable", "sub_model": "Monthly", "access_type": "Shared", "owner": "Jan / Daniel", "notes": "Core ERP: orders, inventory, warehouse, shipping"}];
 
-  var members = [], credentials = [], access = [], allowedUsers = [], customTools = [];
-  var currentUser = null, batchRows = [];
-  var memberFilter = {search:'', dept:'', status:''};
-  var toolFilter   = {search:'', category:'', paid:''};
+  var members=[], credentials=[], access=[], allowedUsers=[], customTools=[];
+  var currentUser=null, batchRows=[], groupRows=[];
+  var memberFilter={search:'',dept:'',status:''};
+  var toolFilter={search:'',category:'',paid:''};
 
-  var DEPTS = ['Admin','B2B','Compliance','Creatives','Customer Support','Ecomm','Finance',
+  var DEPTS=['Admin','B2B','Compliance','Creatives','Customer Support','Ecomm','Finance',
     'HR','IT','Integrator','Leadership','Logistics','Marketing','Operations','Planning',
     'Procurement','Procurement & Logistics','R&D','Warehouse'];
 
   function getAllTools(){
-    var catalogue = TOOL_CATALOGUE.map(function(t){return t.name;});
-    var extra = customTools.filter(function(n){
-      return !catalogue.find(function(c){return c.toLowerCase()===n.toLowerCase();});
-    });
-    return catalogue.concat(extra).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase());});
+    var cat=TOOL_CATALOGUE.map(function(t){return t.name;});
+    var extra=customTools.filter(function(n){return !cat.find(function(c){return c.toLowerCase()===n.toLowerCase();});});
+    return cat.concat(extra).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase());});
   }
-
-  function getToolInfo(name){
-    return TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===name.toLowerCase();})||null;
-  }
+  function getToolInfo(name){return TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===name.toLowerCase();})||null;}
 
   // ── SUPABASE ──
   function sbH(){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=representation'};}
@@ -266,25 +275,19 @@ tr:hover td{background:#FAFBFC}
   function getMember(id){return members.find(function(m){return m.id===id;})||null;}
   function getCred(id){return credentials.find(function(c){return c.id===id;})||null;}
   function showErr(elId,msg){var e=document.getElementById(elId);if(e){e.textContent=msg;e.style.display=msg?'block':'none';}}
-  function showToast(m,type){
-    var t=document.getElementById('toast');
-    t.textContent=m;t.className='toast '+(type||'');
-    t.classList.add('on');setTimeout(function(){t.classList.remove('on');},3000);
-  }
+  function showToast(m,type){var t=document.getElementById('toast');t.textContent=m;t.className='toast '+(type||'');t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2800);}
   function setLoading(on){var el=document.getElementById('loadingBar');if(el)el.style.display=on?'block':'none';}
   function ini(name){return(name||'').split(' ').map(function(w){return w.charAt(0)||'';}).join('').toUpperCase().slice(0,2);}
 
-  // ── BOOT ──
+  // ── BOOT / SESSION ──
   function boot(){
     setLoading(true);
     try{var s=localStorage.getItem('cd_custom_tools');if(s)customTools=JSON.parse(s);}catch(e){}
-    // Check for saved session
     var savedSession=null;
     try{var ss=localStorage.getItem('cd_session');if(ss)savedSession=JSON.parse(ss);}catch(e){}
     sbGet('allowed_users').then(function(data){
       allowedUsers=Array.isArray(data)?data:[];
       if(!allowedUsers.length){setLoading(false);showScreen('setupScreen');return;}
-      // If we have a saved session, verify email still in allowed_users then auto-login
       if(savedSession&&savedSession.email){
         var stillAllowed=allowedUsers.find(function(u){return u.email===savedSession.email;});
         if(stillAllowed){
@@ -297,8 +300,7 @@ tr:hover td{background:#FAFBFC}
           badge.textContent=currentUser.role==='admin'?'Admin':'Member';
           badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
           document.getElementById('tab_users').style.display=currentUser.role==='admin'?'inline-block':'none';
-          loadAllData();
-          return;
+          loadAllData();return;
         }
       }
       setLoading(false);showScreen('loginScreen');
@@ -306,35 +308,28 @@ tr:hover td{background:#FAFBFC}
   }
 
   function showScreen(name){
-    ['setupScreen','loginScreen','app'].forEach(function(id){
-      var el=document.getElementById(id);if(el)el.style.display='none';
-    });
-    var t=document.getElementById(name);
-    if(t)t.style.display=name==='app'?'block':'flex';
+    ['setupScreen','loginScreen','app'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+    var t=document.getElementById(name);if(t)t.style.display=name==='app'?'block':'flex';
   }
 
-  // ── SETUP ──
   function doSetup(){
     var name=document.getElementById('setupName').value.trim();
     var email=document.getElementById('setupEmail').value.trim().toLowerCase();
     var err=document.getElementById('setupErr');
-    if(!name){err.textContent='Name required.';err.style.display='block';return;}
-    if(!email){err.textContent='Email required.';err.style.display='block';return;}
+    if(!name||!email){err.textContent='Both fields required.';err.style.display='block';return;}
     err.style.display='none';setLoading(true);
     sbInsert('allowed_users',{id:uid(),email:email,role:'admin',name:name}).then(function(){
       allowedUsers=[{email:email,role:'admin',name:name}];setLoading(false);
-      document.getElementById('inpEmail').value=email;
-      document.getElementById('inpName').value=name;
+      document.getElementById('inpEmail').value=email;document.getElementById('inpName').value=name;
       showScreen('loginScreen');showToast('Setup complete! Please sign in.');
-    }).catch(function(){setLoading(false);err.textContent='Could not save. Check Supabase table exists.';err.style.display='block';});
+    }).catch(function(){setLoading(false);err.textContent='Could not save.';err.style.display='block';});
   }
 
-  // ── LOGIN ──
   function doLogin(){
     var email=document.getElementById('inpEmail').value.trim().toLowerCase();
     var name=document.getElementById('inpName').value.trim();
     var err=document.getElementById('errMsg');
-    if(!email||!name){err.textContent='Both fields are required.';err.style.display='block';return;}
+    if(!email||!name){err.textContent='Both fields required.';err.style.display='block';return;}
     err.style.display='none';setLoading(true);
     sbGetByEmail(email).then(function(data){
       setLoading(false);
@@ -345,7 +340,7 @@ tr:hover td{background:#FAFBFC}
       document.getElementById('loginScreen').style.display='none';
       document.getElementById('app').style.display='block';
       document.getElementById('uav').textContent=currentUser.initials;
-      document.getElementById('uname').textContent=name;
+      document.getElementById('uname').textContent=currentUser.name;
       var badge=document.getElementById('roleBadge');
       badge.textContent=currentUser.role==='admin'?'Admin':'Member';
       badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
@@ -364,7 +359,6 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('errMsg').style.display='none';
   }
 
-  // ── LOAD ──
   function loadAllData(){
     setLoading(true);showToast('Loading...');
     Promise.all([sbGet('members'),sbGet('credentials'),sbGet('access_entries'),sbGet('allowed_users')])
@@ -373,16 +367,14 @@ tr:hover td{background:#FAFBFC}
       credentials=Array.isArray(r[1])?r[1]:[];
       access=Array.isArray(r[2])?r[2]:[];
       allowedUsers=Array.isArray(r[3])?r[3]:[];
-      setLoading(false);showToast('Ready');
-      switchMainTab('dashboard');
-    }).catch(function(){setLoading(false);showToast('Error loading data.');switchMainTab('dashboard');});
+      setLoading(false);showToast('Ready');switchMainTab('dashboard');
+    }).catch(function(){setLoading(false);showToast('Error loading.');switchMainTab('dashboard');});
   }
 
   // ── MAIN TABS ──
   function switchMainTab(t){
     ['dashboard','access','members','tools','credentials','users'].forEach(function(id){
-      var tab=document.getElementById('tab_'+id);
-      var view=document.getElementById('view_'+id);
+      var tab=document.getElementById('tab_'+id);var view=document.getElementById('view_'+id);
       if(tab)tab.classList.toggle('on',id===t);
       if(view)view.style.display=id===t?'block':'none';
     });
@@ -396,100 +388,59 @@ tr:hover td{background:#FAFBFC}
 
   // ── DASHBOARD ──
   function renderDashboard(){
+    var active=members.filter(function(m){return(m.status||'Active')==='Active';}).length;
     var toolSet=[];access.forEach(function(a){if(toolSet.indexOf(a.tool_name)===-1)toolSet.push(a.tool_name);});
-    var active=members.filter(function(m){return (m.status||'Active')==='Active';}).length;
-    var offboarded=members.filter(function(m){return m.status==='Offboarded';}).length;
     setMetric('dash_members',members.length,function(){switchMainTab('members');});
+    setMetric('dash_tools',toolSet.length,function(){switchMainTab('tools');});
     setMetric('dash_active',active,function(){memberFilter={search:'',dept:'',status:'Active'};switchMainTab('members');renderMemberFilters();renderMemberList();});
-    setMetric('dash_offboarded',offboarded,function(){memberFilter={search:'',dept:'',status:'Offboarded'};switchMainTab('members');renderMemberFilters();renderMemberList();});
-    setMetric('dash_access',access.length,function(){switchMainTab('access');});
+
     switchDashTab('byMember');
   }
-
-  function setMetric(id,value,onClick){
-    var el=document.getElementById(id);if(!el)return;
-    el.textContent=value;
-    var card=el.closest('.mc');
-    if(card){card.style.cursor='pointer';card.onclick=onClick;}
-  }
-
+  function setMetric(id,value,onClick){var el=document.getElementById(id);if(!el)return;el.textContent=value;var card=el.closest('.mc');if(card){card.style.cursor='pointer';card.onclick=onClick;}}
   function switchDashTab(t){
     ['byMember','byTool','byCred'].forEach(function(id){
       document.getElementById('dtab_'+id).classList.toggle('on',id===t);
       document.getElementById('dpanel_'+id).style.display=id===t?'block':'none';
     });
-    if(t==='byMember')renderByMember();
-    if(t==='byTool')renderByTool();
-    if(t==='byCred')renderByCred();
+    if(t==='byMember')renderByMember();if(t==='byTool')renderByTool();if(t==='byCred')renderByCred();
   }
 
   function renderByMember(){
     var el=document.getElementById('dpanel_byMember');
     var q=(memberFilter.search||'').toLowerCase();
-    var filtered=members.filter(function(m){
-      return !q||m.name.toLowerCase().indexOf(q)>-1||m.dept.toLowerCase().indexOf(q)>-1;
-    });
-    var searchBar='<div class="panel-search-wrap"><input class="panel-search" id="dashMemberSearch" placeholder="&#128269; Search members..." value="'+eh(memberFilter.search||'')+'"></div>';
-    if(!filtered.length){el.innerHTML=searchBar+'<div class="empty">No members found.</div>';wirePS('dashMemberSearch','memberSearch');return;}
-    el.innerHTML=searchBar+filtered.map(function(m){
+    var filtered=members.filter(function(m){return !q||m.name.toLowerCase().indexOf(q)>-1||m.dept.toLowerCase().indexOf(q)>-1;});
+    var bar='<div class="panel-search-wrap"><input class="panel-search" id="dashMemberSearch" placeholder="&#128269; Search members..." value="'+eh(memberFilter.search||'')+'"></div>';
+    if(!filtered.length){el.innerHTML=bar+'<div class="empty">No members found.</div>';wirePS('dashMemberSearch','memberSearch');return;}
+    el.innerHTML=bar+filtered.map(function(m){
       var st=m.status||'Active';
       var ua=access.filter(function(a){return a.member_id===m.id;});
-      var chips=ua.map(function(a){
-        return '<span class="dash-tool-chip">'
-          +eh(a.tool_name)
-          +'<button class="chip-rm" data-aid="'+a.id+'" data-mname="'+eh(m.name)+'" data-tname="'+eh(a.tool_name)+'">&#10005;</button>'
-          +'</span>';
-      }).join('');
-      var statusPill='<span class="st-pill st-'+st.toLowerCase().replace(' ','-')+'">'+eh(st)+'</span>';
-      return '<div class="dash-row">'
-        +'<div class="member-click" data-mid="'+m.id+'">'
-        +'<div class="av-sm '+(st==='Offboarded'?'av-off':'')+'">'+eh(m.initials)+'</div>'
-        +'<div><div class="dash-name">'+eh(m.name)+'</div><div class="dash-sub">'+eh(m.dept)+'</div></div>'
-        +'</div>'
+      var chips=ua.map(function(a){return '<span class="dash-tool-chip">'+eh(a.tool_name)+'<button class="chip-rm" data-aid="'+a.id+'" data-mname="'+eh(m.name)+'" data-tname="'+eh(a.tool_name)+'">&#10005;</button></span>';}).join('');
+      return '<div class="dash-row"><div class="member-click" data-mid="'+m.id+'"><div class="av-sm '+(st==='Offboarded'?'av-off':'')+'">'+eh(m.initials)+'</div><div><div class="dash-name">'+eh(m.name)+'</div><div class="dash-sub">'+eh(m.dept)+'</div></div></div>'
         +'<div class="dash-tools">'+(chips||'<span class="no-access">No access recorded</span>')+'</div>'
-        +'<div class="dash-count-wrap">'
-        +statusPill
-        +'<span class="dash-count">'+ua.length+' tool'+(ua.length!==1?'s':'')+'</span>'
-        +'<button class="add-access-btn" data-mid="'+m.id+'">+ Add access</button>'
-        +'</div></div>';
+        +'<div class="dash-count-wrap"><span class="st-pill st-'+st.toLowerCase().replace(' ','-')+'">'+eh(st)+'</span><span class="dash-count">'+ua.length+' tool'+(ua.length!==1?'s':'')+'</span><button class="add-access-btn" data-mid="'+m.id+'">+ Add access</button></div></div>';
     }).join('');
     wirePS('dashMemberSearch','memberSearch');
-    el.querySelectorAll('.chip-rm').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.stopPropagation();
-        if(confirm('Remove '+btn.getAttribute('data-tname')+' access for '+btn.getAttribute('data-mname')+'?'))
-          removeAccessEntry(btn.getAttribute('data-aid'));
-      });
-    });
-    el.querySelectorAll('.member-click').forEach(function(div){div.addEventListener('click',function(){openMemberDetailModal(div.getAttribute('data-mid'));});});
-    el.querySelectorAll('.add-access-btn').forEach(function(btn){btn.addEventListener('click',function(){openBatchModalForMember(btn.getAttribute('data-mid'));});});
+    el.querySelectorAll('.chip-rm').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();if(confirm('Remove '+btn.getAttribute('data-tname')+' for '+btn.getAttribute('data-mname')+'?'))removeAccessEntry(btn.getAttribute('data-aid'));});});
+    el.querySelectorAll('.member-click').forEach(function(d){d.addEventListener('click',function(){openMemberDetailModal(d.getAttribute('data-mid'));});});
+    el.querySelectorAll('.add-access-btn').forEach(function(b){b.addEventListener('click',function(){openBatchModalForMember(b.getAttribute('data-mid'));});});
   }
 
   function renderByTool(){
     var el=document.getElementById('dpanel_byTool');
     var q=(toolFilter.search||'').toLowerCase();
     var toolMap={};
-    access.forEach(function(a){
-      if(q&&a.tool_name.toLowerCase().indexOf(q)===-1)return;
-      if(!toolMap[a.tool_name])toolMap[a.tool_name]=[];
-      var m=getMember(a.member_id);if(m)toolMap[a.tool_name].push({member:m,entry:a});
-    });
-    var searchBar='<div class="panel-search-wrap"><input class="panel-search" id="dashToolSearch" placeholder="&#128269; Search tools..." value="'+eh(toolFilter.search||'')+'"></div>';
+    access.forEach(function(a){if(q&&a.tool_name.toLowerCase().indexOf(q)===-1)return;if(!toolMap[a.tool_name])toolMap[a.tool_name]=[];var m=getMember(a.member_id);if(m)toolMap[a.tool_name].push({member:m,entry:a});});
+    var bar='<div class="panel-search-wrap"><input class="panel-search" id="dashToolSearch" placeholder="&#128269; Search tools..." value="'+eh(toolFilter.search||'')+'"></div>';
     var tools=Object.keys(toolMap).sort();
-    if(!tools.length){el.innerHTML=searchBar+'<div class="empty">No tools found.</div>';wirePS('dashToolSearch','toolSearch');return;}
-    el.innerHTML=searchBar+tools.map(function(t){
-      var items=toolMap[t];
-      var info=getToolInfo(t);
+    if(!tools.length){el.innerHTML=bar+'<div class="empty">No tools found.</div>';wirePS('dashToolSearch','toolSearch');return;}
+    el.innerHTML=bar+tools.map(function(t){
+      var items=toolMap[t];var info=getToolInfo(t);
       var avs=items.map(function(i){return '<div class="av-xs av-clickable" data-mid="'+i.member.id+'" title="'+eh(i.member.name)+'">'+eh(i.member.initials)+'</div>';}).join('');
-      return '<div class="dash-row tool-row-click" data-tool="'+eh(t)+'">'
-        +'<div class="dash-toolname">'+eh(t)+'<span class="tool-cat-tag">'+(info?eh(info.category):'')+'</span></div>'
-        +'<div class="dash-avatars">'+avs+'</div>'
-        +'<div class="dash-count">'+items.length+' user'+(items.length!==1?'s':'')+'</div>'
-        +'</div>';
+      return '<div class="dash-row tool-row-click" data-tool="'+eh(t)+'"><div class="dash-toolname">'+eh(t)+'<span class="tool-cat-tag">'+(info?eh(info.category):'')+'</span></div><div class="dash-avatars">'+avs+'</div><div class="dash-count">'+items.length+' user'+(items.length!==1?'s':'')+'</div></div>';
     }).join('');
     wirePS('dashToolSearch','toolSearch');
     el.querySelectorAll('.av-clickable').forEach(function(av){av.addEventListener('click',function(e){e.stopPropagation();openMemberDetailModal(av.getAttribute('data-mid'));});});
-    el.querySelectorAll('.tool-row-click').forEach(function(row){row.addEventListener('click',function(){openToolDetailModal(row.getAttribute('data-tool'));});});
+    el.querySelectorAll('.tool-row-click').forEach(function(r){r.addEventListener('click',function(){openToolDetailModal(r.getAttribute('data-tool'));});});
   }
 
   function renderByCred(){
@@ -500,28 +451,16 @@ tr:hover td{background:#FAFBFC}
     if(!tools.length){el.innerHTML='<div class="empty">No credentials saved yet.</div>';return;}
     el.innerHTML=tools.map(function(t){
       var creds=toolMap[t];
-      var rows=creds.map(function(c){
-        var users=access.filter(function(a){return a.cred_id===c.id;});
-        var avs=users.map(function(a){var m=getMember(a.member_id);return m?'<div class="av-xs av-clickable" data-mid="'+m.id+'" title="'+eh(m.name)+'">'+eh(m.initials)+'</div>':'';}).join('');
-        return '<div class="cred-row"><span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span>'
-          +'<span class="cred-user">'+eh(c.username)+'</span>'
-          +'<div class="dash-avatars" style="flex:1">'+avs+'</div>'
-          +'<span class="cred-count">'+users.length+' user'+(users.length!==1?'s':'')+'</span></div>';
-      }).join('');
+      var rows=creds.map(function(c){var users=access.filter(function(a){return a.cred_id===c.id;});var avs=users.map(function(a){var m=getMember(a.member_id);return m?'<div class="av-xs av-clickable" data-mid="'+m.id+'" title="'+eh(m.name)+'">'+eh(m.initials)+'</div>':'';}).join('');return '<div class="cred-row"><span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span><span class="cred-user">'+eh(c.username)+'</span><div class="dash-avatars" style="flex:1">'+avs+'</div><span class="cred-count">'+users.length+' user'+(users.length!==1?'s':'')+'</span></div>';}).join('');
       return '<div class="tool-cred-block"><div class="tool-cred-name tool-row-click" data-tool="'+eh(t)+'">'+eh(t)+'</div>'+rows+'</div>';
     }).join('');
     el.querySelectorAll('.av-clickable').forEach(function(av){av.addEventListener('click',function(){openMemberDetailModal(av.getAttribute('data-mid'));});});
     el.querySelectorAll('.tool-row-click').forEach(function(r){r.addEventListener('click',function(){openToolDetailModal(r.getAttribute('data-tool'));});});
   }
 
-  function wirePS(elId,filterKey){
+  function wirePS(elId,fk){
     var el=document.getElementById(elId);if(!el)return;
-    el.addEventListener('input',function(){
-      if(filterKey==='memberSearch')memberFilter.search=el.value;
-      else toolFilter.search=el.value;
-      if(filterKey==='memberSearch')renderByMember();
-      else renderByTool();
-    });
+    el.addEventListener('input',function(){if(fk==='memberSearch')memberFilter.search=el.value;else toolFilter.search=el.value;if(fk==='memberSearch')renderByMember();else renderByTool();});
     el.focus();el.setSelectionRange(el.value.length,el.value.length);
   }
 
@@ -539,25 +478,14 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('tdOwner').textContent=info.owner||'—';
     document.getElementById('tdNotes').textContent=info.notes||'—';
     var userList=document.getElementById('tdUsers');
-    if(!users.length){userList.innerHTML='<span class="no-access">No access recorded</span>';}
-    else{
-      userList.innerHTML=users.map(function(a){
-        var m=getMember(a.member_id);
-        var c=a.cred_id?getCred(a.cred_id):null;
-        return '<div class="td-user-row">'
-          +'<div class="av-sm" style="width:24px;height:24px;font-size:9px">'+(m?eh(m.initials):'?')+'</div>'
-          +'<span>'+(m?eh(m.name):'Unknown')+'</span>'
-          +'<span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span>'
-          +(c?'<span style="font-size:11px;color:#64748B">'+eh(c.username)+'</span>':'')
-          +'</div>';
-      }).join('');
-    }
+    userList.innerHTML=!users.length?'<span class="no-access">No access recorded</span>':users.map(function(a){var m=getMember(a.member_id);var c=a.cred_id?getCred(a.cred_id):null;return '<div class="td-user-row"><div class="av-sm" style="width:24px;height:24px;font-size:9px">'+(m?eh(m.initials):'?')+'</div><span>'+(m?eh(m.name):'Unknown')+'</span><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span>'+(c?'<span style="font-size:11px;color:#64748B">'+eh(c.username)+'</span>':'')+'</div>';}).join('');
     document.getElementById('toolDetailModal').style.display='flex';
   }
 
   // ── MEMBER DETAIL MODAL ──
   function openMemberDetailModal(memberId){
     var m=getMember(memberId);if(!m)return;
+    document.getElementById('memberDetailModal').setAttribute('data-mid',memberId);
     var ua=access.filter(function(a){return a.member_id===m.id;});
     var st=m.status||'Active';
     document.getElementById('detailMemberName').textContent=m.name;
@@ -567,26 +495,9 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('detailMemberStatus').textContent=st;
     document.getElementById('detailMemberStatus').className='st-pill st-'+st.toLowerCase().replace(' ','-');
     var container=document.getElementById('detailAccessList');
-    if(!ua.length){container.innerHTML='<div class="empty" style="padding:1rem">No access recorded.</div>';}
-    else{
-      container.innerHTML=ua.map(function(a){
-        var c=a.cred_id?getCred(a.cred_id):null;
-        var credLabel=a.cred_type==='own'?('own login'+(a.own_login?' ('+eh(a.own_login)+')':'')):(c?eh(c.username):'—');
-        return '<div class="detail-row">'
-          +'<div class="detail-tool">'+eh(a.tool_name)+'</div>'
-          +'<div class="detail-meta"><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span>'
-          +'<span class="detail-cred">'+credLabel+'</span></div>'
-          +'<button class="detail-rm" data-aid="'+a.id+'" data-tname="'+eh(a.tool_name)+'">&#10005; Remove</button>'
-          +'</div>';
-      }).join('');
-      container.querySelectorAll('.detail-rm').forEach(function(btn){
-        btn.addEventListener('click',function(){
-          if(confirm('Remove '+btn.getAttribute('data-tname')+' for '+m.name+'?')){
-            removeAccessEntry(btn.getAttribute('data-aid'),function(){openMemberDetailModal(memberId);});
-          }
-        });
-      });
-    }
+    container.innerHTML=!ua.length?'<div class="empty" style="padding:1rem">No access recorded.</div>':ua.map(function(a){var c=a.cred_id?getCred(a.cred_id):null;var credLabel=a.cred_type==='own'?('own login'+(a.own_login?' ('+eh(a.own_login)+')':'')):(c?eh(c.username):'—');return '<div class="detail-row"><div class="detail-tool tool-link" data-tool="'+eh(a.tool_name)+'">'+eh(a.tool_name)+'</div><div class="detail-meta"><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span><span class="detail-cred">'+credLabel+'</span></div><button class="detail-rm" data-aid="'+a.id+'" data-tname="'+eh(a.tool_name)+'">&#10005; Remove</button></div>';}).join('');
+    container.querySelectorAll('.detail-rm').forEach(function(btn){btn.addEventListener('click',function(){if(confirm('Remove '+btn.getAttribute('data-tname')+' for '+m.name+'?'))removeAccessEntry(btn.getAttribute('data-aid'),function(){openMemberDetailModal(memberId);});});});
+    container.querySelectorAll('.tool-link').forEach(function(d){d.addEventListener('click',function(){document.getElementById('memberDetailModal').style.display='none';openToolDetailModal(d.getAttribute('data-tool'));});});
     document.getElementById('detailAddAccess').onclick=function(){document.getElementById('memberDetailModal').style.display='none';openBatchModalForMember(memberId);};
     document.getElementById('memberDetailModal').style.display='flex';
   }
@@ -596,36 +507,28 @@ tr:hover td{background:#FAFBFC}
     var m=getMember(memberId);if(!m)return;
     var ua=access.filter(function(a){return a.member_id===m.id;});
     var toolList=ua.map(function(a){return '• '+a.tool_name;}).join('\n');
-    var msg='Offboard '+m.name+'?\n\nThis will mark them as Offboarded. They currently have access to:\n\n'+(toolList||'(no tools)')+'\n\nDo you want to REMOVE ALL their access entries now?';
+    var msg='Offboard '+m.name+'?\n\nThey currently have access to:\n\n'+(toolList||'(no tools)')+'\n\nClick OK to continue.';
     if(!confirm(msg))return;
-    var removeAll=ua.length&&confirm('Remove all '+ua.length+' access entries for '+m.name+'?\n\nClick OK to remove all. Click Cancel to keep them (marked as Offboarded only).');
+    var removeAll=ua.length&&confirm('Remove ALL '+ua.length+' access entries for '+m.name+'?\n\nOK = remove all | Cancel = keep entries but mark as Offboarded');
     setLoading(true);
     var p=sbUpdate('members',memberId,{status:'Offboarded'});
-    if(removeAll&&ua.length){
-      p=p.then(function(){return Promise.all(ua.map(function(a){return sbDelete('access_entries',a.id);}));})
-        .then(function(){return sbGet('access_entries');})
-        .then(function(data){access=Array.isArray(data)?data:[];});
-    }
+    if(removeAll&&ua.length){p=p.then(function(){return Promise.all(ua.map(function(a){return sbDelete('access_entries',a.id);}));}).then(function(){return sbGet('access_entries');}).then(function(data){access=Array.isArray(data)?data:[];});}
     p.then(function(){return sbGet('members');}).then(function(data){
       members=Array.isArray(data)?data:[];setLoading(false);
       document.getElementById('memberDetailModal').style.display='none';
       document.getElementById('memberModal').style.display='none';
-      renderMemberList();renderDashboard();
-      showToast(m.name+' has been offboarded'+(removeAll?' and all access removed.':'.'));
-    }).catch(function(){setLoading(false);showToast('Error during offboarding.');});
+      renderMemberList();renderDashboard();showToast(m.name+' offboarded'+(removeAll?' — access removed.':'.'));
+    }).catch(function(){setLoading(false);showToast('Error offboarding.');});
   }
 
   function reactivateMember(memberId){
-    var m=getMember(memberId);if(!m)return;
-    if(!confirm('Reactivate '+m.name+'?'))return;
+    var m=getMember(memberId);if(!m||!confirm('Reactivate '+m.name+'?'))return;
     setLoading(true);
     sbUpdate('members',memberId,{status:'Active'}).then(function(){return sbGet('members');}).then(function(data){
-      members=Array.isArray(data)?data:[];setLoading(false);
-      renderMemberList();renderDashboard();showToast(m.name+' reactivated.');
+      members=Array.isArray(data)?data:[];setLoading(false);renderMemberList();renderDashboard();showToast(m.name+' reactivated.');
     }).catch(function(){setLoading(false);});
   }
 
-  // ── REMOVE ACCESS ──
   function removeAccessEntry(aid,callback){
     setLoading(true);
     sbDelete('access_entries',aid).then(function(){return sbGet('access_entries');}).then(function(data){
@@ -639,43 +542,27 @@ tr:hover td{background:#FAFBFC}
     rebuildMemberDropdowns();
     var el=document.getElementById('accessTableBody');
     if(!access.length){el.innerHTML='<tr><td colspan="6" class="empty">No access entries yet.</td></tr>';return;}
-    var sorted=access.slice().sort(function(a,b){
-      var ma=getMember(a.member_id),mb=getMember(b.member_id);
-      return(ma?ma.name:'').localeCompare(mb?mb.name:'');
-    });
+    var sorted=access.slice().sort(function(a,b){var ma=getMember(a.member_id),mb=getMember(b.member_id);return(ma?ma.name:'').localeCompare(mb?mb.name:'');});
     el.innerHTML=sorted.map(function(a){
-      var m=getMember(a.member_id);
-      var c=a.cred_id?getCred(a.cred_id):null;
-      var credDisplay=a.cred_type==='own'?'<span class="cred-badge indiv">own login'+(a.own_login?' ('+eh(a.own_login)+')':'')+'</span>'
-        :(c?'<span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.username)+'</span>':'<span style="color:#94A3B8">—</span>');
-      return '<tr>'
-        +'<td><div class="member-link" data-mid="'+(m?m.id:'')+'"><div class="av-sm '+(m&&m.status==='Offboarded'?'av-off':'')+'">'+(m?eh(m.initials):'?')+'</div>'+(m?eh(m.name):'Unknown')+'</div></td>'
-        +'<td class="tool-link" data-tool="'+eh(a.tool_name)+'">'+eh(a.tool_name)+'</td>'
-        +'<td>'+credDisplay+'</td>'
-        +'<td><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type||'individual')+'</span></td>'
-        +'<td style="font-size:11px;color:#64748B">'+eh(a.added_by||'—')+'</td>'
-        +'<td><button class="abtn d" data-del-a="'+a.id+'">&#10005;</button></td></tr>';
+      var m=getMember(a.member_id);var c=a.cred_id?getCred(a.cred_id):null;
+      var credDisplay=a.cred_type==='own'?'<span class="cred-badge indiv">own login'+(a.own_login?' ('+eh(a.own_login)+')':'')+'</span>':(c?'<span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.username)+'</span>':'<span style="color:#94A3B8">—</span>');
+      return '<tr><td><div class="member-link" data-mid="'+(m?m.id:'')+'"><div class="av-sm '+(m&&m.status==='Offboarded'?'av-off':'')+'">'+(m?eh(m.initials):'?')+'</div>'+(m?eh(m.name):'Unknown')+'</div></td><td class="tool-link" data-tool="'+eh(a.tool_name)+'">'+eh(a.tool_name)+'</td><td>'+credDisplay+'</td><td><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type||'individual')+'</span></td><td style="font-size:11px;color:#64748B">'+eh(a.added_by||'—')+'</td><td><button class="abtn d" data-del-a="'+a.id+'">&#10005;</button></td></tr>';
     }).join('');
     el.querySelectorAll('[data-del-a]').forEach(function(b){b.addEventListener('click',function(){if(confirm('Remove this entry?'))removeAccessEntry(b.getAttribute('data-del-a'),renderAccessList);});});
     el.querySelectorAll('.member-link').forEach(function(d){d.addEventListener('click',function(){if(d.getAttribute('data-mid'))openMemberDetailModal(d.getAttribute('data-mid'));});});
     el.querySelectorAll('.tool-link').forEach(function(d){d.addEventListener('click',function(){openToolDetailModal(d.getAttribute('data-tool'));});});
   }
 
-  // ── MEMBERS TAB with FILTERS ──
-  function renderMemberFilters(){
-    document.getElementById('mfSearch').value=memberFilter.search||'';
-    document.getElementById('mfDept').value=memberFilter.dept||'';
-    document.getElementById('mfStatus').value=memberFilter.status||'';
-  }
+  // ── MEMBERS TAB ──
+  function renderMemberFilters(){document.getElementById('mfSearch').value=memberFilter.search||'';document.getElementById('mfDept').value=memberFilter.dept||'';document.getElementById('mfStatus').value=memberFilter.status||'';}
 
   function renderMemberList(){
     var el=document.getElementById('memberTableBody');
     var q=(memberFilter.search||'').toLowerCase();
     var filtered=members.filter(function(m){
-      var matchQ=!q||m.name.toLowerCase().indexOf(q)>-1||m.email.toLowerCase().indexOf(q)>-1||m.dept.toLowerCase().indexOf(q)>-1;
-      var matchD=!memberFilter.dept||(m.dept||'')===(memberFilter.dept||'');
-      var matchS=!memberFilter.status||(m.status||'Active')===memberFilter.status;
-      return matchQ&&matchD&&matchS;
+      return(!q||m.name.toLowerCase().indexOf(q)>-1||m.email.toLowerCase().indexOf(q)>-1||m.dept.toLowerCase().indexOf(q)>-1)
+        &&(!memberFilter.dept||(m.dept||'')===memberFilter.dept)
+        &&(!memberFilter.status||(m.status||'Active')===memberFilter.status);
     });
     if(!filtered.length){el.innerHTML='<tr><td colspan="6" class="empty">No members match your filters.</td></tr>';return;}
     el.innerHTML=filtered.map(function(m){
@@ -685,9 +572,9 @@ tr:hover td{background:#FAFBFC}
         +'<td><div class="member-link" data-mid="'+m.id+'"><div class="av-sm '+(st==='Offboarded'?'av-off':'')+'">'+eh(m.initials)+'</div>'+eh(m.name)+'</div></td>'
         +'<td>'+eh(m.email)+'</td><td>'+eh(m.dept)+'</td>'
         +'<td><span class="st-pill st-'+st.toLowerCase().replace(' ','-')+'">'+eh(st)+'</span></td>'
-        +'<td><span class="cnt-link" data-mid="'+m.id+'" style="cursor:pointer;font-weight:700;color:#D97757">'+cnt+'</span></td>'
+        +'<td><span class="cnt-link" data-mid="'+m.id+'">'+cnt+'</span></td>'
         +'<td style="display:flex;gap:4px">'
-        +'<button class="abtn" data-edit-m="'+m.id+'" title="Edit">&#9998;</button>'
+        +'<button class="abtn" data-edit-m="'+m.id+'" title="Edit member">&#9998;</button>'
         +(st!=='Offboarded'?'<button class="abtn off-btn" data-off-m="'+m.id+'" title="Offboard">&#128683;</button>':'<button class="abtn react-btn" data-react-m="'+m.id+'" title="Reactivate">&#9654;</button>')
         +'<button class="abtn d" data-del-m="'+m.id+'" title="Delete">&#10005;</button>'
         +'</td></tr>';
@@ -699,6 +586,7 @@ tr:hover td{background:#FAFBFC}
     el.querySelectorAll('.member-link,.cnt-link').forEach(function(d){d.addEventListener('click',function(){openMemberDetailModal(d.getAttribute('data-mid'));});});
   }
 
+  // ── MEMBER MODAL (add + edit) ──
   function openMemberModal(id){
     var m=id?members.find(function(x){return x.id===id;}):null;
     document.getElementById('memberModalTitle').textContent=m?'Edit member':'Add member';
@@ -707,8 +595,7 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('mDept').value=m?m.dept:'';
     document.getElementById('mStatus').value=m?(m.status||'Active'):'Active';
     document.getElementById('mId').value=m?m.id:'';
-    showErr('mErr','');
-    document.getElementById('memberModal').style.display='flex';
+    showErr('mErr','');document.getElementById('memberModal').style.display='flex';
   }
 
   function saveMember(){
@@ -720,9 +607,8 @@ tr:hover td{background:#FAFBFC}
     if(!name){showErr('mErr','Name required.');return;}
     if(!email){showErr('mErr','Email required.');return;}
     if(!dept){showErr('mErr','Department required.');return;}
-    // Check if being offboarded via edit
     var prev=existingId?members.find(function(x){return x.id===existingId;}):null;
-    var beingOffboarded=prev&&prev.status!=='Offboarded'&&status==='Offboarded';
+    var beingOffboarded=prev&&(prev.status||'Active')!=='Offboarded'&&status==='Offboarded';
     var payload={name:name,email:email,dept:dept,status:status,initials:ini(name)};
     setLoading(true);
     var p=existingId?sbUpdate('members',existingId,payload):sbInsert('members',Object.assign({id:uid()},payload));
@@ -731,13 +617,13 @@ tr:hover td{background:#FAFBFC}
       document.getElementById('memberModal').style.display='none';
       renderMemberList();rebuildMemberDropdowns();renderDashboard();
       showToast(existingId?'Member updated':'Member added');
-      if(beingOffboarded)offboardMember(existingId);
+      if(beingOffboarded&&existingId)offboardMember(existingId);
     }).catch(function(){setLoading(false);showErr('mErr','Error saving.');});
   }
 
   function delMember(id){
     var m=members.find(function(x){return x.id===id;});
-    if(!confirm('Permanently delete '+( m?m.name:'this member')+'? All their access entries will also be deleted.'))return;
+    if(!confirm('Permanently delete '+(m?m.name:'this member')+'?'))return;
     setLoading(true);
     sbDelete('members',id).then(function(){return Promise.all([sbGet('members'),sbGet('access_entries')]);}).then(function(r){
       members=Array.isArray(r[0])?r[0]:[];access=Array.isArray(r[1])?r[1]:[];
@@ -746,11 +632,7 @@ tr:hover td{background:#FAFBFC}
   }
 
   // ── TOOLS TAB ──
-  function renderToolFilters(){
-    document.getElementById('tfSearch').value=toolFilter.search||'';
-    document.getElementById('tfCategory').value=toolFilter.category||'';
-    document.getElementById('tfPaid').value=toolFilter.paid||'';
-  }
+  function renderToolFilters(){document.getElementById('tfSearch').value=toolFilter.search||'';document.getElementById('tfCategory').value=toolFilter.category||'';document.getElementById('tfPaid').value=toolFilter.paid||'';}
 
   function renderToolList(){
     var el=document.getElementById('toolTableBody');
@@ -758,82 +640,186 @@ tr:hover td{background:#FAFBFC}
     var allTools=getAllTools();
     var filtered=allTools.filter(function(name){
       var info=getToolInfo(name)||{};
-      var matchQ=!q||name.toLowerCase().indexOf(q)>-1||(info.category||'').toLowerCase().indexOf(q)>-1||(info.notes||'').toLowerCase().indexOf(q)>-1;
-      var matchC=!toolFilter.category||(info.category||'')===(toolFilter.category||'');
-      var matchP=!toolFilter.paid||(info.paid_free||'')===(toolFilter.paid||'');
-      return matchQ&&matchC&&matchP;
+      return(!q||name.toLowerCase().indexOf(q)>-1||(info.category||'').toLowerCase().indexOf(q)>-1||(info.notes||'').toLowerCase().indexOf(q)>-1)
+        &&(!toolFilter.category||(info.category||'')===toolFilter.category)
+        &&(!toolFilter.paid||(info.paid_free||'')===toolFilter.paid);
     });
-    if(!filtered.length){el.innerHTML='<tr><td colspan="7" class="empty">No tools match your filters.</td></tr>';return;}
+    if(!filtered.length){el.innerHTML='<tr><td colspan="7" class="empty">No tools match.</td></tr>';return;}
     el.innerHTML=filtered.map(function(name){
       var info=getToolInfo(name)||{};
       var userCount=access.filter(function(a){return a.tool_name===name;}).length;
+      var credCount=credentials.filter(function(c){return c.tool_name===name;}).length;
       return '<tr class="tool-row" data-tool="'+eh(name)+'">'
         +'<td><div class="tool-name-link">'+eh(name)+'</div></td>'
         +'<td>'+eh(info.category||'—')+'</td>'
         +'<td>'+eh(info.dept||'—')+'</td>'
-        +'<td>'+(info.url?'<a href="'+eh(info.url)+'" target="_blank" class="url-link">&#127760; Open</a>':'—')+'</td>'
+        +'<td>'+(info.url?'<a href="'+eh(info.url)+'" target="_blank" class="url-link" onclick="event.stopPropagation()">&#127760; Open</a>':'—')+'</td>'
         +'<td>'+(info.paid_free?'<span class="paid-badge paid-'+info.paid_free.toLowerCase().replace(/[^a-z]/g,'')+'">'+eh(info.paid_free)+'</span>':'—')+'</td>'
-        +'<td>'+eh(info.cost||'—')+' '+(info.sub_model?'<span style="font-size:10px;color:#94A3B8">'+eh(info.sub_model)+'</span>':'')+'</td>'
-        +'<td><span class="cnt-link" data-tool="'+eh(name)+'">'+userCount+'</span></td>'
+        +'<td>'+eh(info.cost||'—')+(info.sub_model?' <span style="font-size:10px;color:#94A3B8">'+eh(info.sub_model)+'</span>':'')+'</td>'
+        +'<td><span class="cnt-link">'+userCount+'</span></td>'
         +'</tr>';
     }).join('');
-    el.querySelectorAll('.tool-row').forEach(function(row){
-      row.addEventListener('click',function(){openToolDetailModal(row.getAttribute('data-tool'));});
+    el.querySelectorAll('.tool-row').forEach(function(row){row.addEventListener('click',function(){openToolDetailModal(row.getAttribute('data-tool'));});});
+  }
+
+  // ── CREDENTIALS TAB — grouped by tool, collapsible ──
+  function renderCredentialList(){
+    var el=document.getElementById('credTableBody');
+    if(!credentials.length){el.innerHTML='<tr><td colspan="4" class="empty">No credentials yet. Click &quot;+ Add credential&quot; to begin.</td></tr>';return;}
+
+    // Group by tool
+    var toolMap={};
+    credentials.forEach(function(c){if(!toolMap[c.tool_name])toolMap[c.tool_name]=[];toolMap[c.tool_name].push(c);});
+    var tools=Object.keys(toolMap).sort();
+
+    el.innerHTML=tools.map(function(toolName){
+      var creds=toolMap[toolName];
+      var totalUsers=0;creds.forEach(function(c){totalUsers+=access.filter(function(a){return a.cred_id===c.id;}).length;});
+      var credRows=creds.map(function(c){
+        var users=access.filter(function(a){return a.cred_id===c.id;}).length;
+        return '<tr class="cred-child-row">'
+          +'<td style="padding-left:32px;color:#64748B;font-size:12px">'+eh(c.username)+'</td>'
+          +'<td><span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span></td>'
+          +'<td style="font-size:12px;color:#64748B">'+users+' user'+(users!==1?'s':'')+'</td>'
+          +'<td style="display:flex;gap:4px">'
+          +'<button class="abtn" data-edit-c="'+c.id+'" title="Edit">&#9998;</button>'
+          +'<button class="abtn d" data-del-c="'+c.id+'" title="Delete">&#10005;</button>'
+          +'</td></tr>';
+      }).join('');
+      return '<tr class="cred-group-row" data-tool="'+eh(toolName)+'">'
+        +'<td><span class="cred-expand-icon">&#9654;</span> <strong>'+eh(toolName)+'</strong></td>'
+        +'<td><span style="font-size:11px;color:#94A3B8">'+creds.length+' credential'+(creds.length!==1?'s':'')+'</span></td>'
+        +'<td style="font-size:12px;color:#64748B">'+totalUsers+' user'+(totalUsers!==1?'s':'')+'</td>'
+        +'<td><button class="abtn add-cred-for-tool" data-tool="'+eh(toolName)+'" title="Add another credential for this tool">+ Add</button></td>'
+        +'</tr>'
+        +credRows;
+    }).join('');
+
+    // Wire group row toggle (collapse/expand)
+    el.querySelectorAll('.cred-group-row').forEach(function(row){
+      var toolName=row.getAttribute('data-tool');
+      // Start expanded — collect child rows
+      var children=[];
+      var next=row.nextElementSibling;
+      while(next&&next.classList.contains('cred-child-row')){children.push(next);next=next.nextElementSibling;}
+      var expanded=true;
+      row.style.cursor='pointer';
+      row.addEventListener('click',function(e){
+        if(e.target.classList.contains('abtn')||e.target.classList.contains('add-cred-for-tool'))return;
+        expanded=!expanded;
+        var icon=row.querySelector('.cred-expand-icon');
+        if(icon)icon.textContent=expanded?'▼':'▶';
+        children.forEach(function(c){c.style.display=expanded?'':'none';});
+      });
+      // Start with ▼ (expanded)
+      var icon=row.querySelector('.cred-expand-icon');if(icon)icon.textContent='▼';
+    });
+
+    // Wire edit/delete buttons
+    el.querySelectorAll('[data-edit-c]').forEach(function(b){b.addEventListener('click',function(){openCredModal(b.getAttribute('data-edit-c'));});});
+    el.querySelectorAll('[data-del-c]').forEach(function(b){b.addEventListener('click',function(){delCred(b.getAttribute('data-del-c'));});});
+    // Wire "add another credential for this tool" button
+    el.querySelectorAll('.add-cred-for-tool').forEach(function(b){
+      b.addEventListener('click',function(e){e.stopPropagation();openCredModalForTool(b.getAttribute('data-tool'));});
     });
   }
 
-  // ── CREDENTIALS ──
-  function renderCredentialList(){
-    var el=document.getElementById('credTableBody');
-    if(!credentials.length){el.innerHTML='<tr><td colspan="5" class="empty">No credentials yet.</td></tr>';return;}
-    var sorted=credentials.slice().sort(function(a,b){return(a.tool_name||'').localeCompare(b.tool_name||'');});
-    el.innerHTML=sorted.map(function(c){
-      var users=access.filter(function(a){return a.cred_id===c.id;}).length;
-      return '<tr><td>'+eh(c.tool_name)+'</td><td>'+eh(c.username)+'</td>'
-        +'<td><span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span></td>'
-        +'<td>'+users+'</td>'
-        +'<td style="display:flex;gap:4px">'
-        +'<button class="abtn" data-edit-c="'+c.id+'">&#9998;</button>'
-        +'<button class="abtn d" data-del-c="'+c.id+'">&#10005;</button>'
-        +'</td></tr>';
-    }).join('');
-    el.querySelectorAll('[data-edit-c]').forEach(function(b){b.addEventListener('click',function(){openCredModal(b.getAttribute('data-edit-c'));});});
-    el.querySelectorAll('[data-del-c]').forEach(function(b){b.addEventListener('click',function(){delCred(b.getAttribute('data-del-c'));});});
-  }
+  // ── CREDENTIAL MODAL ──
+  // credRows = array of {username, type} being added in one form
+  var credFormRows=[];
 
   function openCredModal(id){
+    // Edit single existing credential
     var c=id?credentials.find(function(x){return x.id===id;}):null;
     document.getElementById('credModalTitle').textContent=c?'Edit credential':'Add credential';
     populateToolSelect('cToolSel');
     document.getElementById('cToolSel').value=c?c.tool_name:'';
-    document.getElementById('cUsername').value=c?c.username:'';
-    document.getElementById('cType').value=c?c.type:'individual';
-    document.getElementById('cId').value=c?c.id:'';
-    showErr('cErr','');document.getElementById('credModal').style.display='flex';
+    document.getElementById('cToolSel').disabled=!!c; // lock tool when editing
+    credFormRows=[{username:c?c.username:'',type:c?c.type:'individual',owner:c?c.owner||'':'',id:c?c.id:null}];
+    document.getElementById('credEditId').value=c?c.id:'';
+    renderCredFormRows();
+    showErr('cErr','');
+    document.getElementById('credModal').style.display='flex';
+  }
+
+  function openCredModalForTool(toolName){
+    // Add new credentials for a specific tool (tool pre-selected + locked)
+    document.getElementById('credModalTitle').textContent='Add credential — '+toolName;
+    populateToolSelect('cToolSel');
+    document.getElementById('cToolSel').value=toolName;
+    document.getElementById('cToolSel').disabled=true;
+    credFormRows=[{username:'',type:'individual',owner:'',id:null}];
+    document.getElementById('credEditId').value='';
+    renderCredFormRows();
+    showErr('cErr','');
+    document.getElementById('credModal').style.display='flex';
+  }
+
+  function openCredModalBlank(){
+    // Add credentials — tool open for selection
+    document.getElementById('credModalTitle').textContent='Add credential';
+    populateToolSelect('cToolSel');
+    document.getElementById('cToolSel').value='';
+    document.getElementById('cToolSel').disabled=false;
+    credFormRows=[{username:'',type:'individual',owner:'',id:null}];
+    document.getElementById('credEditId').value='';
+    renderCredFormRows();
+    showErr('cErr','');
+    document.getElementById('credModal').style.display='flex';
+  }
+
+  function renderCredFormRows(){
+    var container=document.getElementById('credFormRows');
+    var editId=document.getElementById('credEditId').value;
+    var isEdit=!!editId;
+    container.innerHTML=credFormRows.map(function(row,idx){
+      return '<div class="cred-form-row" id="cfr_'+idx+'">'
+        +(credFormRows.length>1?'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase">Login '+(idx+1)+'</span><button class="batch-rm" data-idx="'+idx+'">&#10005; Remove</button></div>':'')
+        +'<div class="fl3" style="margin-bottom:0">'
+        +'<div class="fl" style="margin-bottom:0"><label>Username / Email</label><input type="text" class="cfr-user" data-idx="'+idx+'" value="'+eh(row.username)+'" placeholder="e.g. team@cd-commerce.de"></div>'
+        +'<div class="fl" style="margin-bottom:0"><label>Type</label><select class="cfr-type" data-idx="'+idx+'"><option value="individual" '+(row.type==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(row.type==='shared'?'selected':'')+'>Shared</option></select></div>'
+        +'<div class="fl" style="margin-bottom:0"><label>Owner / Shared by</label><input type="text" class="cfr-owner" data-idx="'+idx+'" value="'+eh(row.owner||'')+'" placeholder="e.g. Jan Mueller"></div>'
+        +'</div></div>';
+    }).join('');
+
+    container.querySelectorAll('.cfr-user').forEach(function(inp){inp.addEventListener('input',function(){credFormRows[parseInt(inp.getAttribute('data-idx'))].username=inp.value;});});
+    container.querySelectorAll('.cfr-type').forEach(function(sel){sel.addEventListener('change',function(){credFormRows[parseInt(sel.getAttribute('data-idx'))].type=sel.value;});});
+    container.querySelectorAll('.cfr-owner').forEach(function(inp){inp.addEventListener('input',function(){credFormRows[parseInt(inp.getAttribute('data-idx'))].owner=inp.value;});});
+    container.querySelectorAll('.batch-rm').forEach(function(btn){btn.addEventListener('click',function(){credFormRows.splice(parseInt(btn.getAttribute('data-idx')),1);renderCredFormRows();});});
+
+    var addBtn=document.getElementById('btnAddCredRow');
+    if(addBtn)addBtn.style.display=isEdit?'none':'flex';
   }
 
   function saveCred(){
     var toolName=document.getElementById('cToolSel').value;
-    var username=document.getElementById('cUsername').value.trim();
-    var type=document.getElementById('cType').value;
-    var existingId=document.getElementById('cId').value;
+    var editId=document.getElementById('credEditId').value;
     if(!toolName){showErr('cErr','Please select a tool.');return;}
-    if(!username){showErr('cErr','Username required.');return;}
-    var payload={tool_name:toolName,username:username,type:type};
+    for(var i=0;i<credFormRows.length;i++){
+      if(!credFormRows[i].username.trim()){showErr('cErr','Login '+(i+1)+': username/email is required.');return;}
+    }
     setLoading(true);
-    var p=existingId?sbUpdate('credentials',existingId,payload):sbInsert('credentials',Object.assign({id:uid()},payload));
-    p.then(function(){return sbGet('credentials');}).then(function(data){
+    var promises;
+    if(editId){
+      // Editing single existing credential
+      promises=[sbUpdate('credentials',editId,{tool_name:toolName,username:credFormRows[0].username.trim(),type:credFormRows[0].type,owner:credFormRows[0].owner||''})];
+    }else{
+      // Insert all rows
+      promises=credFormRows.map(function(row){return sbInsert('credentials',{id:uid(),tool_name:toolName,username:row.username.trim(),type:row.type,owner:row.owner||''});});
+    }
+    Promise.all(promises).then(function(){return sbGet('credentials');}).then(function(data){
       credentials=Array.isArray(data)?data:[];setLoading(false);
       document.getElementById('credModal').style.display='none';
-      renderCredentialList();renderDashboard();showToast(existingId?'Updated':'Saved');
-    }).catch(function(){setLoading(false);showErr('cErr','Error.');});
+      renderCredentialList();renderDashboard();
+      showToast(editId?'Credential updated':(credFormRows.length>1?credFormRows.length+' credentials saved':'Credential saved'));
+    }).catch(function(){setLoading(false);showErr('cErr','Error saving.');});
   }
 
   function delCred(id){
     if(!confirm('Remove this credential?'))return;setLoading(true);
     sbDelete('credentials',id).then(function(){return Promise.all([sbGet('credentials'),sbGet('access_entries')]);}).then(function(r){
       credentials=Array.isArray(r[0])?r[0]:[];access=Array.isArray(r[1])?r[1]:[];
-      setLoading(false);renderCredentialList();renderDashboard();showToast('Removed');
+      setLoading(false);renderCredentialList();renderDashboard();showToast('Credential removed');
     }).catch(function(){setLoading(false);});
   }
 
@@ -844,68 +830,35 @@ tr:hover td{background:#FAFBFC}
   }
 
   // ── ADD TOOL MODAL ──
-  function openAddToolModal(){
-    document.getElementById('newToolName').value='';showErr('newToolErr','');
-    document.getElementById('addToolModal').style.display='flex';
-  }
-
+  function openAddToolModal(){document.getElementById('newToolName').value='';showErr('newToolErr','');document.getElementById('addToolModal').style.display='flex';}
   function saveNewTool(){
     var name=document.getElementById('newToolName').value.trim();
     if(!name){showErr('newToolErr','Enter a tool name.');return;}
     if(getAllTools().find(function(t){return t.toLowerCase()===name.toLowerCase();})){showErr('newToolErr','Tool already exists.');return;}
-    customTools.push(name);
-    try{localStorage.setItem('cd_custom_tools',JSON.stringify(customTools));}catch(e){}
-    document.getElementById('addToolModal').style.display='none';
-    renderToolList();showToast('"'+name+'" added');
-    renderBatchRows();
+    customTools.push(name);try{localStorage.setItem('cd_custom_tools',JSON.stringify(customTools));}catch(e){}
+    document.getElementById('addToolModal').style.display='none';renderToolList();showToast('"'+name+'" added');renderBatchRows();
   }
 
   // ── GROUP ACCESS ──
   function openGroupAccessModal(){
-    rebuildGroupDeptSelect();
-    document.getElementById('groupDeptSel').value='';
-    document.getElementById('groupToolRows').innerHTML='';
-    showErr('groupErr','');
-    // Start with one row
-    addGroupToolRow();
+    rebuildGroupDeptSelect();groupRows=[];addGroupToolRow();showErr('groupErr','');
     document.getElementById('groupAccessModal').style.display='flex';
   }
-
   function rebuildGroupDeptSelect(){
     var sel=document.getElementById('groupDeptSel');
     var depts=[...new Set(members.map(function(m){return m.dept;}))].filter(Boolean).sort();
-    sel.innerHTML='<option value="">— Select department —</option>'+
-      depts.map(function(d){return'<option value="'+eh(d)+'">'+eh(d)+'</option>';}).join('');
+    sel.innerHTML='<option value="">— Select department —</option>'+depts.map(function(d){return'<option value="'+eh(d)+'">'+eh(d)+'</option>';}).join('');
   }
-
-  var groupRows=[];
   function addGroupToolRow(){
-    var rowId=uid();
-    groupRows.push({id:rowId,toolName:'',accessType:'individual',credVal:'',ownLogin:'',newCredUser:'',newCredType:'individual'});
+    groupRows.push({id:uid(),toolName:'',accessType:'individual',credVal:'',ownLogin:'',newCredUser:'',newCredType:'individual'});
     renderGroupToolRows();
   }
-
   function renderGroupToolRows(){
-    var container=document.getElementById('groupToolRows');
-    var tools=getAllTools();
+    var container=document.getElementById('groupToolRows');var tools=getAllTools();
     container.innerHTML=groupRows.map(function(row,idx){
-      var toolCreds=row.toolName?credentials.filter(function(c){return c.tool_name===row.toolName;}).map(function(c){
-        return'<option value="'+c.id+'" '+(row.credVal===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';
-      }).join(''):'';
-      var credOpts='<option value="">— Credential —</option>'+toolCreds
-        +'<option value="own" '+(row.credVal==='own'?'selected':'')+'>Own login</option>'
-        +'<option value="new" '+(row.credVal==='new'?'selected':'')+'>+ Add new</option>';
-      return '<div class="batch-row" id="grow_'+row.id+'">'
-        +'<div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'
-        +(groupRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'">&#10005; Remove</button>':'')+'</div>'
-        +'<div class="batch-row-fields">'
-        +'<div class="bfl"><label>Tool</label><select class="gr-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select></div>'
-        +'<div class="bfl"><label>Access type</label><select class="gr-atype" data-rid="'+row.id+'"><option value="individual" '+(row.accessType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(row.accessType==='shared'?'selected':'')+'>Shared</option></select></div>'
-        +'<div class="bfl"><label>Credential</label><select class="gr-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div>'
-        +'</div>'
-        +(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="gr-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Login for this tool"></div>':'')
-        +(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username</label><input type="text" class="gr-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="gr-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')
-        +'</div>';
+      var toolCreds=row.toolName?credentials.filter(function(c){return c.tool_name===row.toolName;}).map(function(c){return'<option value="'+c.id+'" '+(row.credVal===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';}).join(''):'';
+      var credOpts='<option value="">— Credential —</option>'+toolCreds+'<option value="own" '+(row.credVal==='own'?'selected':'')+'>Own login</option><option value="new" '+(row.credVal==='new'?'selected':'')+'>+ Add new</option>';
+      return '<div class="batch-row"><div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'+(groupRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'">&#10005; Remove</button>':'')+'</div><div class="batch-row-fields"><div class="bfl"><label>Tool</label><select class="gr-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select></div><div class="bfl"><label>Access type</label><select class="gr-atype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div><div class="bfl"><label>Credential</label><select class="gr-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div></div>'+(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="gr-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Login for this tool"></div>':'')+(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username</label><input type="text" class="gr-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="gr-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')+'</div>';
     }).join('');
     container.querySelectorAll('.batch-rm').forEach(function(b){b.addEventListener('click',function(){groupRows=groupRows.filter(function(r){return r.id!==b.getAttribute('data-rid');});renderGroupToolRows();});});
     container.querySelectorAll('.gr-tool').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r){r.toolName=s.value;r.credVal='';}renderGroupToolRows();});});
@@ -915,98 +868,42 @@ tr:hover td{background:#FAFBFC}
     container.querySelectorAll('.gr-newuser').forEach(function(i){i.addEventListener('input',function(){var r=groupRows.find(function(r){return r.id===i.getAttribute('data-rid');});if(r)r.newCredUser=i.value;});});
     container.querySelectorAll('.gr-newtype').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.newCredType=s.value;});});
   }
-
   function saveGroupAccess(){
     var dept=document.getElementById('groupDeptSel').value;
     if(!dept){showErr('groupErr','Please select a department.');return;}
     if(!groupRows.length){showErr('groupErr','Add at least one tool.');return;}
-    for(var i=0;i<groupRows.length;i++){
-      var r=groupRows[i];
-      if(!r.toolName){showErr('groupErr','Tool '+(i+1)+' needs a tool selection.');return;}
-      if(!r.credVal){showErr('groupErr','Tool '+(i+1)+' needs a credential selection.');return;}
-      if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('groupErr','Tool '+(i+1)+' needs a new credential username.');return;}
-    }
+    for(var i=0;i<groupRows.length;i++){var r=groupRows[i];if(!r.toolName){showErr('groupErr','Tool '+(i+1)+' needs a selection.');return;}if(!r.credVal){showErr('groupErr','Tool '+(i+1)+' needs a credential.');return;}if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('groupErr','Tool '+(i+1)+' needs a new credential username.');return;}}
     showErr('groupErr','');
     var deptMembers=members.filter(function(m){return m.dept===dept&&(m.status||'Active')==='Active';});
-    if(!deptMembers.length){showErr('groupErr','No active members found in '+dept+'.');return;}
+    if(!deptMembers.length){showErr('groupErr','No active members in '+dept+'.');return;}
     setLoading(true);
-    // Save any new creds first
-    var newCreds=groupRows.filter(function(r){return r.credVal==='new';}).map(function(r){
-      return{id:uid(),tool_name:r.toolName,username:r.newCredUser.trim(),type:r.newCredType,_rowId:r.id};
-    });
+    var newCreds=groupRows.filter(function(r){return r.credVal==='new';}).map(function(r){return{id:uid(),tool_name:r.toolName,username:r.newCredUser.trim(),type:r.newCredType,_rowId:r.id};});
     var credSave=newCreds.length?Promise.all(newCreds.map(function(nc){return sbInsert('credentials',{id:nc.id,tool_name:nc.tool_name,username:nc.username,type:nc.type}).then(function(){return nc;});})):Promise.resolve([]);
     credSave.then(function(saved){
       var credMap={};(saved||[]).forEach(function(nc){credMap[nc._rowId]=nc.id;});
-      var date=new Date().toISOString().split('T')[0];
-      var entries=[];
-      deptMembers.forEach(function(m){
-        groupRows.forEach(function(r){
-          // Skip if already has this tool
-          var alreadyHas=access.find(function(a){return a.member_id===m.id&&a.tool_name===r.toolName;});
-          if(alreadyHas)return;
-          var credId=null,credType='own';
-          if(r.credVal==='own'){credType='own';}
-          else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}
-          else{credId=r.credVal;credType='masterlist';}
-          entries.push({id:uid(),member_id:m.id,tool_name:r.toolName,access_type:r.accessType,
-            cred_id:credId||null,cred_type:credType,own_login:r.credVal==='own'?r.ownLogin:null,
-            date:date,added_by:currentUser?currentUser.name:''});
-        });
-      });
-      if(!entries.length){setLoading(false);showErr('groupErr','All members in this department already have access to the selected tools.');return;}
+      var date=new Date().toISOString().split('T')[0];var entries=[];
+      deptMembers.forEach(function(m){groupRows.forEach(function(r){if(access.find(function(a){return a.member_id===m.id&&a.tool_name===r.toolName;}))return;var credId=null,credType='own';if(r.credVal==='own'){credType='own';}else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}else{credId=r.credVal;credType='masterlist';}entries.push({id:uid(),member_id:m.id,tool_name:r.toolName,access_type:r.accessType,cred_id:credId||null,cred_type:credType,own_login:r.credVal==='own'?r.ownLogin:null,date:date,added_by:currentUser?currentUser.name:''});});});
+      if(!entries.length){setLoading(false);showErr('groupErr','All members already have access to the selected tools.');return;}
       return Promise.all(entries.map(function(e){return sbInsert('access_entries',e);})).then(function(){return entries.length;});
     }).then(function(count){
       if(!count)return;
-      return Promise.all([sbGet('access_entries'),sbGet('credentials')]).then(function(r){
-        access=Array.isArray(r[0])?r[0]:[];credentials=Array.isArray(r[1])?r[1]:[];
-        setLoading(false);
-        document.getElementById('groupAccessModal').style.display='none';
-        groupRows=[];renderByMember();renderDashboard();
-        showToast('Access granted to '+deptMembers.length+' members in '+dept);
-      });
+      return Promise.all([sbGet('access_entries'),sbGet('credentials')]).then(function(r){access=Array.isArray(r[0])?r[0]:[];credentials=Array.isArray(r[1])?r[1]:[];setLoading(false);document.getElementById('groupAccessModal').style.display='none';groupRows=[];renderByMember();renderDashboard();showToast('Access granted to '+deptMembers.length+' members in '+dept);});
     }).catch(function(err){setLoading(false);showErr('groupErr','Error saving.');console.error(err);});
   }
 
   // ── BATCH ACCESS ──
-  function openBatchModalForMember(memberId){
-    rebuildMemberDropdowns();batchRows=[];renderBatchRows();showErr('batchErr','');addBatchRow();
-    document.getElementById('batchMemberSel').value=memberId||'';
-    document.getElementById('batchModal').style.display='flex';
-  }
-
-  function openBatchModal(){
-    rebuildMemberDropdowns();batchRows=[];renderBatchRows();showErr('batchErr','');addBatchRow();
-    document.getElementById('batchMemberSel').value='';
-    document.getElementById('batchModal').style.display='flex';
-  }
-
-  function addBatchRow(){
-    batchRows.push({id:uid(),toolName:'',accessType:'individual',credVal:'',ownLogin:'',newCredUser:'',newCredType:'individual'});
-    renderBatchRows();
-  }
-
+  function openBatchModalForMember(memberId){rebuildMemberDropdowns();batchRows=[];renderBatchRows();showErr('batchErr','');addBatchRow();document.getElementById('batchMemberSel').value=memberId||'';document.getElementById('batchModal').style.display='flex';}
+  function openBatchModal(){rebuildMemberDropdowns();batchRows=[];renderBatchRows();showErr('batchErr','');addBatchRow();document.getElementById('batchMemberSel').value='';document.getElementById('batchModal').style.display='flex';}
+  function addBatchRow(){batchRows.push({id:uid(),toolName:'',accessType:'individual',credVal:'',ownLogin:'',newCredUser:'',newCredType:'individual'});renderBatchRows();}
   function removeBatchRow(rowId){batchRows=batchRows.filter(function(r){return r.id!==rowId;});renderBatchRows();}
-
   function renderBatchRows(){
     var container=document.getElementById('batchRowsContainer');
-    if(!batchRows.length){container.innerHTML='<div style="text-align:center;padding:1rem;color:#94A3B8;font-size:13px">Click &quot;+ Add tool&quot; above to begin.</div>';return;}
+    if(!batchRows.length){container.innerHTML='<div style="text-align:center;padding:1rem;color:#94A3B8;font-size:13px">Click &quot;+ Add another tool&quot; below to begin.</div>';return;}
     var tools=getAllTools();
     container.innerHTML=batchRows.map(function(row,idx){
       var toolCreds=row.toolName?credentials.filter(function(c){return c.tool_name===row.toolName;}).map(function(c){return'<option value="'+c.id+'" '+(row.credVal===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';}).join(''):'';
-      var credOpts='<option value="">— Credential —</option>'+toolCreds
-        +'<option value="own" '+(row.credVal==='own'?'selected':'')+'>Own / separate login</option>'
-        +'<option value="new" '+(row.credVal==='new'?'selected':'')+'>+ Add new credential</option>';
-      return '<div class="batch-row" id="brow_'+row.id+'">'
-        +'<div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'
-        +(batchRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'">&#10005; Remove</button>':'')+'</div>'
-        +'<div class="batch-row-fields">'
-        +'<div class="bfl"><label>Tool</label><div style="display:flex;gap:6px"><select class="batch-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select><button class="add-tool-inline" title="Add new tool">+</button></div></div>'
-        +'<div class="bfl"><label>Access type</label><select class="batch-atype" data-rid="'+row.id+'"><option value="individual" '+(row.accessType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(row.accessType==='shared'?'selected':'')+'>Shared</option></select></div>'
-        +'<div class="bfl"><label>Credential</label><select class="batch-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div>'
-        +'</div>'
-        +(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="batch-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Their personal login"></div>':'')
-        +(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to the credentials masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username / email</label><input type="text" class="batch-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="batch-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')
-        +'</div>';
+      var credOpts='<option value="">— Credential —</option>'+toolCreds+'<option value="own" '+(row.credVal==='own'?'selected':'')+'>Own / separate login</option><option value="new" '+(row.credVal==='new'?'selected':'')+'>+ Add new credential</option>';
+      return '<div class="batch-row"><div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'+(batchRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'">&#10005; Remove</button>':'')+'</div><div class="batch-row-fields"><div class="bfl"><label>Tool</label><div style="display:flex;gap:6px"><select class="batch-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select><button class="add-tool-inline" title="Add new tool">+</button></div></div><div class="bfl"><label>Access type</label><select class="batch-atype" data-rid="'+row.id+'"><option value="individual" '+(row.accessType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(row.accessType==='shared'?'selected':'')+'>Shared</option></select></div><div class="bfl"><label>Credential</label><select class="batch-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div></div>'+(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="batch-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Their personal login"></div>':'')+(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to the credentials masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username / email</label><input type="text" class="batch-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="batch-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')+'</div>';
     }).join('');
     container.querySelectorAll('.batch-rm').forEach(function(b){b.addEventListener('click',function(){removeBatchRow(b.getAttribute('data-rid'));});});
     container.querySelectorAll('.batch-tool').forEach(function(s){s.addEventListener('change',function(){var r=batchRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r){r.toolName=s.value;r.credVal='';}renderBatchRows();});});
@@ -1017,98 +914,30 @@ tr:hover td{background:#FAFBFC}
     container.querySelectorAll('.batch-newtype').forEach(function(s){s.addEventListener('change',function(){var r=batchRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.newCredType=s.value;});});
     container.querySelectorAll('.add-tool-inline').forEach(function(b){b.addEventListener('click',function(){openAddToolModal();});});
   }
-
   function saveBatchAccess(){
     var memberId=document.getElementById('batchMemberSel').value;
     if(!memberId){showErr('batchErr','Please select a member.');return;}
     if(!batchRows.length){showErr('batchErr','Add at least one tool.');return;}
-    for(var i=0;i<batchRows.length;i++){
-      var r=batchRows[i];
-      if(!r.toolName){showErr('batchErr','Tool '+(i+1)+' needs a tool selection.');return;}
-      if(!r.credVal){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential selection.');return;}
-      if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential username.');return;}
-    }
+    for(var i=0;i<batchRows.length;i++){var r=batchRows[i];if(!r.toolName){showErr('batchErr','Tool '+(i+1)+' needs a tool selection.');return;}if(!r.credVal){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential selection.');return;}if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential username.');return;}}
     showErr('batchErr','');setLoading(true);
     var newCreds=batchRows.filter(function(r){return r.credVal==='new';}).map(function(r){return{id:uid(),tool_name:r.toolName,username:r.newCredUser.trim(),type:r.newCredType,_rowId:r.id};});
     var credSave=newCreds.length?Promise.all(newCreds.map(function(nc){return sbInsert('credentials',{id:nc.id,tool_name:nc.tool_name,username:nc.username,type:nc.type}).then(function(){return nc;});})):Promise.resolve([]);
-    credSave.then(function(saved){
-      var credMap={};(saved||[]).forEach(function(nc){credMap[nc._rowId]=nc.id;});
-      var date=new Date().toISOString().split('T')[0];
-      var entries=batchRows.map(function(r){
-        var credId=null,credType='own';
-        if(r.credVal==='own'){credType='own';}
-        else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}
-        else{credId=r.credVal;credType='masterlist';}
-        return{id:uid(),member_id:memberId,tool_name:r.toolName,access_type:r.accessType,cred_id:credId||null,cred_type:credType,own_login:r.credVal==='own'?r.ownLogin:null,date:date,added_by:currentUser?currentUser.name:''};
-      });
-      return Promise.all(entries.map(function(e){return sbInsert('access_entries',e);}));
-    }).then(function(){return Promise.all([sbGet('access_entries'),sbGet('credentials')]);}).then(function(r){
-      access=Array.isArray(r[0])?r[0]:[];credentials=Array.isArray(r[1])?r[1]:[];
-      var count=batchRows.length;setLoading(false);
-      document.getElementById('batchModal').style.display='none';batchRows=[];
-      renderByMember();renderDashboard();showToast(count+' entr'+(count===1?'y':'ies')+' saved');
-    }).catch(function(err){setLoading(false);showErr('batchErr','Error saving.');console.error(err);});
+    credSave.then(function(saved){var credMap={};(saved||[]).forEach(function(nc){credMap[nc._rowId]=nc.id;});var date=new Date().toISOString().split('T')[0];var entries=batchRows.map(function(r){var credId=null,credType='own';if(r.credVal==='own'){credType='own';}else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}else{credId=r.credVal;credType='masterlist';}return{id:uid(),member_id:memberId,tool_name:r.toolName,access_type:r.accessType,cred_id:credId||null,cred_type:credType,own_login:r.credVal==='own'?r.ownLogin:null,date:date,added_by:currentUser?currentUser.name:''};});return Promise.all(entries.map(function(e){return sbInsert('access_entries',e);}));}).then(function(){return Promise.all([sbGet('access_entries'),sbGet('credentials')]);}).then(function(r){access=Array.isArray(r[0])?r[0]:[];credentials=Array.isArray(r[1])?r[1]:[];var count=batchRows.length;setLoading(false);document.getElementById('batchModal').style.display='none';batchRows=[];renderByMember();renderDashboard();showToast(count+' entr'+(count===1?'y':'ies')+' saved');}).catch(function(err){setLoading(false);showErr('batchErr','Error saving.');console.error(err);});
   }
-
-  function rebuildMemberDropdowns(){
-    var sel=document.getElementById('batchMemberSel');if(!sel)return;
-    var cur=sel.value;
-    sel.innerHTML='<option value="">— Select member —</option>'+
-      members.filter(function(m){return(m.status||'Active')==='Active';})
-      .map(function(m){return'<option value="'+m.id+'">'+eh(m.name)+' ('+eh(m.dept)+')</option>';}).join('');
-    sel.value=cur;
-  }
+  function rebuildMemberDropdowns(){var sel=document.getElementById('batchMemberSel');if(!sel)return;var cur=sel.value;sel.innerHTML='<option value="">— Select member —</option>'+members.filter(function(m){return(m.status||'Active')==='Active';}).map(function(m){return'<option value="'+m.id+'">'+eh(m.name)+' ('+eh(m.dept)+')</option>';}).join('');sel.value=cur;}
 
   // ── USERS ──
   function renderUserList(){
     var el=document.getElementById('userTableBody');
     if(!allowedUsers.length){el.innerHTML='<tr><td colspan="4" class="empty">No users.</td></tr>';return;}
-    el.innerHTML=allowedUsers.map(function(u){
-      var isSelf=currentUser&&u.email===currentUser.email;
-      return '<tr><td>'+eh(u.name||'—')+'</td><td>'+eh(u.email)+'</td>'
-        +'<td><span class="role-badge '+(u.role==='admin'?'admin':'member')+'">'+eh(u.role)+'</span></td>'
-        +'<td style="display:flex;gap:6px;align-items:center">'
-        +(!isSelf?'<button class="oblue sm" data-toggle-role="'+u.id+'" data-current-role="'+u.role+'">'+(u.role==='admin'?'Make member':'Make admin')+'</button>':'<span style="font-size:11px;color:#94A3B8">You</span>')
-        +(!isSelf?'<button class="abtn d" data-del-u="'+u.id+'">&#10005;</button>':'')
-        +'</td></tr>';
-    }).join('');
+    el.innerHTML=allowedUsers.map(function(u){var isSelf=currentUser&&u.email===currentUser.email;return '<tr><td>'+eh(u.name||'—')+'</td><td>'+eh(u.email)+'</td><td><span class="role-badge '+(u.role==='admin'?'admin':'member')+'">'+eh(u.role)+'</span></td><td style="display:flex;gap:6px;align-items:center">'+(!isSelf?'<button class="oblue sm" data-toggle-role="'+u.id+'" data-current-role="'+u.role+'">'+(u.role==='admin'?'Make member':'Make admin')+'</button>':'<span style="font-size:11px;color:#94A3B8">You</span>')+(!isSelf?'<button class="abtn d" data-del-u="'+u.id+'">&#10005;</button>':'')+'</td></tr>';}).join('');
     el.querySelectorAll('[data-toggle-role]').forEach(function(b){b.addEventListener('click',function(){toggleUserRole(b.getAttribute('data-toggle-role'),b.getAttribute('data-current-role'));});});
     el.querySelectorAll('[data-del-u]').forEach(function(b){b.addEventListener('click',function(){delUser(b.getAttribute('data-del-u'));});});
   }
-
-  function openUserModal(){
-    document.getElementById('uName').value='';document.getElementById('uEmail').value='';document.getElementById('uRole').value='member';
-    showErr('uErr','');document.getElementById('userModal').style.display='flex';
-  }
-
-  function saveUser(){
-    var name=document.getElementById('uName').value.trim();
-    var email=document.getElementById('uEmail').value.trim().toLowerCase();
-    var role=document.getElementById('uRole').value;
-    if(!email){showErr('uErr','Email required.');return;}
-    if(allowedUsers.find(function(u){return u.email===email;})){showErr('uErr','Already in list.');return;}
-    setLoading(true);
-    sbInsert('allowed_users',{id:uid(),email:email,role:role,name:name}).then(function(){return sbGet('allowed_users');}).then(function(data){
-      allowedUsers=Array.isArray(data)?data:[];setLoading(false);
-      document.getElementById('userModal').style.display='none';renderUserList();showToast('User added');
-    }).catch(function(){setLoading(false);showErr('uErr','Error.');});
-  }
-
-  function toggleUserRole(id,cur){
-    var newRole=cur==='admin'?'member':'admin';
-    if(!confirm('Change to '+newRole+'?'))return;setLoading(true);
-    sbUpdate('allowed_users',id,{role:newRole}).then(function(){return sbGet('allowed_users');}).then(function(data){
-      allowedUsers=Array.isArray(data)?data:[];setLoading(false);renderUserList();showToast('Role updated');
-    }).catch(function(){setLoading(false);});
-  }
-
-  function delUser(id){
-    var u=allowedUsers.find(function(x){return x.id===id;});
-    if(!confirm('Remove '+(u?u.email:'this user')+'?'))return;setLoading(true);
-    sbDelete('allowed_users',id).then(function(){return sbGet('allowed_users');}).then(function(data){
-      allowedUsers=Array.isArray(data)?data:[];setLoading(false);renderUserList();showToast('User removed');
-    }).catch(function(){setLoading(false);});
-  }
+  function openUserModal(){document.getElementById('uName').value='';document.getElementById('uEmail').value='';document.getElementById('uRole').value='member';showErr('uErr','');document.getElementById('userModal').style.display='flex';}
+  function saveUser(){var name=document.getElementById('uName').value.trim();var email=document.getElementById('uEmail').value.trim().toLowerCase();var role=document.getElementById('uRole').value;if(!email){showErr('uErr','Email required.');return;}if(allowedUsers.find(function(u){return u.email===email;})){showErr('uErr','Already in list.');return;}setLoading(true);sbInsert('allowed_users',{id:uid(),email:email,role:role,name:name}).then(function(){return sbGet('allowed_users');}).then(function(data){allowedUsers=Array.isArray(data)?data:[];setLoading(false);document.getElementById('userModal').style.display='none';renderUserList();showToast('User added');}).catch(function(){setLoading(false);showErr('uErr','Error.');});}
+  function toggleUserRole(id,cur){var newRole=cur==='admin'?'member':'admin';if(!confirm('Change to '+newRole+'?'))return;setLoading(true);sbUpdate('allowed_users',id,{role:newRole}).then(function(){return sbGet('allowed_users');}).then(function(data){allowedUsers=Array.isArray(data)?data:[];setLoading(false);renderUserList();showToast('Role updated');}).catch(function(){setLoading(false);});}
+  function delUser(id){var u=allowedUsers.find(function(x){return x.id===id;});if(!confirm('Remove '+(u?u.email:'this user')+'?'))return;setLoading(true);sbDelete('allowed_users',id).then(function(){return sbGet('allowed_users');}).then(function(data){allowedUsers=Array.isArray(data)?data:[];setLoading(false);renderUserList();showToast('User removed');}).catch(function(){setLoading(false);});}
 
   // ── INIT ──
   document.addEventListener('DOMContentLoaded',function(){
@@ -1117,13 +946,10 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('inpEmail').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('inpName').focus();});
     document.getElementById('inpName').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
     document.getElementById('btnLogout').addEventListener('click',logout);
-    ['dashboard','access','members','tools','credentials','users'].forEach(function(id){
-      var t=document.getElementById('tab_'+id);if(t)t.addEventListener('click',function(){switchMainTab(id);});
-    });
+    ['dashboard','access','members','tools','credentials','users'].forEach(function(id){var t=document.getElementById('tab_'+id);if(t)t.addEventListener('click',function(){switchMainTab(id);});});
     document.getElementById('dtab_byMember').addEventListener('click',function(){switchDashTab('byMember');});
     document.getElementById('dtab_byTool').addEventListener('click',function(){switchDashTab('byTool');});
     document.getElementById('dtab_byCred').addEventListener('click',function(){switchDashTab('byCred');});
-    // Member filters
     document.getElementById('mfSearch').addEventListener('input',function(){memberFilter.search=this.value;renderMemberList();});
     document.getElementById('mfDept').addEventListener('change',function(){memberFilter.dept=this.value;renderMemberList();});
     document.getElementById('mfStatus').addEventListener('change',function(){memberFilter.status=this.value;renderMemberList();});
@@ -1131,7 +957,6 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('btnSaveMember').addEventListener('click',saveMember);
     document.getElementById('btnCancelMember').addEventListener('click',function(){document.getElementById('memberModal').style.display='none';});
     document.getElementById('memberModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
-    // Tool filters
     document.getElementById('tfSearch').addEventListener('input',function(){toolFilter.search=this.value;renderToolList();});
     document.getElementById('tfCategory').addEventListener('change',function(){toolFilter.category=this.value;renderToolList();});
     document.getElementById('tfPaid').addEventListener('change',function(){toolFilter.paid=this.value;renderToolList();});
@@ -1141,43 +966,38 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('addToolModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
     document.getElementById('newToolName').addEventListener('keydown',function(e){if(e.key==='Enter')saveNewTool();});
     // Credentials
-    document.getElementById('btnAddCred').addEventListener('click',function(){openCredModal(null);});
+    document.getElementById('btnAddCred').addEventListener('click',openCredModalBlank);
     document.getElementById('btnSaveCred').addEventListener('click',saveCred);
     document.getElementById('btnCancelCred').addEventListener('click',function(){document.getElementById('credModal').style.display='none';});
     document.getElementById('credModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
-    // Batch access
+    document.getElementById('btnAddCredRow').addEventListener('click',function(){credFormRows.push({username:'',type:'individual',id:null});renderCredFormRows();});
+    document.getElementById('cToolSel').addEventListener('change',function(){
+      // when tool changes, only update if not locked
+      if(!this.disabled){}
+    });
+    // Batch
     document.getElementById('btnAddAccess').addEventListener('click',openBatchModal);
     document.getElementById('btnAddBatchRow').addEventListener('click',addBatchRow);
     document.getElementById('btnSaveBatch').addEventListener('click',saveBatchAccess);
     document.getElementById('btnCancelBatch').addEventListener('click',function(){document.getElementById('batchModal').style.display='none';batchRows=[];});
     document.getElementById('batchModal').addEventListener('click',function(e){if(e.target===this){this.style.display='none';batchRows=[];}});
-    // Group access
+    // Group
     document.getElementById('btnGroupAccess').addEventListener('click',openGroupAccessModal);
     document.getElementById('btnAddGroupRow').addEventListener('click',addGroupToolRow);
     document.getElementById('btnSaveGroupAccess').addEventListener('click',saveGroupAccess);
     document.getElementById('btnCancelGroupAccess').addEventListener('click',function(){document.getElementById('groupAccessModal').style.display='none';groupRows=[];});
     document.getElementById('groupAccessModal').addEventListener('click',function(e){if(e.target===this){this.style.display='none';groupRows=[];}});
-    // Modals close
+    // Modals
     document.getElementById('btnCloseMemberDetail').addEventListener('click',function(){document.getElementById('memberDetailModal').style.display='none';});
     document.getElementById('memberDetailModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
     document.getElementById('btnCloseToolDetail').addEventListener('click',function(){document.getElementById('toolDetailModal').style.display='none';});
     document.getElementById('toolDetailModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+    document.getElementById('btnOffboardFromDetail').addEventListener('click',function(){var mid=document.getElementById('memberDetailModal').getAttribute('data-mid');if(mid)offboardMember(mid);});
     // Users
     document.getElementById('btnAddUser').addEventListener('click',openUserModal);
     document.getElementById('btnSaveUser').addEventListener('click',saveUser);
     document.getElementById('btnCancelUser').addEventListener('click',function(){document.getElementById('userModal').style.display='none';});
     document.getElementById('userModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
-    // Member detail offboard
-    document.getElementById('btnOffboardFromDetail').addEventListener('click',function(){
-      var mid=document.getElementById('memberDetailModal').getAttribute('data-mid');
-      if(mid)offboardMember(mid);
-    });
-    // Store mid on detail modal open
-    var origOpen=openMemberDetailModal;
-    openMemberDetailModal=function(id){
-      document.getElementById('memberDetailModal').setAttribute('data-mid',id);
-      origOpen(id);
-    };
     boot();
   });
 })();
