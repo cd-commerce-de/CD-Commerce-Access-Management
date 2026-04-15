@@ -865,6 +865,7 @@ tr:hover td{background:#FAFBFC}
       return '<tr class="cred-group-row" data-tool="'+eh(toolName)+'">'
         +'<td><span class="cred-expand-icon">&#9654;</span> <strong>'+eh(toolName)+'</strong></td>'
         +'<td><span style="font-size:11px;color:#94A3B8">'+creds.length+' credential'+(creds.length!==1?'s':'')+'</span></td>'
+        +'<td></td>'
         +'<td style="font-size:12px;color:#64748B">'+totalUsers+' user'+(totalUsers!==1?'s':'')+'</td>'
         +'<td><button class="abtn add-cred-for-tool" data-tool="'+eh(toolName)+'" title="Add another credential for this tool">+ Add</button></td>'
         +'</tr>'
@@ -911,7 +912,7 @@ tr:hover td{background:#FAFBFC}
     populateToolSelect('cToolSel');
     document.getElementById('cToolSel').value=c?c.tool_name:'';
     document.getElementById('cToolSel').disabled=!!c; // lock tool when editing
-    credFormRows=[{username:c?c.username:'',type:c?c.type:'individual',owner:c?c.owner||'':'',id:c?c.id:null}];
+    credFormRows=[{username:c?(c.username||''):'',type:c?(c.type||'individual'):'individual',owner:c?(c.owner||''):'',id:c?c.id:null}];
     document.getElementById('credEditId').value=c?c.id:'';
     renderCredFormRows();
     showErr('cErr','');
@@ -978,7 +979,7 @@ tr:hover td{background:#FAFBFC}
     var promises;
     if(editId){
       // Editing single existing credential
-      promises=[sbUpdate('credentials',editId,{tool_name:toolName,username:credFormRows[0].username.trim(),type:credFormRows[0].type,owner:credFormRows[0].owner||''})];
+      promises=[sbUpdate('credentials',editId,{tool_name:toolName,username:credFormRows[0].username.trim(),type:credFormRows[0].type,owner:(credFormRows[0].owner||'').trim()})];
     }else{
       // Insert all rows
       promises=credFormRows.map(function(row){return sbInsert('credentials',{id:uid(),tool_name:toolName,username:row.username.trim(),type:row.type,owner:row.owner||''});});
