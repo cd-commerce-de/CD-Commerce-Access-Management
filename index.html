@@ -1095,12 +1095,91 @@ tr:hover td{background:#FAFBFC}
     var memberId=document.getElementById('batchMemberSel').value;
     if(!memberId){showErr('batchErr','Please select a member.');return;}
     if(!batchRows.length){showErr('batchErr','Add at least one tool.');return;}
-    for(var i=0;i<batchRows.length;i++){var r=batchRows[i];if(!r.toolName){showErr('batchErr','Tool '+(i+1)+' needs a tool selection.');return;}if(!r.credVal){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential selection.');return;}if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential username.');return;}}
-    showErr('batchErr','');setLoading(true);
-    var newCreds=batchRows.filter(function(r){return r.credVal==='new';}).map(function(r){return{id:uid(),tool_name:r.toolName,username:r.newCredUser.trim(),type:r.newCredType,_rowId:r.id};});
-    var credSave=newCreds.length?Promise.all(newCreds.map(function(nc){return sbInsert('credentials',{id:nc.id,tool_name:nc.tool_name,username:nc.username,type:nc.type}).then(function(){return nc;});})):Promise.resolve([]);
-    credSave.then(function(saved){var credMap={};(saved||[]).forEach(function(nc){credMap[nc._rowId]=nc.id;});var date=new Date().toISOString().split('T')[0];var entries=batchRows.map(function(r){var credId=null,credType='own';if(r.credVal==='own'){credType='own';}else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}else{credId=r.credVal;credType='masterlist';}return{id:uid(),member_id:memberId,tool_name:r.toolName,access_type:r.accessType,cred_id:credId||null,cred_type:credType,own_login:r.credVal==='own'?r.ownLogin:null,date:date,added_by:currentUser?currentUser.name:''};});return Promise.all(entries.map(function(e){return sbInsert('access_entries',e);}));}).then(function(){return Promise.all([sbGet('access_entries'),sbGet('credentials')]);}).then(function(r){access=Array.isArray(r[0])?r[0]:[];credentials=Array.isArray(r[1])?r[1]:[];var count=batchRows.length;setLoading(false);document.getElementById('batchModal').style.display='none';batchRows=[];renderByMember();renderDashboard();showToast(count+' entr'+(count===1?'y':'ies')+' saved');}).catch(function(err){setLoading(false);showErr('batchErr','Error saving.');console.error(err);});
+
+    // Validate all rows filled
+    for(var i=0;i<batchRows.length;i++){
+      var r=batchRows[i];
+      if(!r.toolName){showErr('batchErr','Tool '+(i+1)+' needs a tool selection.');return;}
+      if(!r.credVal){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential selection.');return;}
+      if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential username.');return;}
+    }
+
+    // ── DUPLICATE CHECK ──
+    var m=getMember(memberId);
+    var dupes=[];
+    var rowsToSave=[];
+    batchRows.forEach(function(r){
+      var existing=access.find(function(a){
+        return a.member_id===memberId && a.tool_name===r.toolName;
+      });
+      if(existing){
+        var ec=existing.cred_id?getCred(existing.cred_id):null;
+        var el=existing.cred_type==='own'?'own login':(ec?ec.username:'existing credential');
+        dupes.push(r.toolName+' — already has access via: '+el);
+      } else {
+        rowsToSave.push(r);
+      }
+    });
+
+    if(dupes.length>0 && rowsToSave.length>0){
+      var msg='Duplicate access detected for '+(m?m.name:'this member')+':\n\n'
+        +dupes.map(function(d){return '• '+d;}).join('\n')
+        +'\n\nClick OK to skip the duplicates and save the remaining '
+        +rowsToSave.length+' new entr'+(rowsToSave.length===1?'y':'ies')+'.'
+        +'\nClick Cancel to go back and edit.';
+      if(!confirm(msg)){return;}
+      batchRows=rowsToSave;
+      showToast(dupes.length+' duplicate'+(dupes.length>1?'s':'')+' skipped','warn');
+    } else if(dupes.length>0 && rowsToSave.length===0){
+      showErr('batchErr','Cannot save — all selected tools already have access assigned for '+(m?m.name:'this member')+':\n'+dupes.map(function(d){return '• '+d;}).join(', '));
+      return;
+    }
+
+    if(!batchRows.length){showErr('batchErr','No new entries to save after removing duplicates.');return;}
+
+    showErr('batchErr','');
+    setLoading(true);
+
+    var newCreds=batchRows.filter(function(r){return r.credVal==='new';}).map(function(r){
+      return{id:uid(),tool_name:r.toolName,username:r.newCredUser.trim(),type:r.newCredType,_rowId:r.id};
+    });
+    var credSave=newCreds.length
+      ?Promise.all(newCreds.map(function(nc){return sbInsert('credentials',{id:nc.id,tool_name:nc.tool_name,username:nc.username,type:nc.type}).then(function(){return nc;});}))
+      :Promise.resolve([]);
+
+    credSave.then(function(saved){
+      var credMap={};(saved||[]).forEach(function(nc){credMap[nc._rowId]=nc.id;});
+      var date=new Date().toISOString().split('T')[0];
+      var entries=batchRows.map(function(r){
+        var credId=null,credType='own';
+        if(r.credVal==='own'){credType='own';}
+        else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}
+        else{credId=r.credVal;credType='masterlist';}
+        return{id:uid(),member_id:memberId,tool_name:r.toolName,access_type:r.accessType,
+          cred_id:credId||null,cred_type:credType,
+          own_login:r.credVal==='own'?r.ownLogin:null,
+          date:date,added_by:currentUser?currentUser.name:''};
+      });
+      return Promise.all(entries.map(function(e){return sbInsert('access_entries',e);}));
+    }).then(function(){
+      return Promise.all([sbGet('access_entries'),sbGet('credentials')]);
+    }).then(function(r){
+      access=Array.isArray(r[0])?r[0]:[];
+      credentials=Array.isArray(r[1])?r[1]:[];
+      var count=batchRows.length;
+      setLoading(false);
+      document.getElementById('batchModal').style.display='none';
+      batchRows=[];
+      renderByMember();renderDashboard();
+      showToast(count+' entr'+(count===1?'y':'ies')+' saved');
+    }).catch(function(err){
+      setLoading(false);
+      showErr('batchErr','Error saving. Please try again.');
+      console.error(err);
+    });
   }
+
+
   function rebuildMemberDropdowns(){var sel=document.getElementById('batchMemberSel');if(!sel)return;var cur=sel.value;sel.innerHTML='<option value="">— Select member —</option>'+members.filter(function(m){return(m.status||'Active')==='Active';}).map(function(m){return'<option value="'+m.id+'">'+eh(m.name)+' ('+eh(m.dept)+')</option>';}).join('');sel.value=cur;}
 
   // ── USERS ──
