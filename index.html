@@ -281,6 +281,34 @@ tr:hover td{background:#FAFBFC}
   <button class="oacc" id="btnCommitImport">Import now</button>
 </div>
 </div></div>
+
+<!-- EDIT ACCESS MODAL -->
+<div class="mbg" id="editAccessModal" style="display:none"><div class="modal">
+<div class="mhdr"><h2 id="eaModalTitle">Edit access entry</h2></div>
+<div class="mbody">
+  <div class="fl">
+    <label>Credential</label>
+    <select id="eaCredSel"></select>
+  </div>
+  <div id="eaOwnLoginRow" style="display:none">
+    <div class="fl"><label>Own login username / email</label>
+      <input type="text" id="eaOwnLogin" placeholder="Their personal login for this tool">
+    </div>
+  </div>
+  <div class="fl">
+    <label>Access type</label>
+    <select id="eaAccessType">
+      <option value="individual">Individual</option>
+      <option value="shared">Shared</option>
+    </select>
+  </div>
+  <div class="err" id="eaErr"></div>
+</div>
+<div class="mfoot">
+  <button class="oblue" id="btnCancelEditAccess">Cancel</button>
+  <button class="oacc" id="btnSaveEditAccess">Save changes</button>
+</div>
+</div></div>
 <div class="toast" id="toast"></div>
 <script>
 
@@ -694,7 +722,8 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('detailMemberStatus').textContent=st;
     document.getElementById('detailMemberStatus').className='st-pill st-'+st.toLowerCase().replace(' ','-');
     var container=document.getElementById('detailAccessList');
-    container.innerHTML=!ua.length?'<div class="empty" style="padding:1rem">No access recorded.</div>':ua.map(function(a){var c=a.cred_id?getCred(a.cred_id):null;var credLabel=a.cred_type==='own'?('own login'+(a.own_login?' ('+eh(a.own_login)+')':'')):(c?eh(c.username):'—');return '<div class="detail-row"><div class="detail-tool tool-link" data-tool="'+eh(a.tool_name)+'">'+eh(a.tool_name)+'</div><div class="detail-meta"><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span><span class="detail-cred">'+credLabel+'</span></div><button class="detail-rm" data-aid="'+a.id+'" data-tname="'+eh(a.tool_name)+'">&#10005; Remove</button></div>';}).join('');
+    container.innerHTML=!ua.length?'<div class="empty" style="padding:1rem">No access recorded.</div>':ua.map(function(a){var c=a.cred_id?getCred(a.cred_id):null;var credLabel=a.cred_type==='own'?('own login'+(a.own_login?' ('+eh(a.own_login)+')':'')):(c?eh(c.username):'—');return '<div class="detail-row"><div class="detail-tool tool-link" data-tool="'+eh(a.tool_name)+'">'+eh(a.tool_name)+'</div><div class="detail-meta"><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span><span class="detail-cred">'+credLabel+'</span></div><div style="display:flex;gap:6px"><button class="detail-edit" data-aid="'+a.id+'">&#9998; Edit</button><button class="detail-rm" data-aid="'+a.id+'" data-tname="'+eh(a.tool_name)+'">&#10005; Remove</button></div></div>';}).join('');
+    container.querySelectorAll('.detail-edit').forEach(function(btn){btn.addEventListener('click',function(){openEditAccessModal(btn.getAttribute('data-aid'));});});
     container.querySelectorAll('.detail-rm').forEach(function(btn){btn.addEventListener('click',function(){if(confirm('Remove '+btn.getAttribute('data-tname')+' for '+m.name+'?'))removeAccessEntry(btn.getAttribute('data-aid'),function(){openMemberDetailModal(memberId);});});});
     container.querySelectorAll('.tool-link').forEach(function(d){d.addEventListener('click',function(){document.getElementById('memberDetailModal').style.display='none';openToolDetailModal(d.getAttribute('data-tool'));});});
     document.getElementById('detailAddAccess').onclick=function(){document.getElementById('memberDetailModal').style.display='none';openBatchModalForMember(memberId);};
@@ -747,6 +776,7 @@ tr:hover td{background:#FAFBFC}
       var credDisplay=a.cred_type==='own'?'<span class="cred-badge indiv">own login'+(a.own_login?' ('+eh(a.own_login)+')':'')+'</span>':(c?'<span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.username)+'</span>':'<span style="color:#94A3B8">—</span>');
       return '<tr><td><div class="member-link" data-mid="'+(m?m.id:'')+'"><div class="av-sm '+(m&&m.status==='Offboarded'?'av-off':'')+'">'+(m?eh(m.initials):'?')+'</div>'+(m?eh(m.name):'Unknown')+'</div></td><td class="tool-link" data-tool="'+eh(a.tool_name)+'">'+eh(a.tool_name)+'</td><td>'+credDisplay+'</td><td><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type||'individual')+'</span></td><td style="font-size:11px;color:#64748B">'+eh(a.added_by||'—')+'</td><td><button class="abtn d" data-del-a="'+a.id+'">&#10005;</button></td></tr>';
     }).join('');
+    el.querySelectorAll('[data-edit-a]').forEach(function(b){b.addEventListener('click',function(){openEditAccessModal(b.getAttribute('data-edit-a'));});});
     el.querySelectorAll('[data-del-a]').forEach(function(b){b.addEventListener('click',function(){if(confirm('Remove this entry?'))removeAccessEntry(b.getAttribute('data-del-a'),renderAccessList);});});
     el.querySelectorAll('.member-link').forEach(function(d){d.addEventListener('click',function(){if(d.getAttribute('data-mid'))openMemberDetailModal(d.getAttribute('data-mid'));});});
     el.querySelectorAll('.tool-link').forEach(function(d){d.addEventListener('click',function(){openToolDetailModal(d.getAttribute('data-tool'));});});
@@ -1497,6 +1527,81 @@ tr:hover td{background:#FAFBFC}
   }
 
   // ── DUPLICATE CHECK: same tool + same credential ID only ──
+
+  // ── EDIT ACCESS ENTRY ──
+  var editingAccessId = null;
+
+  function openEditAccessModal(accessId){
+    var a=access.find(function(x){return x.id===accessId;});
+    if(!a)return;
+    editingAccessId=accessId;
+    var m=getMember(a.member_id);
+    document.getElementById('eaModalTitle').textContent='Edit access — '+(m?m.name:'member')+' / '+a.tool_name;
+    document.getElementById('eaAccessType').value=a.access_type||'individual';
+
+    // Build credential dropdown for this tool
+    var sel=document.getElementById('eaCredSel');
+    var toolCreds=credentials.filter(function(c){return c.tool_name===a.tool_name;});
+    sel.innerHTML='<option value="own">Using own / separate login</option>'
+      +toolCreds.map(function(c){return'<option value="'+c.id+'" '+(a.cred_id===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';}).join('');
+    if(a.cred_type==='own')sel.value='own';
+    else if(a.cred_id)sel.value=a.cred_id;
+
+    document.getElementById('eaOwnLogin').value=a.own_login||'';
+    document.getElementById('eaOwnLoginRow').style.display=(a.cred_type==='own')?'block':'none';
+    showErr('eaErr','');
+    document.getElementById('editAccessModal').style.display='flex';
+  }
+
+  function saveEditAccess(){
+    var credVal=document.getElementById('eaCredSel').value;
+    var accessType=document.getElementById('eaAccessType').value;
+    var ownLogin=document.getElementById('eaOwnLogin').value.trim();
+    if(!credVal){showErr('eaErr','Please select a credential.');return;}
+
+    var a=access.find(function(x){return x.id===editingAccessId;});
+    if(!a){showErr('eaErr','Entry not found.');return;}
+
+    var credId=null, credType='own';
+    if(credVal==='own'){credType='own';}
+    else{credId=credVal;credType='masterlist';}
+
+    // Duplicate check — same tool + same cred, but different access entry
+    var isDupe=access.find(function(x){
+      if(x.id===editingAccessId)return false;
+      if(x.member_id!==a.member_id||x.tool_name!==a.tool_name)return false;
+      if(credVal==='own')return x.cred_type==='own';
+      return x.cred_id===credId;
+    });
+    if(isDupe){
+      var dc=credId?getCred(credId):null;
+      showErr('eaErr','This member already has access to '+a.tool_name+' with '+(dc?dc.username:'own login')+'. Duplicate not allowed.');
+      return;
+    }
+
+    setLoading(true);
+    sbUpdate('access_entries',editingAccessId,{
+      access_type:accessType,
+      cred_id:credId||null,
+      cred_type:credType,
+      own_login:credType==='own'?ownLogin:null
+    }).then(function(){return sbGet('access_entries');}).then(function(data){
+      access=Array.isArray(data)?data:[];
+      setLoading(false);
+      document.getElementById('editAccessModal').style.display='none';
+      editingAccessId=null;
+      renderAccessList();
+      renderByMember();
+      renderDashboard();
+      // Refresh member detail if open
+      var mid=document.getElementById('memberDetailModal').getAttribute('data-mid');
+      if(mid&&document.getElementById('memberDetailModal').style.display==='flex'){
+        openMemberDetailModal(mid);
+      }
+      showToast('Access entry updated');
+    }).catch(function(){setLoading(false);showErr('eaErr','Error saving.');});
+  }
+
   // ── INIT ──
   document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('btnDoSetup').addEventListener('click',doSetup);
@@ -1565,6 +1670,12 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('btnAddUser').addEventListener('click',openUserModal);
     // Import
     document.getElementById('btnImportMembers').addEventListener('click',function(){openImportModal('members');});
+    document.getElementById('btnSaveEditAccess').addEventListener('click',saveEditAccess);
+    document.getElementById('btnCancelEditAccess').addEventListener('click',function(){document.getElementById('editAccessModal').style.display='none';editingAccessId=null;});
+    document.getElementById('editAccessModal').addEventListener('click',function(e){if(e.target===this){this.style.display='none';editingAccessId=null;}});
+    document.getElementById('eaCredSel').addEventListener('change',function(){
+      document.getElementById('eaOwnLoginRow').style.display=this.value==='own'?'block':'none';
+    });
     document.getElementById('btnImportCredentials').addEventListener('click',function(){openImportModal('credentials');});
     document.getElementById('importFileInput').addEventListener('change',function(){handleImportFile(this);});
     document.getElementById('btnCommitImport').addEventListener('click',commitImport);
