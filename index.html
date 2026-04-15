@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CD Commerce Access Management</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 
 
@@ -107,7 +108,7 @@ body{font-family:Arial,sans-serif;background:#F8FAFC;min-height:100vh}
 .filter-bar select{font-size:13px;border:1.5px solid #E2E8F0;border-radius:8px;padding:7px 12px;color:#0F172A;outline:none;cursor:pointer;font-family:Arial,sans-serif;background:#fff}
 .filter-bar select:focus{border-color:#D97757}
 /* TABLES */
-.sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}.import-preview-table{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:8px;max-height:200px;overflow-y:auto}.import-preview-row{display:flex;gap:10px;padding:5px 0;border-bottom:1px solid #F1F5F9;font-size:12px}.import-preview-row:last-child{border-bottom:none}.import-col{flex:1;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sec-hdr h2{font-size:16px;font-weight:700;color:#0F172A}
 .sec-hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tbox{background:#fff;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden}
@@ -224,9 +225,9 @@ tr:hover td{background:#FAFBFC}
 <div class="main-nav"><button class="main-tab on" id="tab_dashboard">&#128202; Dashboard</button><button class="main-tab" id="tab_access">&#128274; Access Entries</button><button class="main-tab" id="tab_members">&#128100; Members</button><button class="main-tab" id="tab_tools">&#128295; Tools</button><button class="main-tab" id="tab_credentials">&#128273; Credentials</button><button class="main-tab" id="tab_users" style="display:none">&#9881; User Management</button></div>
 <div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc"><div class="mc-l">Total Members</div><div class="mc-v" id="dash_members">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Total Tools</div><div class="mc-v" id="dash_tools">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Active Members</div><div class="mc-v" id="dash_active">0</div><div class="mc-hint">Click to filter &#8594;</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per Credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
 <div class="view" id="view_access"><div class="sec-hdr"><h2>Access Entries</h2><div class="sec-hdr-right"><button class="oblue" id="btnGroupAccess">&#128101; Group access</button><button class="oacc" id="btnAddAccess">+ Add access</button></div></div><div class="tbox"><table><thead><tr><th>Member</th><th>Tool</th><th>Credential</th><th>Access type</th><th>Added by</th><th></th></tr></thead><tbody id="accessTableBody"></tbody></table></div></div>
-<div class="view" id="view_members"><div class="sec-hdr"><h2>Team Members</h2><button class="oacc" id="btnAddMember">+ Add member</button></div><div class="filter-bar"><input id="mfSearch" placeholder="&#128269; Search name, email, department..."><select id="mfDept"><option value="">All departments</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select><select id="mfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Access</th><th>Actions</th></tr></thead><tbody id="memberTableBody"></tbody></table></div></div>
-<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><button class="oacc" id="btnAddTool">+ Add tool</button></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Cost</th><th>Users</th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
-<div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><button class="oacc" id="btnAddCred">+ Add credential</button></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by</th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
+<div class="view" id="view_members"><div class="sec-hdr"><h2>Team Members</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportMembers">&#8595; Import CSV</button><button class="oblue" id="btnExportMembersCSV">&#8593; CSV</button><button class="oblue" id="btnExportMembersXLSX">&#8593; Excel</button><button class="oacc" id="btnAddMember">+ Add member</button></div></div><div class="filter-bar"><input id="mfSearch" placeholder="&#128269; Search name, email, department..."><select id="mfDept"><option value="">All departments</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select><select id="mfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Access</th><th>Actions</th></tr></thead><tbody id="memberTableBody"></tbody></table></div></div>
+<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV">&#8593; CSV</button><button class="oblue" id="btnExportToolsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Cost</th><th>Users</th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
+<div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportCredentials">&#8595; Import CSV</button><button class="oblue" id="btnExportCredsCSV">&#8593; CSV</button><button class="oblue" id="btnExportCredsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddCred">+ Add credential</button></div></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by</th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
 <div class="view" id="view_users"><div class="sec-hdr"><div><h2>User Management</h2><p style="font-size:12px;color:#64748B;margin-top:3px">Only listed users can sign in.</p></div><button class="oacc" id="btnAddUser">+ Add user</button></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
 </div>
 <div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><div style="display:flex;gap:8px"><button class="mhdr-edit" id="btnEditToolFromDetail">&#9998; Edit</button><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
@@ -257,6 +258,28 @@ tr:hover td{background:#FAFBFC}
 <div class="err" id="teErr"></div>
 </div>
 <div class="mfoot"><button class="oblue" id="btnCancelToolEdit2" onclick="document.getElementById('toolEditModal').style.display='none'">Cancel</button><button class="oacc" id="btnSaveToolEdit">Save changes</button></div>
+</div></div>
+
+<!-- IMPORT MODAL -->
+<div class="mbg" id="importModal" style="display:none"><div class="modal wide">
+<input type="hidden" id="importType">
+<div class="mhdr"><h2 id="importModalTitle">Import from CSV</h2><button class="mhdr-close" id="btnCancelImport">Cancel</button></div>
+<div class="mbody">
+  <div class="ibox" id="importHint"></div>
+  <div class="fl">
+    <label>Select CSV file</label>
+    <input type="file" id="importFileInput" accept=".csv" style="border:1.5px solid #E2E8F0;border-radius:8px;padding:8px;font-family:Arial,sans-serif;font-size:13px;width:100%;cursor:pointer">
+  </div>
+  <div id="importPreviewWrap" style="display:none">
+    <div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px" id="importPreviewLabel"></div>
+    <div class="import-preview-table" id="importPreviewBody"></div>
+  </div>
+  <div class="err" id="importErr" style="margin-top:8px"></div>
+</div>
+<div class="mfoot">
+  <button class="oblue" id="btnCancelImport2" onclick="document.getElementById('importModal').style.display='none'">Cancel</button>
+  <button class="oacc" id="btnCommitImport">Import now</button>
+</div>
 </div></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -1104,18 +1127,31 @@ tr:hover td{background:#FAFBFC}
       if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential username.');return;}
     }
 
-    // ── DUPLICATE CHECK ──
+    // ── DUPLICATE CHECK: only flag if exact same tool + same credential ──
     var m=getMember(memberId);
     var dupes=[];
     var rowsToSave=[];
     batchRows.forEach(function(r){
-      var existing=access.find(function(a){
-        return a.member_id===memberId && a.tool_name===r.toolName;
+      // Resolve the credential ID being added
+      var newCredId=null;
+      if(r.credVal&&r.credVal!=='own'&&r.credVal!=='new'){newCredId=r.credVal;}
+      // Find exact match: same member, same tool, same cred
+      var exactDupe=access.find(function(a){
+        if(a.member_id!==memberId||a.tool_name!==r.toolName)return false;
+        if(r.credVal==='own'){
+          // Own login: dupe only if also own login
+          return a.cred_type==='own';
+        }
+        if(newCredId){
+          // Specific credential: dupe only if same cred_id
+          return a.cred_id===newCredId;
+        }
+        return false;
       });
-      if(existing){
-        var ec=existing.cred_id?getCred(existing.cred_id):null;
-        var el=existing.cred_type==='own'?'own login':(ec?ec.username:'existing credential');
-        dupes.push(r.toolName+' — already has access via: '+el);
+      if(exactDupe){
+        var ec=exactDupe.cred_id?getCred(exactDupe.cred_id):null;
+        var el=exactDupe.cred_type==='own'?'own login':(ec?ec.username:'this credential');
+        dupes.push(r.toolName+' with "'+el+'" — exact duplicate');
       } else {
         rowsToSave.push(r);
       }
@@ -1247,6 +1283,220 @@ tr:hover td{background:#FAFBFC}
     openToolDetailModal(name);
   }
 
+
+  // ── BULK IMPORT / EXPORT ──
+
+  // Parse CSV text into array of objects using first row as headers
+  function parseCSV(text){
+    var lines=text.trim().split('\n');
+    if(lines.length<2)return[];
+    var headers=splitCSVRow(lines[0]).map(function(h){return h.trim().toLowerCase().replace(/\s+/g,'_');});
+    return lines.slice(1).map(function(line){
+      var vals=splitCSVRow(line);
+      var obj={};
+      headers.forEach(function(h,i){obj[h]=(vals[i]||'').trim();});
+      return obj;
+    }).filter(function(r){return Object.values(r).some(function(v){return v;});});
+  }
+
+  function splitCSVRow(row){
+    var cols=[],cur='',inQ=false;
+    for(var i=0;i<row.length;i++){
+      if(row[i]==='"'){inQ=!inQ;}
+      else if(row[i]===','&&!inQ){cols.push(cur);cur='';}
+      else{cur+=row[i];}
+    }
+    cols.push(cur);
+    return cols;
+  }
+
+  function toCSV(rows, headers){
+    function esc(v){var s=String(v==null?'':v);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}
+    return [headers.join(',')].concat(rows.map(function(r){return headers.map(function(h){return esc(r[h]||'');}).join(',');})).join('\n');
+  }
+
+  function downloadCSV(filename, csvText){
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csvText],{type:'text/csv'}));
+    a.download=filename;a.click();
+  }
+
+  // ── EXPORT ──
+  function exportMembers(fmt){
+    if(!members.length){showToast('No members to export.','warn');return;}
+    var rows=members.map(function(m){return{name:m.name,email:m.email,department:m.dept,status:m.status||'Active',initials:m.initials};});
+    var headers=['name','email','department','status','initials'];
+    if(fmt==='xlsx'){exportXLSX('cd_commerce_members.xlsx','Members',rows,headers);}
+    else{downloadCSV('cd_commerce_members.csv',toCSV(rows,headers));showToast('Members exported to CSV');}
+  }
+
+  function exportTools(fmt){
+    var allTools=getAllTools();
+    if(!allTools.length){showToast('No tools to export.','warn');return;}
+    var rows=allTools.map(function(name){
+      var info=getToolInfo(name)||{};
+      var userCount=access.filter(function(a){return a.tool_name===name;}).length;
+      return{name:name,category:info.category||'',department:info.dept||'',url:info.url||'',paid_free:info.paid_free||'',monthly_cost:info.cost||'',subscription_model:info.sub_model||'',owner:info.owner||'',notes:info.notes||'',users:userCount};
+    });
+    var headers=['name','category','department','url','paid_free','monthly_cost','subscription_model','owner','notes','users'];
+    if(fmt==='xlsx'){exportXLSX('cd_commerce_tools.xlsx','Tools',rows,headers);}
+    else{downloadCSV('cd_commerce_tools.csv',toCSV(rows,headers));showToast('Tools exported to CSV');}
+  }
+
+  function exportCredentials(fmt){
+    if(!credentials.length){showToast('No credentials to export.','warn');return;}
+    var rows=credentials.map(function(c){
+      var userCount=access.filter(function(a){return a.cred_id===c.id;}).length;
+      return{tool_name:c.tool_name,username:c.username,type:c.type,owner:c.owner||'',users:userCount};
+    });
+    var headers=['tool_name','username','type','owner','users'];
+    if(fmt==='xlsx'){exportXLSX('cd_commerce_credentials.xlsx','Credentials',rows,headers);}
+    else{downloadCSV('cd_commerce_credentials.csv',toCSV(rows,headers));showToast('Credentials exported to CSV');}
+  }
+
+  // Simple XLSX export using SheetJS CDN
+  function exportXLSX(filename, sheetName, rows, headers){
+    if(typeof XLSX==='undefined'){showToast('Excel export loading... try again.','warn');return;}
+    var wsData=[headers].concat(rows.map(function(r){return headers.map(function(h){return r[h]||''});}));
+    var ws=XLSX.utils.aoa_to_sheet(wsData);
+    var wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,sheetName);
+    XLSX.writeFile(wb,filename);
+    showToast(sheetName+' exported to Excel');
+  }
+
+  // ── IMPORT ──
+  function openImportModal(type){
+    document.getElementById('importType').value=type;
+    document.getElementById('importModalTitle').textContent='Import '+type.charAt(0).toUpperCase()+type.slice(1)+' from CSV';
+    document.getElementById('importFileInput').value='';
+    document.getElementById('importPreviewWrap').style.display='none';
+    document.getElementById('importPreviewBody').innerHTML='';
+    document.getElementById('importPreviewLabel').textContent='';
+    showErr('importErr','');
+    document.getElementById('importHint').textContent=getImportHint(type);
+    document.getElementById('importModal').style.display='flex';
+  }
+
+  function getImportHint(type){
+    if(type==='members')return 'Required columns: name, email, department. Optional: status (Active/Offboarded)';
+    if(type==='credentials')return 'Required columns: tool_name, username, type (individual/shared). Optional: owner';
+    return '';
+  }
+
+  function handleImportFile(inp){
+    var file=inp.files[0];if(!file)return;
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      var rows=parseCSV(ev.target.result);
+      if(!rows.length){showErr('importErr','File is empty or could not be parsed.');return;}
+      showErr('importErr','');
+      var type=document.getElementById('importType').value;
+      var preview=previewImportRows(rows,type);
+      document.getElementById('importPreviewLabel').textContent=rows.length+' row'+(rows.length!==1?'s':'')+' found — preview (first 5):';
+      document.getElementById('importPreviewBody').innerHTML=preview;
+      document.getElementById('importPreviewWrap').style.display='block';
+      document.getElementById('importModal').setAttribute('data-rows',JSON.stringify(rows));
+    };
+    rd.readAsText(file);
+  }
+
+  function previewImportRows(rows,type){
+    var sample=rows.slice(0,5);
+    if(type==='members'){
+      return sample.map(function(r){
+        return '<div class="import-preview-row">'
+          +'<span class="import-col">'+eh(r.name||r['full_name']||'—')+'</span>'
+          +'<span class="import-col">'+eh(r.email||'—')+'</span>'
+          +'<span class="import-col">'+eh(r.department||r.dept||'—')+'</span>'
+          +'<span class="import-col"><span class="st-pill st-'+(r.status||'active').toLowerCase()+'">'+eh(r.status||'Active')+'</span></span>'
+          +'</div>';
+      }).join('');
+    }
+    if(type==='credentials'){
+      return sample.map(function(r){
+        return '<div class="import-preview-row">'
+          +'<span class="import-col">'+eh(r.tool_name||r.tool||'—')+'</span>'
+          +'<span class="import-col">'+eh(r.username||r.email||'—')+'</span>'
+          +'<span class="import-col"><span class="cred-badge '+(r.type==='shared'?'shared':'indiv')+'">'+eh(r.type||'individual')+'</span></span>'
+          +'<span class="import-col" style="color:#D97757">'+eh(r.owner||'—')+'</span>'
+          +'</div>';
+      }).join('');
+    }
+    return rows.slice(0,5).map(function(r){return '<div class="import-preview-row">'+Object.values(r).map(function(v){return '<span class="import-col">'+eh(v)+'</span>';}).join('')+'</div>';}).join('');
+  }
+
+  function commitImport(){
+    var type=document.getElementById('importType').value;
+    var raw=document.getElementById('importModal').getAttribute('data-rows');
+    if(!raw){showErr('importErr','No file loaded.');return;}
+    var rows=JSON.parse(raw);
+    if(!rows.length){showErr('importErr','No rows to import.');return;}
+
+    if(type==='members'){importMembers(rows);}
+    else if(type==='credentials'){importCredentials(rows);}
+  }
+
+  function importMembers(rows){
+    var toInsert=[];var skipped=[];var errors=[];
+    rows.forEach(function(r,idx){
+      var name=(r.name||r.full_name||'').trim();
+      var email=(r.email||'').trim().toLowerCase();
+      var dept=(r.department||r.dept||'').trim();
+      var status=r.status||'Active';
+      if(!name||!email){errors.push('Row '+(idx+1)+': missing name or email');return;}
+      var exists=members.find(function(m){return m.email.toLowerCase()===email;});
+      if(exists){skipped.push(name+' ('+email+') — already exists');return;}
+      toInsert.push({id:uid(),name:name,email:email,dept:dept,status:status,initials:ini(name)});
+    });
+    if(errors.length){showErr('importErr','Errors: '+errors.join(' | '));return;}
+    if(!toInsert.length){
+      showErr('importErr','Nothing to import. '+(skipped.length?skipped.length+' row'+(skipped.length>1?'s':'')+' skipped (already exist).':''));
+      return;
+    }
+    setLoading(true);
+    Promise.all(toInsert.map(function(m){return sbInsert('members',m);}))
+    .then(function(){return sbGet('members');})
+    .then(function(data){
+      members=Array.isArray(data)?data:[];
+      setLoading(false);
+      document.getElementById('importModal').style.display='none';
+      renderMemberList();rebuildMemberDropdowns();renderDashboard();
+      showToast(toInsert.length+' member'+(toInsert.length>1?'s':'')+' imported'+(skipped.length?' | '+skipped.length+' skipped (duplicates)':''));
+    }).catch(function(){setLoading(false);showErr('importErr','Error saving to database.');});
+  }
+
+  function importCredentials(rows){
+    var toInsert=[];var skipped=[];var errors=[];
+    rows.forEach(function(r,idx){
+      var toolName=(r.tool_name||r.tool||'').trim();
+      var username=(r.username||r.email||'').trim();
+      var type=(r.type||'individual').trim().toLowerCase();
+      var owner=(r.owner||'').trim();
+      if(!toolName||!username){errors.push('Row '+(idx+1)+': missing tool_name or username');return;}
+      if(type!=='individual'&&type!=='shared')type='individual';
+      var exists=credentials.find(function(c){return c.tool_name.toLowerCase()===toolName.toLowerCase()&&c.username.toLowerCase()===username.toLowerCase();});
+      if(exists){skipped.push(username+' on '+toolName+' — already exists');return;}
+      toInsert.push({id:uid(),tool_name:toolName,username:username,type:type,owner:owner});
+    });
+    if(errors.length){showErr('importErr','Errors: '+errors.join(' | '));return;}
+    if(!toInsert.length){
+      showErr('importErr','Nothing to import. '+(skipped.length?skipped.length+' row'+(skipped.length>1?'s':'')+' skipped (already exist).':''));
+      return;
+    }
+    setLoading(true);
+    Promise.all(toInsert.map(function(c){return sbInsert('credentials',c);}))
+    .then(function(){return sbGet('credentials');})
+    .then(function(data){
+      credentials=Array.isArray(data)?data:[];
+      setLoading(false);
+      document.getElementById('importModal').style.display='none';
+      renderCredentialList();renderDashboard();
+      showToast(toInsert.length+' credential'+(toInsert.length>1?'s':'')+' imported'+(skipped.length?' | '+skipped.length+' skipped':''));
+    }).catch(function(){setLoading(false);showErr('importErr','Error saving to database.');});
+  }
+
+  // ── DUPLICATE CHECK: same tool + same credential ID only ──
   // ── INIT ──
   document.addEventListener('DOMContentLoaded',function(){
     document.getElementById('btnDoSetup').addEventListener('click',doSetup);
@@ -1313,6 +1563,22 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('btnOffboardFromDetail').addEventListener('click',function(){var mid=document.getElementById('memberDetailModal').getAttribute('data-mid');if(mid)offboardMember(mid);});
     // Users
     document.getElementById('btnAddUser').addEventListener('click',openUserModal);
+    // Import
+    document.getElementById('btnImportMembers').addEventListener('click',function(){openImportModal('members');});
+    document.getElementById('btnImportCredentials').addEventListener('click',function(){openImportModal('credentials');});
+    document.getElementById('importFileInput').addEventListener('change',function(){handleImportFile(this);});
+    document.getElementById('btnCommitImport').addEventListener('click',commitImport);
+    document.getElementById('btnCancelImport').addEventListener('click',function(){document.getElementById('importModal').style.display='none';});
+    document.getElementById('importModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
+    // Export Members
+    document.getElementById('btnExportMembersCSV').addEventListener('click',function(){exportMembers('csv');});
+    document.getElementById('btnExportMembersXLSX').addEventListener('click',function(){exportMembers('xlsx');});
+    // Export Tools
+    document.getElementById('btnExportToolsCSV').addEventListener('click',function(){exportTools('csv');});
+    document.getElementById('btnExportToolsXLSX').addEventListener('click',function(){exportTools('xlsx');});
+    // Export Credentials
+    document.getElementById('btnExportCredsCSV').addEventListener('click',function(){exportCredentials('csv');});
+    document.getElementById('btnExportCredsXLSX').addEventListener('click',function(){exportCredentials('xlsx');});
     document.getElementById('btnSaveToolEdit').addEventListener('click',saveToolEdit);
     document.getElementById('btnCancelToolEdit').addEventListener('click',function(){document.getElementById('toolEditModal').style.display='none';});
     document.getElementById('toolEditModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
