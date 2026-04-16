@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACNUlEQVR4nO2Vv08TYRjHP+8dFEICbRMPgaAVbNUZJ1wMP4KDDPhHECYSnNSZyCqr+gfggrtsjMAi6XEyIDQRkpK2eAcNQ+/eexxom0KqMUGtw32nN8+b93k+d8/zzaNERGihjFYWjwAigAggAvgvANquBrTWiAiGYWAYf59P1XZBbSUopeqXIoJSisZ1UYNrvL82QBiG9aSf1tbYsW1mZp4xPDzUtMjVmIhcijU7N4sppUCq8jxP1tfX5fHYmExMTsrQ3bQc5HIShqG4riu2bUuhUJCdHUdERHzfly+7uxIEgVxHbQCrqx+Zn5+nq6uLlQ8rPBwZ4UbvTeyszZ1UitdLS2QyGb4dHnJSKjH9dJpEMoFSis2tLcpnZ/hBQLlcprOzk46OGJ53SiwWo7u7m7PTU5RhoJTCsixc1yUIAp5MTV244MXLVywuLuI4Dm+Wl+nv7+fR6CgT4+OICLFYB1przGoSs80EEUzT5Dif57vrsr+/z8DAAIlEgr29r/T19WFZFp+3t3Ech/xxnqAKmc1mOcjl0FpfzMDs3BybGxukUre5d/8Bc7OzZDKZeo/Pz885OjrC6u2lWCiQTqfRWnOQy3FrcJBSqYRlWfUe+75Pe3t7vdeu5xGPx5EwpFgskkwmqVQqxOPxC4CKX+Hd2/eUTko8X1igp6enqSt+NoTXUd2GjWp0Ra3gpUe/mPBmgFcd0JhHVYcRrTUApmn+sa/7HTX9A/9SLd8FEUAEEAFEAC0H+AFHbntPYvf73AAAAABJRU5ErkJggg==">
+<link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACNUlEQVR4nO2Vv08TYRjHP+8dFEICbRMPgaAVbNUZJ1wMP4KDDPhHECYSnNSZyCqr+gfggrtsjMAi6XEyIDQRkpK2eAcNQ+/eexxom0KqMUGtw32nN8+b93k+d8/zzaNERGihjFYWjwAigAggAvgvANquBrTWiAiGYWAYf59P1XZBbSUopeqXIoJSisZ1UYNrvL82QBiG9aSf1tbYsW1mZp4xPDzUtMjVmIhcijU7N4sppUCq8jxP1tfX5fHYmExMTsrQ3bQc5HIShqG4riu2bUuhUJCdHUdERHzfly+7uxIEgVxHbQCrqx+Zn5+nq6uLlQ8rPBwZ4UbvTeyszZ1UitdLS2QyGb4dHnJSKjH9dJpEMoFSis2tLcpnZ/hBQLlcprOzk46OGJ53SiwWo7u7m7PTU5RhoJTCsixc1yUIAp5MTV244MXLVywuLuI4Dm+Wl+nv7+fR6CgT4+OICLFYB1przGoSs80EEUzT5Dif57vrsr+/z8DAAIlEgr29r/T19WFZFp+3t3Ech/xxnqAKmc1mOcjl0FpfzMDs3BybGxukUre5d/8Bc7OzZDKZeo/Pz885OjrC6u2lWCiQTqfRWnOQy3FrcJBSqYRlWfUe+75Pe3t7vdeu5xGPx5EwpFgskkwmqVQqxOPxC4CKX+Hd2/eUTko8X1igp6enqSt+NoTXUd2GjWp0Ra3gpUe/mPBmgFcd0JhHVYcRrTUApmn+sa/7HTX9A/9SLd8FEUAEEAFEAC0H+AFHbntPYvf73AAAAABJRU5ErkJggg==">
 <title>CD Commerce Access Management</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -500,6 +502,7 @@ tr:hover td{background:#FAFBFC}
       +'<select class="dash-filter-sel" id="pmGroupBy"><option value="none" '+(groupBy==='none'?'selected':'')+'>No grouping</option><option value="dept" '+(groupBy==='dept'?'selected':'')+'>Group by Department</option><option value="status" '+(groupBy==='status'?'selected':'')+'>Group by Status</option></select>'
       +'</div>';
 
+    filtered.sort(function(a,b){return a.name.localeCompare(b.name);});
     if(!filtered.length){el.innerHTML=bar+'<div class="empty">No members match your filters.</div>';wireFilterBar('pm');return;}
 
     var rows='';
@@ -972,6 +975,7 @@ tr:hover td{background:#FAFBFC}
     el.innerHTML=tools.map(function(toolName){
       var creds=toolMap[toolName];
       var totalUsers=0;creds.forEach(function(c){totalUsers+=access.filter(function(a){return a.cred_id===c.id;}).length;});
+      creds.sort(function(a,b){return a.username.localeCompare(b.username);});
       var credRows=creds.map(function(c){
         var users=access.filter(function(a){return a.cred_id===c.id;}).length;
         return '<tr class="cred-child-row">'
