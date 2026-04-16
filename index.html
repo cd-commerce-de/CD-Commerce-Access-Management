@@ -188,7 +188,7 @@ tr:hover td{background:#FAFBFC}
 .bfl input,.bfl select{width:100%;font-size:12px;border:1px solid #E2E8F0;border-radius:7px;padding:7px 10px;color:#0F172A;outline:none;font-family:Arial,sans-serif;background:#fff}
 .bfl input:focus,.bfl select:focus{border-color:#D97757}
 .batch-new-cred{margin-top:10px;padding-top:10px;border-top:1px dashed #E2E8F0}
-.batch-rm{font-size:12px;color:#EF4444;background:none;border:none;cursor:pointer;font-weight:600;font-family:Arial,sans-serif;padding:3px 8px;border-radius:6px}
+.batch-rm{font-size:12px;color:#EF4444;background:none;border:none;cursor:pointer;font-weight:600;font-family:Arial,sans-serif;padding:3px 8px;border-radius:6px}.batch-rm:hover{background:#FEE2E2}.batch-creds-section{border-top:1px dashed #E2E8F0;margin-top:10px;padding-top:10px}.batch-cred-row{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px;margin-bottom:8px}.batch-cred-row-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.cred-row-rm{font-size:11px;color:#EF4444;background:none;border:none;cursor:pointer;font-weight:600;font-family:Arial,sans-serif;padding:2px 6px;border-radius:4px}.cred-row-rm:hover{background:#FEE2E2}.btn-add-cred-row{width:100%;padding:8px;border:1.5px dashed #94A3B8;border-radius:8px;background:#F8FAFC;color:#64748B;font-size:12px;font-weight:600;cursor:pointer;font-family:Arial,sans-serif;margin-top:4px;transition:all 0.15s}.btn-add-cred-row:hover{border-color:#D97757;color:#D97757;background:#FDF2EE}
 .batch-rm:hover{background:#FEE2E2}
 .add-tool-inline{font-size:11px;font-weight:700;color:#D97757;background:none;border:1px solid #F5DDD3;border-radius:6px;padding:5px 8px;cursor:pointer;font-family:Arial,sans-serif;flex-shrink:0}
 .add-tool-inline:hover{background:#FDF2EE}
@@ -1168,127 +1168,309 @@ tr:hover td{background:#FAFBFC}
   // ── BATCH ACCESS ──
   function openBatchModalForMember(memberId){rebuildMemberDropdowns();batchRows=[];renderBatchRows();showErr('batchErr','');addBatchRow();document.getElementById('batchMemberSel').value=memberId||'';document.getElementById('batchModal').style.display='flex';}
   function openBatchModal(){rebuildMemberDropdowns();batchRows=[];renderBatchRows();showErr('batchErr','');addBatchRow();document.getElementById('batchMemberSel').value='';document.getElementById('batchModal').style.display='flex';}
-  function addBatchRow(){batchRows.push({id:uid(),toolName:'',accessType:'individual',credVal:'',ownLogin:'',newCredUser:'',newCredType:'individual'});renderBatchRows();}
-  function removeBatchRow(rowId){batchRows=batchRows.filter(function(r){return r.id!==rowId;});renderBatchRows();}
-  function renderBatchRows(){
-    var container=document.getElementById('batchRowsContainer');
-    if(!batchRows.length){container.innerHTML='<div style="text-align:center;padding:1rem;color:#94A3B8;font-size:13px">Click &quot;+ Add another tool&quot; below to begin.</div>';return;}
-    var tools=getAllTools();
-    container.innerHTML=batchRows.map(function(row,idx){
-      var toolCreds=row.toolName?credentials.filter(function(c){return c.tool_name===row.toolName;}).map(function(c){return'<option value="'+c.id+'" '+(row.credVal===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';}).join(''):'';
-      var credOpts='<option value="">— Credential —</option>'+toolCreds+'<option value="own" '+(row.credVal==='own'?'selected':'')+'>Own / separate login</option><option value="new" '+(row.credVal==='new'?'selected':'')+'>+ Add new credential</option>';
-      return '<div class="batch-row"><div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'+(batchRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'">&#10005; Remove</button>':'')+'</div><div class="batch-row-fields"><div class="bfl"><label>Tool</label><div style="display:flex;gap:6px"><select class="batch-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select><button class="add-tool-inline" title="Add new tool">+</button></div></div><div class="bfl"><label>Access type</label><select class="batch-atype" data-rid="'+row.id+'"><option value="individual" '+(row.accessType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(row.accessType==='shared'?'selected':'')+'>Shared</option></select></div><div class="bfl"><label>Credential</label><select class="batch-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div></div>'+(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="batch-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Their personal login"></div>':'')+(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to the credentials masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username / email</label><input type="text" class="batch-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="batch-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')+'</div>';
-    }).join('');
-    container.querySelectorAll('.batch-rm').forEach(function(b){b.addEventListener('click',function(){removeBatchRow(b.getAttribute('data-rid'));});});
-    container.querySelectorAll('.batch-tool').forEach(function(s){s.addEventListener('change',function(){var r=batchRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r){r.toolName=s.value;r.credVal='';}renderBatchRows();});});
-    container.querySelectorAll('.batch-atype').forEach(function(s){s.addEventListener('change',function(){var r=batchRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.accessType=s.value;});});
-    container.querySelectorAll('.batch-cred').forEach(function(s){s.addEventListener('change',function(){var r=batchRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.credVal=s.value;renderBatchRows();});});
-    container.querySelectorAll('.batch-own').forEach(function(i){i.addEventListener('input',function(){var r=batchRows.find(function(r){return r.id===i.getAttribute('data-rid');});if(r)r.ownLogin=i.value;});});
-    container.querySelectorAll('.batch-newuser').forEach(function(i){i.addEventListener('input',function(){var r=batchRows.find(function(r){return r.id===i.getAttribute('data-rid');});if(r)r.newCredUser=i.value;});});
-    container.querySelectorAll('.batch-newtype').forEach(function(s){s.addEventListener('change',function(){var r=batchRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.newCredType=s.value;});});
-    container.querySelectorAll('.add-tool-inline').forEach(function(b){b.addEventListener('click',function(){openAddToolModal();});});
+  function addBatchRow(){
+    batchRows.push({id:uid(), toolName:'', creds:[{id:uid(), credVal:'', accessType:'individual', ownLogin:'', newCredUser:'', newCredType:'individual'}]});
+    renderBatchRows();
   }
+
+  function removeBatchRow(rowId){
+    batchRows = batchRows.filter(function(r){return r.id!==rowId;});
+    renderBatchRows();
+  }
+
+  function addCredToRow(rowId){
+    var row = batchRows.find(function(r){return r.id===rowId;});
+    if(row) row.creds.push({id:uid(), credVal:'', accessType:'individual', ownLogin:'', newCredUser:'', newCredType:'individual'});
+    renderBatchRows();
+  }
+
+  function removeCredFromRow(rowId, credId){
+    var row = batchRows.find(function(r){return r.id===rowId;});
+    if(row && row.creds.length > 1) row.creds = row.creds.filter(function(c){return c.id!==credId;});
+    renderBatchRows();
+  }
+
+  function renderBatchRows(){
+    var container = document.getElementById('batchRowsContainer');
+    if(!batchRows.length){
+      container.innerHTML = '<div style="text-align:center;padding:1rem;color:#94A3B8;font-size:13px">Click &quot;+ Add another tool&quot; below to begin.</div>';
+      return;
+    }
+    var tools = getAllTools();
+    container.innerHTML = batchRows.map(function(row, idx){
+      var toolCreds = row.toolName
+        ? credentials.filter(function(c){return c.tool_name===row.toolName;})
+        : [];
+
+      var credRowsHtml = row.creds.map(function(cr, ci){
+        var credOpts = '<option value="">— Credential —</option>'
+          + toolCreds.map(function(c){return '<option value="'+c.id+'" '+(cr.credVal===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';}).join('')
+          + '<option value="own" '+(cr.credVal==='own'?'selected':'')+'>Own / separate login</option>'
+          + '<option value="new" '+(cr.credVal==='new'?'selected':'')+'>+ Add new credential</option>';
+
+        return '<div class="batch-cred-row" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'">'
+          + '<div class="batch-cred-row-hdr">'
+          + '<span style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.05em">Credential '+(ci+1)+'</span>'
+          + (row.creds.length>1 ? '<button class="cred-row-rm" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'">&#10005;</button>' : '')
+          + '</div>'
+          + '<div class="batch-row-fields">'
+          + '<div class="bfl"><label>Credential</label>'
+          + '<select class="batch-cred-sel" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'" '+(row.toolName?'':'disabled')+'>'
+          + credOpts
+          + '</select></div>'
+          + '<div class="bfl"><label>Access type</label>'
+          + '<select class="batch-atype-sel" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'">'
+          + '<option value="individual" '+(cr.accessType==='individual'?'selected':'')+'>Individual</option>'
+          + '<option value="shared" '+(cr.accessType==='shared'?'selected':'')+'>Shared</option>'
+          + '</select></div>'
+          + '</div>'
+          + (cr.credVal==='own'
+            ? '<div class="bfl" style="margin-top:6px"><label>Own login username</label>'
+              + '<input type="text" class="batch-own-inp" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'" value="'+eh(cr.ownLogin)+'" placeholder="Their personal login for this tool"></div>'
+            : '')
+          + (cr.credVal==='new'
+            ? '<div class="batch-new-cred"><div class="ibox" style="margin-bottom:6px">New credential will be saved to the masterlist.</div>'
+              + '<div class="batch-row-fields">'
+              + '<div class="bfl"><label>Username / email</label><input type="text" class="batch-newuser-inp" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'" value="'+eh(cr.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div>'
+              + '<div class="bfl"><label>Type</label><select class="batch-newtype-sel" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'"><option value="individual" '+(cr.newCredType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(cr.newCredType==='shared'?'selected':'')+'>Shared</option></select></div>'
+              + '</div></div>'
+            : '')
+          + '</div>';
+      }).join('');
+
+      return '<div class="batch-row" id="brow_'+row.id+'">'
+        + '<div class="batch-row-hdr">'
+        + '<span class="batch-row-num">Tool '+(idx+1)+'</span>'
+        + (batchRows.length>1 ? '<button class="batch-rm" data-rid="'+row.id+'">&#10005; Remove tool</button>' : '')
+        + '</div>'
+        // Tool selector
+        + '<div class="bfl" style="margin-bottom:10px">'
+        + '<label>Tool</label>'
+        + '<div style="display:flex;gap:6px">'
+        + '<select class="batch-tool-sel" data-rid="'+row.id+'">'
+        + '<option value="">— Select tool —</option>'
+        + tools.map(function(t){return '<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')
+        + '</select>'
+        + '<button class="add-tool-inline" data-rid="'+row.id+'" title="Add new tool to list">+</button>'
+        + '</div>'
+        + (row.toolName ? '' : '<div style="font-size:11px;color:#94A3B8;margin-top:4px">Select a tool to assign credentials below</div>')
+        + '</div>'
+        // Credentials section
+        + '<div class="batch-creds-section">'
+        + credRowsHtml
+        + (row.toolName
+            ? '<button class="btn-add-cred-row" data-rid="'+row.id+'">+ Add another credential for '+eh(row.toolName)+'</button>'
+            : '')
+        + '</div>'
+        + '</div>';
+    }).join('');
+
+    // Wire tool selector
+    container.querySelectorAll('.batch-tool-sel').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var row = batchRows.find(function(r){return r.id===sel.getAttribute('data-rid');});
+        if(!row) return;
+        row.toolName = sel.value;
+        // Reset all cred selections when tool changes
+        row.creds.forEach(function(cr){cr.credVal=''; cr.ownLogin=''; cr.newCredUser='';});
+        renderBatchRows();
+      });
+    });
+
+    // Wire add-tool-inline button
+    container.querySelectorAll('.add-tool-inline').forEach(function(b){
+      b.addEventListener('click', function(){openAddToolModal();});
+    });
+
+    // Wire remove tool row
+    container.querySelectorAll('.batch-rm').forEach(function(b){
+      b.addEventListener('click', function(){removeBatchRow(b.getAttribute('data-rid'));});
+    });
+
+    // Wire add credential to row
+    container.querySelectorAll('.btn-add-cred-row').forEach(function(b){
+      b.addEventListener('click', function(){addCredToRow(b.getAttribute('data-rid'));});
+    });
+
+    // Wire remove credential row
+    container.querySelectorAll('.cred-row-rm').forEach(function(b){
+      b.addEventListener('click', function(){removeCredFromRow(b.getAttribute('data-row-id'), b.getAttribute('data-cred-id'));});
+    });
+
+    // Wire credential selectors
+    container.querySelectorAll('.batch-cred-sel').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var row = batchRows.find(function(r){return r.id===sel.getAttribute('data-row-id');});
+        if(!row) return;
+        var cr = row.creds.find(function(c){return c.id===sel.getAttribute('data-cred-id');});
+        if(cr) cr.credVal = sel.value;
+        renderBatchRows();
+      });
+    });
+
+    // Wire access type
+    container.querySelectorAll('.batch-atype-sel').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var row = batchRows.find(function(r){return r.id===sel.getAttribute('data-row-id');});
+        if(!row) return;
+        var cr = row.creds.find(function(c){return c.id===sel.getAttribute('data-cred-id');});
+        if(cr) cr.accessType = sel.value;
+      });
+    });
+
+    // Wire own login input
+    container.querySelectorAll('.batch-own-inp').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        var row = batchRows.find(function(r){return r.id===inp.getAttribute('data-row-id');});
+        if(!row) return;
+        var cr = row.creds.find(function(c){return c.id===inp.getAttribute('data-cred-id');});
+        if(cr) cr.ownLogin = inp.value;
+      });
+    });
+
+    // Wire new cred username
+    container.querySelectorAll('.batch-newuser-inp').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        var row = batchRows.find(function(r){return r.id===inp.getAttribute('data-row-id');});
+        if(!row) return;
+        var cr = row.creds.find(function(c){return c.id===inp.getAttribute('data-cred-id');});
+        if(cr) cr.newCredUser = inp.value;
+      });
+    });
+
+    // Wire new cred type
+    container.querySelectorAll('.batch-newtype-sel').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var row = batchRows.find(function(r){return r.id===sel.getAttribute('data-row-id');});
+        if(!row) return;
+        var cr = row.creds.find(function(c){return c.id===sel.getAttribute('data-cred-id');});
+        if(cr) cr.newCredType = sel.value;
+      });
+    });
+  }
+
   function saveBatchAccess(){
-    var memberId=document.getElementById('batchMemberSel').value;
+    var memberId = document.getElementById('batchMemberSel').value;
     if(!memberId){showErr('batchErr','Please select a member.');return;}
     if(!batchRows.length){showErr('batchErr','Add at least one tool.');return;}
 
-    // Validate all rows filled
-    for(var i=0;i<batchRows.length;i++){
-      var r=batchRows[i];
-      if(!r.toolName){showErr('batchErr','Tool '+(i+1)+' needs a tool selection.');return;}
-      if(!r.credVal){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential selection.');return;}
-      if(r.credVal==='new'&&!r.newCredUser.trim()){showErr('batchErr','Tool '+(i+1)+' ('+r.toolName+') needs a credential username.');return;}
+    // Validate all rows
+    for(var i=0; i<batchRows.length; i++){
+      var row = batchRows[i];
+      if(!row.toolName){showErr('batchErr','Tool '+(i+1)+' — please select a tool.');return;}
+      for(var j=0; j<row.creds.length; j++){
+        var cr = row.creds[j];
+        var label = 'Tool '+(i+1)+' ('+row.toolName+'), Credential '+(j+1);
+        if(!cr.credVal){showErr('batchErr',label+' — please select a credential.');return;}
+        if(cr.credVal==='new'&&!cr.newCredUser.trim()){showErr('batchErr',label+' — please enter a username for the new credential.');return;}
+      }
     }
 
-    // ── DUPLICATE CHECK: only flag if exact same tool + same credential ──
-    var m=getMember(memberId);
-    var dupes=[];
-    var rowsToSave=[];
-    batchRows.forEach(function(r){
-      // Resolve the credential ID being added
-      var newCredId=null;
-      if(r.credVal&&r.credVal!=='own'&&r.credVal!=='new'){newCredId=r.credVal;}
-      // Find exact match: same member, same tool, same cred
-      var exactDupe=access.find(function(a){
-        if(a.member_id!==memberId||a.tool_name!==r.toolName)return false;
-        if(r.credVal==='own'){
-          // Own login: dupe only if also own login
-          return a.cred_type==='own';
+    // Duplicate check — only block exact same tool + same credential
+    var m = getMember(memberId);
+    var dupes = [], rowsToSave = [];
+    batchRows.forEach(function(row){
+      var credsToSave = [];
+      row.creds.forEach(function(cr){
+        var newCredId = (cr.credVal && cr.credVal!=='own' && cr.credVal!=='new') ? cr.credVal : null;
+        var exactDupe = access.find(function(a){
+          if(a.member_id!==memberId || a.tool_name!==row.toolName) return false;
+          if(cr.credVal==='own') return a.cred_type==='own';
+          if(newCredId) return a.cred_id===newCredId;
+          return false;
+        });
+        if(exactDupe){
+          var ec = exactDupe.cred_id ? getCred(exactDupe.cred_id) : null;
+          var el = exactDupe.cred_type==='own' ? 'own login' : (ec ? ec.username : 'this credential');
+          dupes.push(row.toolName+' with "'+el+'"');
+        } else {
+          credsToSave.push(cr);
         }
-        if(newCredId){
-          // Specific credential: dupe only if same cred_id
-          return a.cred_id===newCredId;
-        }
-        return false;
       });
-      if(exactDupe){
-        var ec=exactDupe.cred_id?getCred(exactDupe.cred_id):null;
-        var el=exactDupe.cred_type==='own'?'own login':(ec?ec.username:'this credential');
-        dupes.push(r.toolName+' with "'+el+'" — exact duplicate');
-      } else {
-        rowsToSave.push(r);
-      }
+      if(credsToSave.length) rowsToSave.push(Object.assign({}, row, {creds: credsToSave}));
     });
 
-    if(dupes.length>0 && rowsToSave.length>0){
-      var msg='Duplicate access detected for '+(m?m.name:'this member')+':\n\n'
-        +dupes.map(function(d){return '• '+d;}).join('\n')
-        +'\n\nClick OK to skip the duplicates and save the remaining '
-        +rowsToSave.length+' new entr'+(rowsToSave.length===1?'y':'ies')+'.'
-        +'\nClick Cancel to go back and edit.';
-      if(!confirm(msg)){return;}
-      batchRows=rowsToSave;
+    if(dupes.length > 0 && rowsToSave.length > 0){
+      var totalNew = rowsToSave.reduce(function(acc,r){return acc+r.creds.length;},0);
+      if(!confirm('Duplicate access detected — skipping:\n\n'
+        + dupes.map(function(d){return '• '+d;}).join('\n')
+        + '\n\nSave the remaining '+totalNew+' new entr'+(totalNew===1?'y':'ies')+'?\n\nCancel to go back and fix.'))
+        return;
+      batchRows = rowsToSave;
       showToast(dupes.length+' duplicate'+(dupes.length>1?'s':'')+' skipped','warn');
-    } else if(dupes.length>0 && rowsToSave.length===0){
-      showErr('batchErr','Cannot save — all selected tools already have access assigned for '+(m?m.name:'this member')+':\n'+dupes.map(function(d){return '• '+d;}).join(', '));
+    } else if(dupes.length > 0 && rowsToSave.length === 0){
+      showErr('batchErr','All selected credentials already exist for this member. Nothing to save.');
       return;
     }
 
-    if(!batchRows.length){showErr('batchErr','No new entries to save after removing duplicates.');return;}
+    if(!batchRows.length){showErr('batchErr','No new entries to save.');return;}
 
     showErr('batchErr','');
     setLoading(true);
 
-    var newCreds=batchRows.filter(function(r){return r.credVal==='new';}).map(function(r){
-      return{id:uid(),tool_name:r.toolName,username:r.newCredUser.trim(),type:r.newCredType,_rowId:r.id};
+    // Collect all new credentials to create first
+    var newCredsToCreate = [];
+    batchRows.forEach(function(row){
+      row.creds.forEach(function(cr){
+        if(cr.credVal==='new'){
+          newCredsToCreate.push({id:uid(), tool_name:row.toolName, username:cr.newCredUser.trim(), type:cr.newCredType, _rowId:row.id, _credId:cr.id});
+        }
+      });
     });
-    var credSave=newCreds.length
-      ?Promise.all(newCreds.map(function(nc){return sbInsert('credentials',{id:nc.id,tool_name:nc.tool_name,username:nc.username,type:nc.type}).then(function(){return nc;});}))
-      :Promise.resolve([]);
+
+    var credSave = newCredsToCreate.length
+      ? Promise.all(newCredsToCreate.map(function(nc){
+          return sbInsert('credentials',{id:nc.id,tool_name:nc.tool_name,username:nc.username,type:nc.type})
+            .then(function(){return nc;});
+        }))
+      : Promise.resolve([]);
 
     credSave.then(function(saved){
-      var credMap={};(saved||[]).forEach(function(nc){credMap[nc._rowId]=nc.id;});
-      var date=new Date().toISOString().split('T')[0];
-      var entries=batchRows.map(function(r){
-        var credId=null,credType='own';
-        if(r.credVal==='own'){credType='own';}
-        else if(r.credVal==='new'){credId=credMap[r.id];credType='masterlist';}
-        else{credId=r.credVal;credType='masterlist';}
-        return{id:uid(),member_id:memberId,tool_name:r.toolName,access_type:r.accessType,
-          cred_id:credId||null,cred_type:credType,
-          own_login:r.credVal==='own'?r.ownLogin:null,
-          date:date,added_by:currentUser?currentUser.name:''};
+      // Map newly created creds back
+      var credMap = {};
+      (saved||[]).forEach(function(nc){credMap[nc._rowId+'__'+nc._credId] = nc.id;});
+
+      var date = new Date().toISOString().split('T')[0];
+      var entries = [];
+
+      batchRows.forEach(function(row){
+        row.creds.forEach(function(cr){
+          var credId = null, credType = 'own';
+          if(cr.credVal==='own'){ credType='own'; }
+          else if(cr.credVal==='new'){ credId=credMap[row.id+'__'+cr.id]; credType='masterlist'; }
+          else { credId=cr.credVal; credType='masterlist'; }
+          entries.push({
+            id: uid(),
+            member_id: memberId,
+            tool_name: row.toolName,
+            access_type: cr.accessType,
+            cred_id: credId||null,
+            cred_type: credType,
+            own_login: cr.credVal==='own' ? cr.ownLogin : null,
+            date: date,
+            added_by: currentUser ? currentUser.name : ''
+          });
+        });
       });
-      return Promise.all(entries.map(function(e){return sbInsert('access_entries',e);}));
-    }).then(function(){
-      return Promise.all([sbGet('access_entries'),sbGet('credentials')]);
-    }).then(function(r){
-      access=Array.isArray(r[0])?r[0]:[];
-      credentials=Array.isArray(r[1])?r[1]:[];
-      var count=batchRows.length;
-      setLoading(false);
-      document.getElementById('batchModal').style.display='none';
-      batchRows=[];
-      renderByMember();renderDashboard();
-      showToast(count+' entr'+(count===1?'y':'ies')+' saved');
+
+      return Promise.all(entries.map(function(entry){return sbInsert('access_entries',entry);}))
+        .then(function(){return entries.length;});
+    }).then(function(count){
+      return Promise.all([sbGet('access_entries'),sbGet('credentials')]).then(function(r){
+        access = Array.isArray(r[0]) ? r[0] : [];
+        credentials = Array.isArray(r[1]) ? r[1] : [];
+        setLoading(false);
+        document.getElementById('batchModal').style.display='none';
+        batchRows=[];
+        renderByMember(); renderDashboard();
+        showToast(count+' access entr'+(count===1?'y':'ies')+' saved');
+      });
     }).catch(function(err){
       setLoading(false);
       showErr('batchErr','Error saving. Please try again.');
       console.error(err);
     });
   }
-
 
   function rebuildMemberDropdowns(){var sel=document.getElementById('batchMemberSel');if(!sel)return;var cur=sel.value;sel.innerHTML='<option value="">— Select member —</option>'+members.filter(function(m){return(m.status||'Active')==='Active';}).map(function(m){return'<option value="'+m.id+'">'+eh(m.name)+' ('+eh(m.dept)+')</option>';}).join('');sel.value=cur;}
 
