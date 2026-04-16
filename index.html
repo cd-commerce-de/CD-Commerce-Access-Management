@@ -164,7 +164,7 @@ tr:hover td{background:#FAFBFC}
 .td-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .td-field label{font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:3px}
 .td-field .td-val{font-size:13px;color:#0F172A;font-weight:500}
-.td-user-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #F1F5F9;font-size:12px}
+.td-user-row{display:flex;align-items:center;gap:8px;padding:6px 0 6px 12px;border-bottom:1px solid #F8FAFC;font-size:12px}.td-user-row:last-child{border-bottom:none}.td-cred-group{margin-bottom:12px;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden}.td-cred-group:last-child{margin-bottom:0}.td-cred-group-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#F8FAFC;border-bottom:1px solid #E2E8F0;font-size:12px;font-weight:600;color:#334155}.td-cred-count{margin-left:auto;font-size:11px;color:#94A3B8;font-weight:500}
 .td-user-row:last-child{border-bottom:none}
 /* MEMBER DETAIL */
 .detail-hdr{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid #F1F5F9}
@@ -530,7 +530,7 @@ tr:hover td{background:#FAFBFC}
 
   function memberDashRow(m){
     var st=m.status||'Active';
-    var ua=access.filter(function(a){return a.member_id===m.id;});
+    var ua=access.filter(function(a){return a.member_id===m.id;}).slice().sort(function(a,b){return a.tool_name.localeCompare(b.tool_name);});
     var chips=ua.map(function(a){return'<span class="dash-tool-chip">'+eh(a.tool_name)+'<button class="chip-rm" data-aid="'+a.id+'" data-mname="'+eh(m.name)+'" data-tname="'+eh(a.tool_name)+'">&#10005;</button></span>';}).join('');
     return'<div class="dash-row"><div class="member-click" data-mid="'+m.id+'"><div class="av-sm '+(st==='Offboarded'?'av-off':'')+'">'+eh(m.initials)+'</div><div><div class="dash-name">'+eh(m.name)+'</div><div class="dash-sub">'+eh(m.dept)+'</div></div></div><div class="dash-tools">'+(chips||'<span class="no-access">No access recorded</span>')+'</div><div class="dash-count-wrap"><span class="st-pill st-'+st.toLowerCase().replace(' ','-')+'">'+eh(st)+'</span><span class="dash-count">'+ua.length+' tool'+(ua.length!==1?'s':'')+'</span><button class="add-access-btn" data-mid="'+m.id+'">+ Add access</button></div></div>';
   }
@@ -704,16 +704,51 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('tdSub').textContent=info.sub_model||'—';
     document.getElementById('tdOwner').textContent=info.owner||'—';
     document.getElementById('tdNotes').textContent=info.notes||'—';
+
     var userList=document.getElementById('tdUsers');
-    userList.innerHTML=!users.length?'<span class="no-access">No access recorded</span>':users.map(function(a){var m=getMember(a.member_id);var c=a.cred_id?getCred(a.cred_id):null;return '<div class="td-user-row"><div class="av-sm" style="width:24px;height:24px;font-size:9px">'+(m?eh(m.initials):'?')+'</div><span>'+(m?eh(m.name):'Unknown')+'</span><span class="cred-badge '+(a.access_type==='shared'?'shared':'indiv')+'">'+eh(a.access_type)+'</span>'+(c?'<span style="font-size:11px;color:#64748B">'+eh(c.username)+'</span>':'')+'</div>';}).join('');
+    if(!users.length){
+      userList.innerHTML='<span class="no-access">No access recorded</span>';
+    } else {
+      // Group by credential
+      var credGroups={};  // key: cred_id or 'own'
+      users.forEach(function(a){
+        var key=a.cred_type==='own'?'__own__':(a.cred_id||'__none__');
+        if(!credGroups[key])credGroups[key]=[];
+        credGroups[key].push(a);
+      });
+
+      var html='';
+      Object.keys(credGroups).forEach(function(key){
+        var entries=credGroups[key];
+        var c=key!=='__own__'&&key!=='__none__'?getCred(key):null;
+        var credLabel=key==='__own__'
+          ?'Own / individual login'
+          :(c?c.username+' <span class="cred-badge '+(c.type==='shared'?'shared':'indiv')+'">'+eh(c.type)+'</span>':'Unknown credential');
+        var ownerLabel=c&&c.owner?'<span style="font-size:11px;color:#D97757;font-weight:600;margin-left:6px">'+eh(c.owner)+'</span>':'';
+
+        html+='<div class="td-cred-group">'
+          +'<div class="td-cred-group-hdr">'+credLabel+ownerLabel
+          +'<span class="td-cred-count">'+entries.length+' user'+(entries.length!==1?'s':'')+'</span>'
+          +'</div>'
+          +entries.map(function(a){
+            var m=getMember(a.member_id);
+            return '<div class="td-user-row">'
+              +'<div class="av-sm" style="width:26px;height:26px;font-size:10px;flex-shrink:0">'+(m?eh(m.initials):'?')+'</div>'
+              +'<span style="font-weight:500">'+(m?eh(m.name):'Unknown')+'</span>'
+              +(m?'<span style="font-size:11px;color:#94A3B8">'+eh(m.dept)+'</span>':'')
+              +'</div>';
+          }).join('')
+          +'</div>';
+      });
+      userList.innerHTML=html;
+    }
     document.getElementById('toolDetailModal').style.display='flex';
   }
 
-  // ── MEMBER DETAIL MODAL ──
   function openMemberDetailModal(memberId){
     var m=getMember(memberId);if(!m)return;
     document.getElementById('memberDetailModal').setAttribute('data-mid',memberId);
-    var ua=access.filter(function(a){return a.member_id===m.id;});
+    var ua=access.filter(function(a){return a.member_id===m.id;}).slice().sort(function(a,b){return a.tool_name.localeCompare(b.tool_name);});
     var st=m.status||'Active';
     document.getElementById('detailMemberName').textContent=m.name;
     document.getElementById('detailMemberSub').textContent=m.dept+' · '+m.email;
@@ -733,7 +768,7 @@ tr:hover td{background:#FAFBFC}
   // ── OFFBOARDING ──
   function offboardMember(memberId){
     var m=getMember(memberId);if(!m)return;
-    var ua=access.filter(function(a){return a.member_id===m.id;});
+    var ua=access.filter(function(a){return a.member_id===m.id;}).slice().sort(function(a,b){return a.tool_name.localeCompare(b.tool_name);});
     var toolList=ua.map(function(a){return '• '+a.tool_name;}).join('\n');
     var msg='Offboard '+m.name+'?\n\nThey currently have access to:\n\n'+(toolList||'(no tools)')+'\n\nClick OK to continue.';
     if(!confirm(msg))return;
