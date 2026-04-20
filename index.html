@@ -365,15 +365,10 @@ tr:hover td{background:#FAFBFC}
   // ── BOOT / SESSION ──
   function boot(){
     setLoading(true);
+    // Legacy localStorage reads — data will be migrated to Supabase on first loadAllData
     try{var s=localStorage.getItem('cd_custom_tools');if(s)customTools=JSON.parse(s);}catch(e){}
-    // Load tool info overrides (edits on catalogue tools) and custom tool metadata
     try{var ov=localStorage.getItem('cd_tool_overrides');if(ov)toolOverrides=JSON.parse(ov)||{};}catch(e){toolOverrides={};}
     try{var ci=localStorage.getItem('cd_custom_tool_info');if(ci)customToolInfo=JSON.parse(ci)||{};}catch(e){customToolInfo={};}
-    // Apply catalogue overrides so every render sees the edits
-    TOOL_CATALOGUE.forEach(function(t,i){
-      var key=(t.name||'').toLowerCase();
-      if(toolOverrides[key]){TOOL_CATALOGUE[i]=Object.assign({},t,toolOverrides[key]);}
-    });
     var savedSession=null;
     try{var ss=localStorage.getItem('cd_session');if(ss)savedSession=JSON.parse(ss);}catch(e){}
     sbGet('allowed_users').then(function(data){
@@ -444,15 +439,116 @@ tr:hover td{background:#FAFBFC}
     if(!confirm('Sign out?'))return;
     try{localStorage.removeItem('cd_session');}catch(e){}
     currentUser=null;members=[];credentials=[];access=[];allowedUsers=[];
+    toolOverrides={};customToolInfo={};customTools=[];applyOverridesToCatalogue();
     document.getElementById('app').style.display='none';
     document.getElementById('loginScreen').style.display='flex';
     document.getElementById('inpEmail').value='';document.getElementById('inpName').value='';
     document.getElementById('errMsg').style.display='none';
   }
 
+  // ── TOOL STATE HELPERS ──
+  var ORIGINAL_TOOL_CATALOGUE = TOOL_CATALOGUE.map(function(t){return Object.assign({},t);});
+  function applyOverridesToCatalogue(){
+    // Reset to originals, then overlay overrides (so un-editing works)
+    TOOL_CATALOGUE.length = 0;
+    ORIGINAL_TOOL_CATALOGUE.forEach(function(t){
+      var key = (t.name||'').toLowerCase();
+      if(toolOverrides[key]){
+        TOOL_CATALOGUE.push(Object.assign({}, t, toolOverrides[key]));
+      } else {
+        TOOL_CATALOGUE.push(Object.assign({}, t));
+      }
+    });
+  }
+  function rebuildCustomTools(){
+    customTools = Object.keys(customToolInfo).map(function(k){return customToolInfo[k].name;});
+  }
+  // Find override row for a currently-displayed name (handles renames)
+  function findOverrideForCurrentName(currentName){
+    if(!currentName) return null;
+    var k = currentName.toLowerCase();
+    if(toolOverrides[k]) return {key:k, row:toolOverrides[k]};
+    for(var ok in toolOverrides){
+      if((toolOverrides[ok].name||'').toLowerCase() === k) return {key:ok, row:toolOverrides[ok]};
+    }
+    return null;
+  }
+  // Find custom-tool row by current display name
+  function findCustomForCurrentName(currentName){
+    if(!currentName) return null;
+    var k = currentName.toLowerCase();
+    if(customToolInfo[k]) return {key:k, row:customToolInfo[k]};
+    for(var ck in customToolInfo){
+      if((customToolInfo[ck].name||'').toLowerCase() === k) return {key:ck, row:customToolInfo[ck]};
+    }
+    return null;
+  }
+
+  // Fetch tool_overrides + custom_tools from Supabase, migrate any legacy localStorage data, apply to catalogue
+  function loadToolsFromSupabase(){
+    // Snapshot legacy (localStorage-loaded) state before we overwrite
+    var legacyOverrides = toolOverrides || {};
+    var legacyCustomInfo = customToolInfo || {};
+    var legacyCustomNames = (customTools||[]).slice();
+    return Promise.all([sbGet('tool_overrides'), sbGet('custom_tools')]).then(function(r){
+      var overridesRows = Array.isArray(r[0])?r[0]:[];
+      var customRows = Array.isArray(r[1])?r[1]:[];
+      // Rebuild maps from server as source of truth
+      toolOverrides = {};
+      overridesRows.forEach(function(row){
+        if(row && row.original_name) toolOverrides[row.original_name.toLowerCase()] = row;
+      });
+      customToolInfo = {};
+      customRows.forEach(function(row){
+        if(row && row.name) customToolInfo[row.name.toLowerCase()] = row;
+      });
+      // Migration: push any local-only legacy entries to Supabase (server wins on conflict — we skip)
+      var migrations = [];
+      Object.keys(legacyOverrides).forEach(function(k){
+        if(!toolOverrides[k]){
+          var l = legacyOverrides[k] || {};
+          var payload = {id:uid(), original_name:k, name:l.name||k, category:l.category||'', dept:l.dept||'', url:l.url||'', paid_free:l.paid_free||'', cost:l.cost||'', sub_model:l.sub_model||'', owner:l.owner||'', notes:l.notes||''};
+          migrations.push(sbInsert('tool_overrides', payload).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            toolOverrides[k] = saved || payload;
+          }).catch(function(){/* ignore, will retry next boot */}));
+        }
+      });
+      Object.keys(legacyCustomInfo).forEach(function(k){
+        if(!customToolInfo[k]){
+          var l = legacyCustomInfo[k] || {};
+          var payload = {id:uid(), name:l.name||k, category:l.category||'', dept:l.dept||'', url:l.url||'', paid_free:l.paid_free||'', cost:l.cost||'', sub_model:l.sub_model||'', owner:l.owner||'', notes:l.notes||''};
+          migrations.push(sbInsert('custom_tools', payload).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            if(saved && saved.name) customToolInfo[saved.name.toLowerCase()] = saved;
+          }).catch(function(){}));
+        }
+      });
+      // Also migrate bare custom tool names (no info)
+      legacyCustomNames.forEach(function(n){
+        var k = n.toLowerCase();
+        if(!customToolInfo[k] && !legacyCustomInfo[k]){
+          var payload = {id:uid(), name:n, category:'', dept:'', url:'', paid_free:'', cost:'', sub_model:'', owner:'', notes:''};
+          migrations.push(sbInsert('custom_tools', payload).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            if(saved && saved.name) customToolInfo[saved.name.toLowerCase()] = saved;
+          }).catch(function(){}));
+        }
+      });
+      return Promise.all(migrations).then(function(){
+        // Clear legacy localStorage keys now that data is on the server
+        try{localStorage.removeItem('cd_tool_overrides');}catch(e){}
+        try{localStorage.removeItem('cd_custom_tool_info');}catch(e){}
+        try{localStorage.removeItem('cd_custom_tools');}catch(e){}
+        applyOverridesToCatalogue();
+        rebuildCustomTools();
+      });
+    });
+  }
+
   function loadAllData(){
     setLoading(true);showToast('Loading...');
-    Promise.all([sbGet('members'),sbGet('credentials'),sbGet('access_entries'),sbGet('allowed_users')])
+    Promise.all([sbGet('members'),sbGet('credentials'),sbGet('access_entries'),sbGet('allowed_users'),loadToolsFromSupabase()])
     .then(function(r){
       members=Array.isArray(r[0])?r[0]:[];
       credentials=Array.isArray(r[1])?r[1]:[];
@@ -1165,8 +1261,20 @@ tr:hover td{background:#FAFBFC}
     var name=document.getElementById('newToolName').value.trim();
     if(!name){showErr('newToolErr','Enter a tool name.');return;}
     if(getAllTools().find(function(t){return t.toLowerCase()===name.toLowerCase();})){showErr('newToolErr','Tool already exists.');return;}
-    customTools.push(name);try{localStorage.setItem('cd_custom_tools',JSON.stringify(customTools));}catch(e){}
-    document.getElementById('addToolModal').style.display='none';renderToolList();showToast('"'+name+'" added');renderBatchRows();
+    setLoading(true);
+    var payload = {id:uid(), name:name, category:'', dept:'', url:'', paid_free:'', cost:'', sub_model:'', owner:'', notes:''};
+    sbInsert('custom_tools', payload).then(function(data){
+      var saved = Array.isArray(data)?data[0]:data;
+      if(saved && saved.name) customToolInfo[saved.name.toLowerCase()] = saved;
+      else customToolInfo[name.toLowerCase()] = payload;
+      rebuildCustomTools();
+      setLoading(false);
+      document.getElementById('addToolModal').style.display='none';
+      renderToolList();showToast('"'+name+'" added');renderBatchRows();
+    }).catch(function(){
+      setLoading(false);
+      showErr('newToolErr','Could not save (server error).');
+    });
   }
 
   // ── GROUP ACCESS ──
@@ -1577,42 +1685,76 @@ tr:hover td{background:#FAFBFC}
       owner: document.getElementById('teOwner').value.trim(),
       notes: document.getElementById('teNotes').value.trim()
     };
-    var origKey = (editingToolName||'').toLowerCase();
+    var origDisplayKey = (editingToolName||'').toLowerCase();
     var newKey = name.toLowerCase();
-    // Block renaming into an existing tool to avoid collisions
-    if(origKey!==newKey){
-      var collision = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===newKey;}) || customTools.find(function(n){return n.toLowerCase()===newKey;});
-      if(collision){showErr('teErr','A tool with that name already exists.');return;}
-    }
-    var idx = TOOL_CATALOGUE.findIndex(function(t){return t.name.toLowerCase()===origKey;});
-    try{
-      if(idx > -1){
-        // Catalogue tool → merge in memory + persist override keyed by ORIGINAL name
-        TOOL_CATALOGUE[idx] = Object.assign({}, TOOL_CATALOGUE[idx], updated);
-        toolOverrides[origKey] = Object.assign({}, toolOverrides[origKey]||{}, updated);
-        localStorage.setItem('cd_tool_overrides', JSON.stringify(toolOverrides));
-      } else {
-        // Custom tool → persist full info + update name in customTools if renamed
-        if(origKey && origKey!==newKey){
-          delete customToolInfo[origKey];
-          var ci = customTools.findIndex(function(n){return n.toLowerCase()===origKey;});
-          if(ci > -1) customTools[ci] = name;
-        } else if(!origKey){
-          // Shouldn't happen via modal, but be safe
-          if(!customTools.find(function(n){return n.toLowerCase()===newKey;})) customTools.push(name);
-        }
-        customToolInfo[newKey] = updated;
-        localStorage.setItem('cd_custom_tools', JSON.stringify(customTools));
-        localStorage.setItem('cd_custom_tool_info', JSON.stringify(customToolInfo));
+
+    // Determine tool type: catalogue (is in TOOL_CATALOGUE under current name) vs custom
+    var catalogueHit = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===origDisplayKey;});
+    var customHit = findCustomForCurrentName(editingToolName);
+    var isCatalogue = !!catalogueHit && !customHit;
+
+    // Collision check on rename
+    if(origDisplayKey !== newKey){
+      var catCollide = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===newKey;});
+      var customCollide = customToolInfo[newKey];
+      // Allow renaming into own row (shouldn't happen since keys differ, but safe)
+      if((catCollide && catCollide.name.toLowerCase()!==origDisplayKey) ||
+         (customCollide && (!customHit || customCollide !== customHit.row))){
+        showErr('teErr','A tool with that name already exists.');return;
       }
-    } catch(e){
-      showErr('teErr','Could not save (storage full or blocked). Try removing old entries.');
-      return;
     }
-    document.getElementById('toolEditModal').style.display='none';
-    renderToolList();
-    showToast('Tool info updated');
-    openToolDetailModal(name);
+
+    setLoading(true);
+    var p;
+    if(isCatalogue){
+      // Catalogue tool: upsert into tool_overrides, keyed by original_name
+      var existing = findOverrideForCurrentName(editingToolName);
+      if(existing && existing.row && existing.row.id){
+        var patch = Object.assign({}, updated); // original_name stays the same
+        p = sbUpdate('tool_overrides', existing.row.id, patch).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          toolOverrides[existing.key] = saved || Object.assign({}, existing.row, patch);
+        });
+      } else {
+        // No override yet — need to determine original_name from the catalogue entry
+        var origName = origDisplayKey; // current name === original name since no override exists yet
+        var payload = Object.assign({id:uid(), original_name:origName}, updated);
+        p = sbInsert('tool_overrides', payload).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          toolOverrides[origName] = saved || payload;
+        });
+      }
+    } else {
+      // Custom tool: upsert into custom_tools
+      if(customHit && customHit.row && customHit.row.id){
+        p = sbUpdate('custom_tools', customHit.row.id, updated).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          delete customToolInfo[customHit.key];
+          var newRow = saved || Object.assign({id:customHit.row.id}, updated);
+          customToolInfo[newRow.name.toLowerCase()] = newRow;
+        });
+      } else {
+        var payload2 = Object.assign({id:uid()}, updated);
+        p = sbInsert('custom_tools', payload2).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          var newRow = saved || payload2;
+          customToolInfo[newRow.name.toLowerCase()] = newRow;
+        });
+      }
+    }
+
+    p.then(function(){
+      applyOverridesToCatalogue();
+      rebuildCustomTools();
+      setLoading(false);
+      document.getElementById('toolEditModal').style.display='none';
+      renderToolList();
+      showToast('Tool info updated');
+      openToolDetailModal(name);
+    }).catch(function(e){
+      setLoading(false);
+      showErr('teErr','Could not save (server error). Check connection.');
+    });
   }
 
 
