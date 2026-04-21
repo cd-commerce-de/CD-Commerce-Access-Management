@@ -131,6 +131,22 @@ tr:hover td{background:#FAFBFC}
 .paid-badgefree{background:#D1FAE5;color:#065F46}
 .paid-badgepayperuse{background:#E0F2FE;color:#075985}
 .paid-badgefreemium{background:#EDE9FE;color:#5B21B6}
+/* TOOL STATUS DROPDOWN */
+.tool-status-sel{display:inline-block;padding:3px 22px 3px 9px;border-radius:100px;font-size:11px;font-weight:700;border:none;outline:none;cursor:pointer;font-family:Arial,sans-serif;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-repeat:no-repeat;background-position:right 6px center;background-size:9px}
+.tool-status-sel.st-sel-active{background-color:#D1FAE5;color:#065F46;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23065F46' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.tool-status-sel.st-sel-trial{background-color:#FEF3C7;color:#92400E;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%2392400E' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.tool-status-sel.st-sel-under-review{background-color:#DBEAFE;color:#1E40AF;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%231E40AF' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.tool-status-sel.st-sel-cancelled{background-color:#FEE2E2;color:#991B1B;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23991B1B' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.tool-status-sel:hover{filter:brightness(0.96)}
+.tool-status-sel:focus{box-shadow:0 0 0 2px rgba(217,119,87,0.25)}
+.tool-row.row-cancelled td:not(:last-child){opacity:0.55}
+.tool-row.row-cancelled .tool-name-link{text-decoration:line-through;text-decoration-color:#DC2626;text-decoration-thickness:1.5px}
+.tool-row.row-under-review td:first-child{border-left:3px solid #1E40AF}
+.td-status-pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700}
+.td-status-pill.active{background:#D1FAE5;color:#065F46}
+.td-status-pill.trial{background:#FEF3C7;color:#92400E}
+.td-status-pill.under-review{background:#DBEAFE;color:#1E40AF}
+.td-status-pill.cancelled{background:#FEE2E2;color:#991B1B}
 .cnt-link{cursor:pointer;font-weight:700;color:#D97757}
 .member-link{display:flex;align-items:center;gap:8px;cursor:pointer}
 .abtn{background:none;border:none;cursor:pointer;color:#94A3B8;font-size:13px;padding:2px 5px;border-radius:5px}
@@ -228,11 +244,11 @@ tr:hover td{background:#FAFBFC}
 <div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc"><div class="mc-l">Total Members</div><div class="mc-v" id="dash_members">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Total Tools</div><div class="mc-v" id="dash_tools">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Active Members</div><div class="mc-v" id="dash_active">0</div><div class="mc-hint">Click to filter &#8594;</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per Credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
 <div class="view" id="view_access"><div class="sec-hdr"><h2>Access Entries</h2><div class="sec-hdr-right"><button class="oblue" id="btnGroupAccess">&#128101; Group access</button><button class="oacc" id="btnAddAccess">+ Add access</button></div></div><div class="tbox"><table><thead><tr><th>Member</th><th>Tool</th><th>Credential</th><th>Access type</th><th>Added by</th><th></th></tr></thead><tbody id="accessTableBody"></tbody></table></div></div>
 <div class="view" id="view_members"><div class="sec-hdr"><h2>Team Members</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportMembers">&#8595; Import CSV</button><button class="oblue" id="btnExportMembersCSV">&#8593; CSV</button><button class="oblue" id="btnExportMembersXLSX">&#8593; Excel</button><button class="oacc" id="btnAddMember">+ Add member</button></div></div><div class="filter-bar"><input id="mfSearch" placeholder="&#128269; Search name, email, department..."><select id="mfDept"><option value="">All departments</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select><select id="mfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Access</th><th>Actions</th></tr></thead><tbody id="memberTableBody"></tbody></table></div></div>
-<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV">&#8593; CSV</button><button class="oblue" id="btnExportToolsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Owner <span style="font-weight:400;color:rgba(255,255,255,0.5);font-size:10px">click to edit</span></th><th>Users</th><th></th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
+<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV">&#8593; CSV</button><button class="oblue" id="btnExportToolsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select><select id="tfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Status</th><th>Owner <span style="font-weight:400;color:rgba(255,255,255,0.5);font-size:10px">click to edit</span></th><th>Users</th><th></th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
 <div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportCredentials">&#8595; Import CSV</button><button class="oblue" id="btnExportCredsCSV">&#8593; CSV</button><button class="oblue" id="btnExportCredsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddCred">+ Add credential</button></div></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by <span style="font-weight:400;color:rgba(255,255,255,0.5);font-size:10px">click to edit</span></th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
 <div class="view" id="view_users"><div class="sec-hdr"><div><h2>User Management</h2><p style="font-size:12px;color:#64748B;margin-top:3px">Only listed users can sign in.</p></div><button class="oacc" id="btnAddUser">+ Add user</button></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
 </div>
-<div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><div style="display:flex;gap:8px"><button class="mhdr-edit" id="btnEditToolFromDetail">&#9998; Edit</button><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
+<div class="mbg" id="toolDetailModal" style="display:none"><div class="modal wide"><div class="mhdr"><h2 id="tdName">Tool Details</h2><div style="display:flex;gap:8px"><button class="mhdr-edit" id="btnEditToolFromDetail">&#9998; Edit</button><button class="mhdr-close" id="btnCloseToolDetail">Close</button></div></div><div class="mbody"><div class="td-grid"><div class="td-field"><label>Category</label><div class="td-val" id="tdCategory"></div></div><div class="td-field"><label>Department</label><div class="td-val" id="tdDept"></div></div><div class="td-field"><label>URL</label><div class="td-val" id="tdURL"></div></div><div class="td-field"><label>Paid / Free</label><div class="td-val" id="tdPaid"></div></div><div class="td-field"><label>Status</label><div class="td-val" id="tdStatus"></div></div><div class="td-field"><label>Monthly Cost</label><div class="td-val" id="tdCost"></div></div><div class="td-field"><label>Subscription</label><div class="td-val" id="tdSub"></div></div><div class="td-field"><label>Owner / Manager</label><div class="td-val" id="tdOwner"></div></div></div><div class="td-field" style="margin-bottom:14px"><label>Primary Use / Notes</label><div class="td-val" id="tdNotes" style="color:#64748B;font-size:12px;line-height:1.6"></div></div><div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Who has access</div><div id="tdUsers"></div></div></div></div>
 <div class="mbg" id="memberDetailModal" style="display:none"><div class="modal"><div class="mhdr"><h2>Member Access</h2><div style="display:flex;gap:8px"><button class="mhdr-edit" id="btnEditMemberFromDetail">&#9998; Edit</button><button class="mhdr-close" id="btnCloseMemberDetail">Close</button></div></div><div class="detail-hdr"><div class="detail-av" id="detailMemberAv"></div><div><div style="display:flex;align-items:center;gap:8px"><div class="detail-name" id="detailMemberName"></div><span id="detailMemberStatus"></span></div><div class="detail-sub" id="detailMemberSub"></div></div></div><div class="mbody" style="padding-top:8px"><div id="detailAccessList"></div><div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px"><button class="oblue" id="btnOffboardFromDetail" style="color:#EF4444;border-color:#FEE2E2">&#128683; Offboard member</button><button class="oacc" id="detailAddAccess">+ Add access</button></div></div></div></div>
 <div class="mbg" id="memberModal" style="display:none"><div class="modal"><div class="mhdr"><h2 id="memberModalTitle">Add member</h2></div><div class="mbody"><input type="hidden" id="mId"><div class="fl"><label>Full name</label><input type="text" id="mName" placeholder="e.g. Jan Mueller"></div><div class="fl"><label>Email</label><input type="email" id="mEmail" placeholder="jan@cd-commerce.de"></div><div class="fl2"><div class="fl" style="margin-bottom:0"><label>Department</label><select id="mDept"><option value="">Select...</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select></div><div class="fl" style="margin-bottom:0"><label>Status</label><select id="mStatus"><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div></div><div class="err" id="mErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelMember">Cancel</button><button class="oacc" id="btnSaveMember">Save member</button></div></div></div>
 <div class="mbg" id="addToolModal" style="display:none"><div class="modal sm"><div class="mhdr"><h2>Add new tool</h2></div><div class="mbody"><div class="ibox">This tool will appear in all dropdowns across the app.</div><div class="fl"><label>Tool name</label><input type="text" id="newToolName" placeholder="e.g. Semrush, Jungle Scout..."></div><div class="err" id="newToolErr"></div></div><div class="mfoot"><button class="oblue" id="btnCancelNewTool">Cancel</button><button class="oacc" id="btnSaveNewTool">Add tool</button></div></div></div>
@@ -255,6 +271,7 @@ tr:hover td{background:#FAFBFC}
 <div class="fl" style="margin-bottom:0"><label>Approx. Monthly Cost</label><input type="text" id="teCost" placeholder="e.g. €29"></div>
 <div class="fl" style="margin-bottom:0"><label>Subscription Model</label><input type="text" id="teSub" placeholder="e.g. Monthly"></div>
 </div>
+<div class="fl"><label>Status</label><select id="teStatus" style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 12px;font-size:14px;color:#0F172A;outline:none;font-family:Arial,sans-serif;background:#fff"><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select></div>
 <div class="fl"><label>Owner / Manager</label><input type="text" id="teOwner" placeholder="e.g. Jan / Michael"></div>
 <div class="fl"><label>Primary Use / Notes</label><textarea id="teNotes" rows="3" placeholder="What is this tool used for?"></textarea></div>
 <div class="err" id="teErr"></div>
@@ -324,7 +341,7 @@ tr:hover td{background:#FAFBFC}
   var toolOverrides={}, customToolInfo={};
   var currentUser=null, batchRows=[], groupRows=[];
   var memberFilter={search:'',dept:'',status:''};
-  var toolFilter={search:'',category:'',paid:''};
+  var toolFilter={search:'',category:'',paid:'',status:''};
 
   var DEPTS=['Admin','B2B','Compliance','Creatives','Customer Support','Ecomm','Finance',
     'HR','IT','Integrator','Leadership','Logistics','Marketing','Operations','Planning',
@@ -568,7 +585,7 @@ tr:hover td{background:#FAFBFC}
     if(t==='dashboard')renderDashboard();
     if(t==='access')renderAccessList();
     if(t==='members'){memberFilter={search:'',dept:'',status:''};renderMemberFilters();renderMemberList();}
-    if(t==='tools'){toolFilter={search:'',category:'',paid:''};renderToolFilters();renderToolList();}
+    if(t==='tools'){toolFilter={search:'',category:'',paid:'',status:''};renderToolFilters();renderToolList();}
     if(t==='credentials')renderCredentialList();
     if(t==='users')renderUserList();
   }
@@ -816,6 +833,9 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('tdDept').textContent=info.dept||'—';
     document.getElementById('tdURL').innerHTML=info.url?'<a href="'+eh(info.url)+'" target="_blank" style="color:#D97757">'+eh(info.url)+'</a>':'—';
     document.getElementById('tdPaid').textContent=info.paid_free||'—';
+    var _st=info.status||'Active';
+    var _stSlug=_st.toLowerCase().replace(/\s+/g,'-');
+    document.getElementById('tdStatus').innerHTML='<span class="td-status-pill '+_stSlug+'">'+eh(_st)+'</span>';
     document.getElementById('tdCost').textContent=info.cost||'—';
     document.getElementById('tdSub').textContent=info.sub_model||'—';
     document.getElementById('tdOwner').textContent=info.owner||'—';
@@ -1012,7 +1032,7 @@ tr:hover td{background:#FAFBFC}
   }
 
   // ── TOOLS TAB ──
-  function renderToolFilters(){document.getElementById('tfSearch').value=toolFilter.search||'';document.getElementById('tfCategory').value=toolFilter.category||'';document.getElementById('tfPaid').value=toolFilter.paid||'';}
+  function renderToolFilters(){document.getElementById('tfSearch').value=toolFilter.search||'';document.getElementById('tfCategory').value=toolFilter.category||'';document.getElementById('tfPaid').value=toolFilter.paid||'';document.getElementById('tfStatus').value=toolFilter.status||'';}
 
   function renderToolList(){
     var el=document.getElementById('toolTableBody');
@@ -1020,9 +1040,11 @@ tr:hover td{background:#FAFBFC}
     var allTools=getAllTools();
     var filtered=allTools.filter(function(name){
       var info=getToolInfo(name)||{};
+      var st=info.status||'Active';
       return(!q||name.toLowerCase().indexOf(q)>-1||(info.category||'').toLowerCase().indexOf(q)>-1||(info.notes||'').toLowerCase().indexOf(q)>-1)
         &&(!toolFilter.category||(info.category||'')===toolFilter.category)
-        &&(!toolFilter.paid||(info.paid_free||'')===toolFilter.paid);
+        &&(!toolFilter.paid||(info.paid_free||'')===toolFilter.paid)
+        &&(!toolFilter.status||st===toolFilter.status);
     });
     var sortBy=toolFilter.sort||'name';
     filtered.sort(function(a,b){
@@ -1032,16 +1054,23 @@ tr:hover td{background:#FAFBFC}
       if(sortBy==='category')return(ia.category||'').localeCompare(ib.category||'');
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
-    if(!filtered.length){el.innerHTML='<tr><td colspan="8" class="empty">No tools match.</td></tr>';return;}
+    if(!filtered.length){el.innerHTML='<tr><td colspan="9" class="empty">No tools match.</td></tr>';return;}
     el.innerHTML=filtered.map(function(name){
       var info=getToolInfo(name)||{};
       var userCount=access.filter(function(a){return a.tool_name===name;}).length;
-      return '<tr class="tool-row" data-tool="'+eh(name)+'">'
+      var st=info.status||'Active';
+      var STATUS_OPTS=['Active','Trial','Under review','Cancelled'];
+      var stSlug=st.toLowerCase().replace(/\s+/g,'-');
+      var stClass='st-sel-'+stSlug;
+      var rowClass='tool-row'+(st==='Cancelled'?' row-cancelled':'')+(st==='Under review'?' row-under-review':'');
+      var stOpts=STATUS_OPTS.map(function(o){return '<option value="'+o+'"'+(st===o?' selected':'')+'>'+o+'</option>';}).join('');
+      return '<tr class="'+rowClass+'" data-tool="'+eh(name)+'">'
         +'<td><div class="tool-name-link">'+eh(name)+'</div></td>'
         +'<td>'+eh(info.category||'—')+'</td>'
         +'<td>'+eh(info.dept||'—')+'</td>'
         +'<td>'+(info.url?'<a href="'+eh(info.url)+'" target="_blank" class="url-link" onclick="event.stopPropagation()">&#127760; Open</a>':'—')+'</td>'
         +'<td>'+(info.paid_free?'<span class="paid-badge paid-'+info.paid_free.toLowerCase().replace(/[^a-z]/g,'')+'">'+eh(info.paid_free)+'</span>':'—')+'</td>'
+        +'<td><select class="tool-status-sel '+stClass+'" data-status-tool="'+eh(name)+'" onclick="event.stopPropagation()">'+stOpts+'</select></td>'
         +'<td class="inline-edit-cell" data-tool="'+eh(name)+'">'
         +'<span class="inline-val '+(info.owner?'':'empty-val')+'">'+(info.owner?eh(info.owner):'+ Add owner')+'</span>'
         +'</td>'
@@ -1076,6 +1105,12 @@ tr:hover td{background:#FAFBFC}
     });
     el.querySelectorAll('[data-edit-tool]').forEach(function(b){
       b.addEventListener('click',function(e){e.stopPropagation();openToolEditModal(b.getAttribute('data-edit-tool'));});
+    });
+    el.querySelectorAll('[data-status-tool]').forEach(function(sel){
+      sel.addEventListener('change',function(e){
+        e.stopPropagation();
+        saveToolStatus(sel.getAttribute('data-status-tool'),sel.value);
+      });
     });
   }
 
@@ -1666,6 +1701,7 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('teCost').value = info.cost || '';
     document.getElementById('teSub').value = info.sub_model || '';
     document.getElementById('teOwner').value = info.owner || '';
+    document.getElementById('teStatus').value = info.status || 'Active';
     document.getElementById('teNotes').value = info.notes || '';
     showErr('teErr','');
     document.getElementById('toolEditModal').style.display='flex';
@@ -1683,6 +1719,7 @@ tr:hover td{background:#FAFBFC}
       cost: document.getElementById('teCost').value.trim(),
       sub_model: document.getElementById('teSub').value.trim(),
       owner: document.getElementById('teOwner').value.trim(),
+      status: document.getElementById('teStatus').value || 'Active',
       notes: document.getElementById('teNotes').value.trim()
     };
     var origDisplayKey = (editingToolName||'').toLowerCase();
@@ -1754,6 +1791,60 @@ tr:hover td{background:#FAFBFC}
     }).catch(function(e){
       setLoading(false);
       showErr('teErr','Could not save (server error). Check connection.');
+    });
+  }
+
+  // ── STATUS INLINE UPDATE ──
+  function saveToolStatus(toolName, newStatus){
+    if(!toolName) return;
+    newStatus = newStatus || 'Active';
+    var info = getToolInfo(toolName) || {};
+    // Only save if actually changed
+    if((info.status||'Active') === newStatus){ return; }
+    var catalogueHit = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===toolName.toLowerCase();});
+    var customHit = findCustomForCurrentName(toolName);
+    var isCatalogue = !!catalogueHit && !customHit;
+    setLoading(true);
+    var p;
+    if(isCatalogue){
+      var existing = findOverrideForCurrentName(toolName);
+      if(existing && existing.row && existing.row.id){
+        p = sbUpdate('tool_overrides', existing.row.id, {status:newStatus}).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {status:newStatus});
+        });
+      } else {
+        // No override yet — create one carrying over existing catalogue info so we don't lose it
+        var base = Object.assign({}, catalogueHit);
+        delete base.id; // do not reuse catalogue id for override row
+        var origName = toolName.toLowerCase();
+        var payload = Object.assign({id:uid(), original_name:origName}, base, {status:newStatus});
+        p = sbInsert('tool_overrides', payload).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          toolOverrides[origName] = saved || payload;
+        });
+      }
+    } else {
+      if(customHit && customHit.row && customHit.row.id){
+        p = sbUpdate('custom_tools', customHit.row.id, {status:newStatus}).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          customToolInfo[customHit.key] = saved || Object.assign({}, customHit.row, {status:newStatus});
+        });
+      } else {
+        // Shouldn't happen (custom tool exists only via customToolInfo), but handle gracefully
+        p = Promise.resolve();
+      }
+    }
+    p.then(function(){
+      applyOverridesToCatalogue();
+      rebuildCustomTools();
+      setLoading(false);
+      renderToolList();
+      showToast('"'+toolName+'" marked '+newStatus);
+    }).catch(function(){
+      setLoading(false);
+      showToast('Could not save status — check connection');
+      renderToolList(); // revert visual
     });
   }
 
@@ -2067,6 +2158,7 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('tfSearch').addEventListener('input',function(){toolFilter.search=this.value;renderToolList();});
     document.getElementById('tfCategory').addEventListener('change',function(){toolFilter.category=this.value;renderToolList();});
     document.getElementById('tfPaid').addEventListener('change',function(){toolFilter.paid=this.value;renderToolList();});
+    document.getElementById('tfStatus').addEventListener('change',function(){toolFilter.status=this.value;renderToolList();});
     document.getElementById('btnAddTool').addEventListener('click',openAddToolModal);
     document.getElementById('btnSaveNewTool').addEventListener('click',saveNewTool);
     document.getElementById('btnCancelNewTool').addEventListener('click',function(){document.getElementById('addToolModal').style.display='none';});
