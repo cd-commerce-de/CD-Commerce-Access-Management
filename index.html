@@ -373,9 +373,18 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
   // ── SUPABASE ──
   function sbH(){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=representation'};}
   function sbGet(t,qs){return fetch(SUPA_URL+'/rest/v1/'+t+'?order=created_at.asc'+(qs?'&'+qs:''),{method:'GET',headers:sbH()}).then(function(r){return r.json();});}
-  function sbInsert(t,d){return fetch(SUPA_URL+'/rest/v1/'+t,{method:'POST',headers:sbH(),body:JSON.stringify(d)}).then(function(r){return r.json();});}
-  function sbUpdate(t,id,d){return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:sbH(),body:JSON.stringify(d)}).then(function(r){return r.json();});}
-  function sbDelete(t,id){return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'DELETE',headers:sbH()});}
+  function sbInsert(t,d){return fetch(SUPA_URL+'/rest/v1/'+t,{method:'POST',headers:sbH(),body:JSON.stringify(d)}).then(function(r){
+    if(!r.ok){return r.text().then(function(txt){console.error('sbInsert '+t+' failed:',r.status,txt);throw new Error('Insert failed ('+r.status+'): '+txt.slice(0,200));});}
+    return r.json();
+  });}
+  function sbUpdate(t,id,d){return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:sbH(),body:JSON.stringify(d)}).then(function(r){
+    if(!r.ok){return r.text().then(function(txt){console.error('sbUpdate '+t+' failed:',r.status,txt);throw new Error('Update failed ('+r.status+'): '+txt.slice(0,200));});}
+    return r.json();
+  });}
+  function sbDelete(t,id){return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'DELETE',headers:sbH()}).then(function(r){
+    if(!r.ok){return r.text().then(function(txt){console.error('sbDelete '+t+' failed:',r.status,txt);throw new Error('Delete failed ('+r.status+')');});}
+    return r;
+  });}
   function sbGetByEmail(e){return fetch(SUPA_URL+'/rest/v1/allowed_users?email=eq.'+encodeURIComponent(e),{method:'GET',headers:sbH()}).then(function(r){return r.json();});}
 
   // ── UTILS ──
@@ -1926,14 +1935,15 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
           toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {status:newStatus});
         });
       } else {
-        // No override yet — create one carrying over existing catalogue info so we don't lose it
-        var base = Object.assign({}, catalogueHit);
-        delete base.id; // do not reuse catalogue id for override row
+        // No override yet — create minimal one with just the status change.
+        // (applyOverridesToCatalogue merges with original, so we don't need to copy other fields.
+        //  Copying catalogueHit here was a bug — it pulled in access_type which the DB rejects.)
         var origName = toolName.toLowerCase();
-        var payload = Object.assign({id:uid(), original_name:origName}, base, {status:newStatus});
+        var payload = {id:uid(), original_name:origName, status:newStatus};
         p = sbInsert('tool_overrides', payload).then(function(data){
           var saved = Array.isArray(data)?data[0]:data;
-          toolOverrides[origName] = saved || payload;
+          if(saved && saved.error){ throw new Error(saved.message||'insert rejected'); }
+          toolOverrides[origName] = (saved && saved.id) ? saved : payload;
         });
       }
     } else {
@@ -1979,13 +1989,14 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
           toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {owner:newOwner});
         });
       } else {
-        var base = Object.assign({}, catalogueHit);
-        delete base.id;
+        // Minimal override — only the changed field. Original catalogue values flow through
+        // via applyOverridesToCatalogue(). Avoids passing columns the DB doesn't have (e.g. access_type).
         var origName = toolName.toLowerCase();
-        var payload = Object.assign({id:uid(), original_name:origName}, base, {owner:newOwner});
+        var payload = {id:uid(), original_name:origName, owner:newOwner};
         p = sbInsert('tool_overrides', payload).then(function(data){
           var saved = Array.isArray(data)?data[0]:data;
-          toolOverrides[origName] = saved || payload;
+          if(saved && saved.error){ throw new Error(saved.message||'insert rejected'); }
+          toolOverrides[origName] = (saved && saved.id) ? saved : payload;
         });
       }
     } else {
