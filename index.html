@@ -47,7 +47,7 @@ body{font-family:Arial,sans-serif;background:#F8FAFC;min-height:100vh}
 .main-tab:hover{color:#0F172A}
 .view{display:none;padding:18px 24px}
 /* METRICS */
-.metrics{display:flex;flex-direction:row;gap:10px;margin-bottom:14px}
+.metrics{display:flex;flex-direction:row;flex-wrap:wrap;gap:10px;margin-bottom:14px}
 .mc{background:#fff;border-radius:8px;padding:10px 20px;border:1px solid #E2E8F0;transition:all 0.15s;cursor:pointer;min-width:160px;max-width:220px}
 .mc:hover{border-color:#D97757;box-shadow:0 2px 8px rgba(217,119,87,0.12);transform:translateY(-1px)}
 .mc-l{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px}
@@ -147,6 +147,15 @@ tr:hover td{background:#FAFBFC}
 .td-status-pill.trial{background:#FEF3C7;color:#92400E}
 .td-status-pill.under-review{background:#DBEAFE;color:#1E40AF}
 .td-status-pill.cancelled{background:#FEE2E2;color:#991B1B}
+/* TOOL OWNER DROPDOWN */
+.tool-owner-sel{display:inline-block;max-width:160px;padding:4px 22px 4px 9px;border-radius:6px;font-size:12px;font-weight:600;color:#0F172A;background-color:#F8FAFC;border:1px solid #E2E8F0;outline:none;cursor:pointer;font-family:Arial,sans-serif;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-repeat:no-repeat;background-position:right 6px center;background-size:9px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>")}
+.tool-owner-sel:hover{border-color:#D97757;background-color:#FFFBF9}
+.tool-owner-sel:focus{border-color:#D97757;box-shadow:0 0 0 2px rgba(217,119,87,0.18)}
+.tool-owner-sel.unmapped{background-color:#FEF3C7;border-color:#F59E0B;color:#92400E}
+.tool-owner-sel.empty{color:#94A3B8;font-style:italic;font-weight:500}
+/* GROUP HEADERS IN TOOL TABLE */
+tr.tool-group-hdr td{background:#F1F5F9;padding:8px 14px;font-size:11px;font-weight:700;color:#0F172A;text-transform:uppercase;letter-spacing:0.05em;border-top:2px solid #D97757;border-bottom:1px solid #E2E8F0}
+tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none;letter-spacing:0;margin-left:8px}
 .cnt-link{cursor:pointer;font-weight:700;color:#D97757}
 .member-link{display:flex;align-items:center;gap:8px;cursor:pointer}
 .abtn{background:none;border:none;cursor:pointer;color:#94A3B8;font-size:13px;padding:2px 5px;border-radius:5px}
@@ -241,10 +250,10 @@ tr:hover td{background:#FAFBFC}
 <div id="app" style="display:none">
 <div class="hdr"><div class="hdr-left"><img class="hdr-logo" src="data:image/png;base64,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" alt="CD Commerce"><div class="hdr-div"></div><h1>CD Commerce Access Management</h1></div><div class="hdr-right"><div class="upill"><div class="uav" id="uav"></div><span class="uname" id="uname"></span></div><span class="role-badge" id="roleBadge"></span><button class="hbtn" id="btnLogout">Sign out</button></div></div>
 <div class="main-nav"><button class="main-tab on" id="tab_dashboard">&#128202; Dashboard</button><button class="main-tab" id="tab_access">&#128274; Access Entries</button><button class="main-tab" id="tab_members">&#128100; Members</button><button class="main-tab" id="tab_tools">&#128295; Tools</button><button class="main-tab" id="tab_credentials">&#128273; Credentials</button><button class="main-tab" id="tab_users" style="display:none">&#9881; User Management</button></div>
-<div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc"><div class="mc-l">Total Members</div><div class="mc-v" id="dash_members">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Total Tools</div><div class="mc-v" id="dash_tools">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Active Members</div><div class="mc-v" id="dash_active">0</div><div class="mc-hint">Click to filter &#8594;</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per Credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
+<div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc"><div class="mc-l">Total Members</div><div class="mc-v" id="dash_members">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Total Tools</div><div class="mc-v" id="dash_tools">0</div><div class="mc-hint">Click to view &#8594;</div></div><div class="mc"><div class="mc-l">Active Members</div><div class="mc-v" id="dash_active">0</div><div class="mc-hint">Click to filter &#8594;</div></div><div class="mc"><div class="mc-l">Unassigned Tools</div><div class="mc-v" id="dash_unassigned">0</div><div class="mc-hint" id="dash_unassigned_hint">No ownership gaps</div></div><div class="mc"><div class="mc-l">Top Owner Load</div><div class="mc-v" id="dash_topowner_count">0</div><div class="mc-hint" id="dash_topowner_name">—</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per Credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
 <div class="view" id="view_access"><div class="sec-hdr"><h2>Access Entries</h2><div class="sec-hdr-right"><button class="oblue" id="btnGroupAccess">&#128101; Group access</button><button class="oacc" id="btnAddAccess">+ Add access</button></div></div><div class="tbox"><table><thead><tr><th>Member</th><th>Tool</th><th>Credential</th><th>Access type</th><th>Added by</th><th></th></tr></thead><tbody id="accessTableBody"></tbody></table></div></div>
 <div class="view" id="view_members"><div class="sec-hdr"><h2>Team Members</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportMembers">&#8595; Import CSV</button><button class="oblue" id="btnExportMembersCSV">&#8593; CSV</button><button class="oblue" id="btnExportMembersXLSX">&#8593; Excel</button><button class="oacc" id="btnAddMember">+ Add member</button></div></div><div class="filter-bar"><input id="mfSearch" placeholder="&#128269; Search name, email, department..."><select id="mfDept"><option value="">All departments</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select><select id="mfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Access</th><th>Actions</th></tr></thead><tbody id="memberTableBody"></tbody></table></div></div>
-<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV">&#8593; CSV</button><button class="oblue" id="btnExportToolsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select><select id="tfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Status</th><th>Owner <span style="font-weight:400;color:rgba(255,255,255,0.5);font-size:10px">click to edit</span></th><th>Users</th><th></th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
+<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV">&#8593; CSV</button><button class="oblue" id="btnExportToolsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><input id="tfSearch" placeholder="&#128269; Search tools, categories, notes..."><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select><select id="tfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select><select id="tfOwner"><option value="">All owners</option></select><select id="tfGroupBy"><option value="">No grouping</option><option value="owner">Group by Owner</option><option value="category">Group by Category</option><option value="status">Group by Status</option><option value="dept">Group by Department</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Status</th><th>Owner</th><th>Users</th><th></th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
 <div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportCredentials">&#8595; Import CSV</button><button class="oblue" id="btnExportCredsCSV">&#8593; CSV</button><button class="oblue" id="btnExportCredsXLSX">&#8593; Excel</button><button class="oacc" id="btnAddCred">+ Add credential</button></div></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by <span style="font-weight:400;color:rgba(255,255,255,0.5);font-size:10px">click to edit</span></th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
 <div class="view" id="view_users"><div class="sec-hdr"><div><h2>User Management</h2><p style="font-size:12px;color:#64748B;margin-top:3px">Only listed users can sign in.</p></div><button class="oacc" id="btnAddUser">+ Add user</button></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
 </div>
@@ -272,7 +281,7 @@ tr:hover td{background:#FAFBFC}
 <div class="fl" style="margin-bottom:0"><label>Subscription Model</label><input type="text" id="teSub" placeholder="e.g. Monthly"></div>
 </div>
 <div class="fl"><label>Status</label><select id="teStatus" style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 12px;font-size:14px;color:#0F172A;outline:none;font-family:Arial,sans-serif;background:#fff"><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select></div>
-<div class="fl"><label>Owner / Manager</label><input type="text" id="teOwner" placeholder="e.g. Jan / Michael"></div>
+<div class="fl"><label>Owner / Manager</label><select id="teOwner" style="width:100%;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 12px;font-size:14px;color:#0F172A;outline:none;font-family:Arial,sans-serif;background:#fff"></select></div>
 <div class="fl"><label>Primary Use / Notes</label><textarea id="teNotes" rows="3" placeholder="What is this tool used for?"></textarea></div>
 <div class="err" id="teErr"></div>
 </div>
@@ -341,7 +350,7 @@ tr:hover td{background:#FAFBFC}
   var toolOverrides={}, customToolInfo={};
   var currentUser=null, batchRows=[], groupRows=[];
   var memberFilter={search:'',dept:'',status:''};
-  var toolFilter={search:'',category:'',paid:'',status:''};
+  var toolFilter={search:'',category:'',paid:'',status:'',owner:'',groupBy:''};
 
   var DEPTS=['Admin','B2B','Compliance','Creatives','Customer Support','Ecomm','Finance',
     'HR','IT','Integrator','Leadership','Logistics','Marketing','Operations','Planning',
@@ -585,7 +594,7 @@ tr:hover td{background:#FAFBFC}
     if(t==='dashboard')renderDashboard();
     if(t==='access')renderAccessList();
     if(t==='members'){memberFilter={search:'',dept:'',status:''};renderMemberFilters();renderMemberList();}
-    if(t==='tools'){toolFilter={search:'',category:'',paid:'',status:''};renderToolFilters();renderToolList();}
+    if(t==='tools'){toolFilter={search:'',category:'',paid:'',status:'',owner:'',groupBy:''};renderToolFilters();renderToolList();}
     if(t==='credentials')renderCredentialList();
     if(t==='users')renderUserList();
   }
@@ -597,6 +606,36 @@ tr:hover td{background:#FAFBFC}
     setMetric('dash_members',members.length,function(){switchMainTab('members');});
     setMetric('dash_tools',toolSet.length,function(){switchMainTab('tools');});
     setMetric('dash_active',active,function(){memberFilter={search:'',dept:'',status:'Active'};switchMainTab('members');renderMemberFilters();renderMemberList();});
+
+    // Owner load metrics — count only Active tools (Cancelled = not real workload)
+    var allTools=getAllTools();
+    var unassigned=0, ownerCounts={};
+    allTools.forEach(function(n){
+      var info=getToolInfo(n)||{};
+      var st=info.status||'Active';
+      if(st==='Cancelled') return; // ignore dead tools
+      var ow=(info.owner||'').trim();
+      if(!ow){ unassigned++; return; }
+      ownerCounts[ow]=(ownerCounts[ow]||0)+1;
+    });
+    setMetric('dash_unassigned',unassigned,function(){
+      toolFilter={search:'',category:'',paid:'',status:'',owner:'__UNASSIGNED__',groupBy:''};
+      switchMainTab('tools');renderToolFilters();renderToolList();
+    });
+    document.getElementById('dash_unassigned_hint').textContent = unassigned>0 ? 'Click to fix →' : 'No ownership gaps';
+    // Top owner by load (exclude legacy multi-owner strings — those aren't real single owners)
+    var topName='—', topCount=0;
+    Object.keys(ownerCounts).forEach(function(k){
+      if(ownerCounts[k]>topCount){topName=k;topCount=ownerCounts[k];}
+    });
+    setMetric('dash_topowner_count',topCount,function(){
+      if(topCount===0) return;
+      toolFilter={search:'',category:'',paid:'',status:'',owner:topName,groupBy:''};
+      switchMainTab('tools');renderToolFilters();renderToolList();
+    });
+    var hint=topCount===0?'No owners set':(topName+' →');
+    if(topCount>=15) hint=topName+' (heavy) →';
+    document.getElementById('dash_topowner_name').textContent=hint;
 
     switchDashTab('byMember');
   }
@@ -1032,7 +1071,57 @@ tr:hover td{background:#FAFBFC}
   }
 
   // ── TOOLS TAB ──
-  function renderToolFilters(){document.getElementById('tfSearch').value=toolFilter.search||'';document.getElementById('tfCategory').value=toolFilter.category||'';document.getElementById('tfPaid').value=toolFilter.paid||'';document.getElementById('tfStatus').value=toolFilter.status||'';}
+  function getActiveMembers(){
+    return members.filter(function(m){return(m.status||'Active')==='Active';})
+                  .slice()
+                  .sort(function(a,b){return a.name.localeCompare(b.name);});
+  }
+  function isOwnerMapped(val){
+    if(!val)return true; // empty is "unset", not "unmapped"
+    return members.some(function(m){return m.name===val;});
+  }
+  function buildOwnerOptions(currentValue){
+    var opts='<option value="">— No owner —</option>';
+    var active=getActiveMembers();
+    var matchesActive=active.some(function(m){return m.name===currentValue;});
+    // Legacy / multi-owner / non-member values shown at top so user can see + replace
+    if(currentValue && !matchesActive && !members.some(function(m){return m.name===currentValue;})){
+      opts+='<option value="'+eh(currentValue)+'" selected>'+eh(currentValue)+' (legacy — pick owner)</option>';
+    }
+    opts+=active.map(function(m){
+      return '<option value="'+eh(m.name)+'"'+(m.name===currentValue?' selected':'')+'>'+eh(m.name)+'</option>';
+    }).join('');
+    // Offboarded / on-leave members that still match the value
+    members.forEach(function(m){
+      if((m.status||'Active')!=='Active' && m.name===currentValue){
+        opts+='<option value="'+eh(m.name)+'" selected>'+eh(m.name)+' ('+eh(m.status||'')+')</option>';
+      }
+    });
+    return opts;
+  }
+
+  function renderToolFilters(){
+    document.getElementById('tfSearch').value=toolFilter.search||'';
+    document.getElementById('tfCategory').value=toolFilter.category||'';
+    document.getElementById('tfPaid').value=toolFilter.paid||'';
+    document.getElementById('tfStatus').value=toolFilter.status||'';
+    // Rebuild owner filter dropdown from current members + any legacy owner values
+    var ownerSel=document.getElementById('tfOwner');
+    var allOwnerVals={};
+    getAllTools().forEach(function(n){var v=(getToolInfo(n)||{}).owner||'';if(v)allOwnerVals[v]=true;});
+    var memberNames=getActiveMembers().map(function(m){return m.name;});
+    var combined=[].concat(memberNames);
+    Object.keys(allOwnerVals).forEach(function(v){if(combined.indexOf(v)===-1)combined.push(v);});
+    combined.sort();
+    ownerSel.innerHTML='<option value="">All owners</option>'
+      +'<option value="__UNASSIGNED__">— Unassigned —</option>'
+      +combined.map(function(n){
+        var isMember=memberNames.indexOf(n)>-1;
+        return '<option value="'+eh(n)+'">'+eh(n)+(isMember?'':' (legacy)')+'</option>';
+      }).join('');
+    ownerSel.value=toolFilter.owner||'';
+    document.getElementById('tfGroupBy').value=toolFilter.groupBy||'';
+  }
 
   function renderToolList(){
     var el=document.getElementById('toolTableBody');
@@ -1041,10 +1130,15 @@ tr:hover td{background:#FAFBFC}
     var filtered=allTools.filter(function(name){
       var info=getToolInfo(name)||{};
       var st=info.status||'Active';
-      return(!q||name.toLowerCase().indexOf(q)>-1||(info.category||'').toLowerCase().indexOf(q)>-1||(info.notes||'').toLowerCase().indexOf(q)>-1)
+      var ownerVal=info.owner||'';
+      var ownerMatch=true;
+      if(toolFilter.owner==='__UNASSIGNED__') ownerMatch=!ownerVal;
+      else if(toolFilter.owner) ownerMatch=(ownerVal===toolFilter.owner);
+      return(!q||name.toLowerCase().indexOf(q)>-1||(info.category||'').toLowerCase().indexOf(q)>-1||(info.notes||'').toLowerCase().indexOf(q)>-1||ownerVal.toLowerCase().indexOf(q)>-1)
         &&(!toolFilter.category||(info.category||'')===toolFilter.category)
         &&(!toolFilter.paid||(info.paid_free||'')===toolFilter.paid)
-        &&(!toolFilter.status||st===toolFilter.status);
+        &&(!toolFilter.status||st===toolFilter.status)
+        &&ownerMatch;
     });
     var sortBy=toolFilter.sort||'name';
     filtered.sort(function(a,b){
@@ -1055,7 +1149,8 @@ tr:hover td{background:#FAFBFC}
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
     if(!filtered.length){el.innerHTML='<tr><td colspan="9" class="empty">No tools match.</td></tr>';return;}
-    el.innerHTML=filtered.map(function(name){
+
+    function renderRow(name){
       var info=getToolInfo(name)||{};
       var userCount=access.filter(function(a){return a.tool_name===name;}).length;
       var st=info.status||'Active';
@@ -1064,6 +1159,10 @@ tr:hover td{background:#FAFBFC}
       var stClass='st-sel-'+stSlug;
       var rowClass='tool-row'+(st==='Cancelled'?' row-cancelled':'')+(st==='Under review'?' row-under-review':'');
       var stOpts=STATUS_OPTS.map(function(o){return '<option value="'+o+'"'+(st===o?' selected':'')+'>'+o+'</option>';}).join('');
+      var ownerVal=info.owner||'';
+      var ownerMapped=isOwnerMapped(ownerVal);
+      var ownerCls='tool-owner-sel'+(!ownerVal?' empty':(!ownerMapped?' unmapped':''));
+      var ownerOpts=buildOwnerOptions(ownerVal);
       return '<tr class="'+rowClass+'" data-tool="'+eh(name)+'">'
         +'<td><div class="tool-name-link">'+eh(name)+'</div></td>'
         +'<td>'+eh(info.category||'—')+'</td>'
@@ -1071,37 +1170,43 @@ tr:hover td{background:#FAFBFC}
         +'<td>'+(info.url?'<a href="'+eh(info.url)+'" target="_blank" class="url-link" onclick="event.stopPropagation()">&#127760; Open</a>':'—')+'</td>'
         +'<td>'+(info.paid_free?'<span class="paid-badge paid-'+info.paid_free.toLowerCase().replace(/[^a-z]/g,'')+'">'+eh(info.paid_free)+'</span>':'—')+'</td>'
         +'<td><select class="tool-status-sel '+stClass+'" data-status-tool="'+eh(name)+'" onclick="event.stopPropagation()">'+stOpts+'</select></td>'
-        +'<td class="inline-edit-cell" data-tool="'+eh(name)+'">'
-        +'<span class="inline-val '+(info.owner?'':'empty-val')+'">'+(info.owner?eh(info.owner):'+ Add owner')+'</span>'
-        +'</td>'
+        +'<td><select class="'+ownerCls+'" data-owner-tool="'+eh(name)+'" onclick="event.stopPropagation()" title="'+(!ownerMapped&&ownerVal?'Legacy value — pick a single owner':'')+'">'+ownerOpts+'</select></td>'
         +'<td><span class="cnt-link">'+userCount+'</span></td>'
         +'<td><button class="abtn" data-edit-tool="'+eh(name)+'" onclick="event.stopPropagation()" title="Edit tool">&#9998;</button></td>'
         +'</tr>';
-    }).join('');
+    }
+
+    if(toolFilter.groupBy){
+      var gk=toolFilter.groupBy;
+      var groups={};
+      filtered.forEach(function(name){
+        var info=getToolInfo(name)||{};
+        var key;
+        if(gk==='owner')      key=info.owner||'— Unassigned —';
+        else if(gk==='status')   key=info.status||'Active';
+        else if(gk==='category') key=info.category||'— Uncategorised —';
+        else if(gk==='dept')     key=info.dept||'— No department —';
+        else key='Other';
+        if(!groups[key])groups[key]=[];
+        groups[key].push(name);
+      });
+      var keys=Object.keys(groups).sort(function(a,b){
+        // Put placeholder groups at end
+        var aPlace=/^— /.test(a),bPlace=/^— /.test(b);
+        if(aPlace!==bPlace)return aPlace?1:-1;
+        return a.localeCompare(b);
+      });
+      el.innerHTML=keys.map(function(k){
+        var n=groups[k].length;
+        return '<tr class="tool-group-hdr"><td colspan="9">'+eh(k)+'<span class="group-count">'+n+' tool'+(n!==1?'s':'')+'</span></td></tr>'
+          +groups[k].map(renderRow).join('');
+      }).join('');
+    } else {
+      el.innerHTML=filtered.map(renderRow).join('');
+    }
+
     el.querySelectorAll('.tool-row').forEach(function(row){
       row.addEventListener('click',function(){openToolDetailModal(row.getAttribute('data-tool'));});
-    });
-    el.querySelectorAll('.inline-edit-cell').forEach(function(cell){
-      cell.addEventListener('click',function(e){
-        e.stopPropagation();
-        if(cell.querySelector('input'))return;
-        var toolName=cell.getAttribute('data-tool');
-        var info=getToolInfo(toolName)||{};
-        var cur=info.owner||'';
-        cell.innerHTML='<input class="inline-input" type="text" value="'+eh(cur)+'" placeholder="e.g. Jan Mueller" />';
-        var inp=cell.querySelector('input');inp.focus();inp.select();
-        function saveFn(){
-          var val=inp.value.trim();
-          var idx2=TOOL_CATALOGUE.findIndex(function(t){return t.name.toLowerCase()===toolName.toLowerCase();});
-          if(idx2>-1)TOOL_CATALOGUE[idx2].owner=val;
-          cell.innerHTML='<span class="inline-val '+(val?'':'empty-val')+'">'+(val?eh(val):'+ Add owner')+'</span>';
-          showToast('Owner updated for '+toolName);
-          el.querySelectorAll('.inline-edit-cell').forEach(function(c2){c2.addEventListener('click',arguments.callee);});
-          renderToolList();
-        }
-        inp.addEventListener('blur',saveFn);
-        inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')inp.blur();if(ev.key==='Escape'){inp.removeEventListener('blur',saveFn);cell.innerHTML='<span class="inline-val '+(cur?'':'empty-val')+'">'+(cur?eh(cur):'+ Add owner')+'</span>';renderToolList();}});
-      });
     });
     el.querySelectorAll('[data-edit-tool]').forEach(function(b){
       b.addEventListener('click',function(e){e.stopPropagation();openToolEditModal(b.getAttribute('data-edit-tool'));});
@@ -1110,6 +1215,12 @@ tr:hover td{background:#FAFBFC}
       sel.addEventListener('change',function(e){
         e.stopPropagation();
         saveToolStatus(sel.getAttribute('data-status-tool'),sel.value);
+      });
+    });
+    el.querySelectorAll('[data-owner-tool]').forEach(function(sel){
+      sel.addEventListener('change',function(e){
+        e.stopPropagation();
+        saveToolOwner(sel.getAttribute('data-owner-tool'),sel.value);
       });
     });
   }
@@ -1671,7 +1782,7 @@ tr:hover td{background:#FAFBFC}
     });
   }
 
-  function rebuildMemberDropdowns(){var sel=document.getElementById('batchMemberSel');if(!sel)return;var cur=sel.value;sel.innerHTML='<option value="">— Select member —</option>'+members.filter(function(m){return(m.status||'Active')==='Active';}).map(function(m){return'<option value="'+m.id+'">'+eh(m.name)+' ('+eh(m.dept)+')</option>';}).join('');sel.value=cur;}
+  function rebuildMemberDropdowns(){var sel=document.getElementById('batchMemberSel');if(!sel)return;var cur=sel.value;sel.innerHTML='<option value="">— Select member —</option>'+members.filter(function(m){return(m.status||'Active')==='Active';}).map(function(m){return'<option value="'+m.id+'">'+eh(m.name)+' ('+eh(m.dept)+')</option>';}).join('');sel.value=cur;var toolsViewEl=document.getElementById('view_tools');if(toolsViewEl&&toolsViewEl.style.display!=='none'){renderToolFilters();renderToolList();}}
 
   // ── USERS ──
   function renderUserList(){
@@ -1700,6 +1811,7 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('tePaid').value = info.paid_free || '';
     document.getElementById('teCost').value = info.cost || '';
     document.getElementById('teSub').value = info.sub_model || '';
+    document.getElementById('teOwner').innerHTML = buildOwnerOptions(info.owner || '');
     document.getElementById('teOwner').value = info.owner || '';
     document.getElementById('teStatus').value = info.status || 'Active';
     document.getElementById('teNotes').value = info.notes || '';
@@ -1840,11 +1952,63 @@ tr:hover td{background:#FAFBFC}
       rebuildCustomTools();
       setLoading(false);
       renderToolList();
+      renderDashboard();
       showToast('"'+toolName+'" marked '+newStatus);
     }).catch(function(){
       setLoading(false);
       showToast('Could not save status — check connection');
       renderToolList(); // revert visual
+    });
+  }
+
+  function saveToolOwner(toolName, newOwner){
+    if(!toolName) return;
+    newOwner = (newOwner||'').trim();
+    var info = getToolInfo(toolName) || {};
+    if((info.owner||'') === newOwner) return;
+    var catalogueHit = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===toolName.toLowerCase();});
+    var customHit = findCustomForCurrentName(toolName);
+    var isCatalogue = !!catalogueHit && !customHit;
+    setLoading(true);
+    var p;
+    if(isCatalogue){
+      var existing = findOverrideForCurrentName(toolName);
+      if(existing && existing.row && existing.row.id){
+        p = sbUpdate('tool_overrides', existing.row.id, {owner:newOwner}).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {owner:newOwner});
+        });
+      } else {
+        var base = Object.assign({}, catalogueHit);
+        delete base.id;
+        var origName = toolName.toLowerCase();
+        var payload = Object.assign({id:uid(), original_name:origName}, base, {owner:newOwner});
+        p = sbInsert('tool_overrides', payload).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          toolOverrides[origName] = saved || payload;
+        });
+      }
+    } else {
+      if(customHit && customHit.row && customHit.row.id){
+        p = sbUpdate('custom_tools', customHit.row.id, {owner:newOwner}).then(function(data){
+          var saved = Array.isArray(data)?data[0]:data;
+          customToolInfo[customHit.key] = saved || Object.assign({}, customHit.row, {owner:newOwner});
+        });
+      } else {
+        p = Promise.resolve();
+      }
+    }
+    p.then(function(){
+      applyOverridesToCatalogue();
+      rebuildCustomTools();
+      setLoading(false);
+      renderToolList();
+      renderDashboard();
+      showToast(newOwner?('Owner set to '+newOwner+' for '+toolName):('Owner cleared for '+toolName));
+    }).catch(function(){
+      setLoading(false);
+      showToast('Could not save owner — check connection');
+      renderToolList();
     });
   }
 
@@ -2159,6 +2323,8 @@ tr:hover td{background:#FAFBFC}
     document.getElementById('tfCategory').addEventListener('change',function(){toolFilter.category=this.value;renderToolList();});
     document.getElementById('tfPaid').addEventListener('change',function(){toolFilter.paid=this.value;renderToolList();});
     document.getElementById('tfStatus').addEventListener('change',function(){toolFilter.status=this.value;renderToolList();});
+    document.getElementById('tfOwner').addEventListener('change',function(){toolFilter.owner=this.value;renderToolList();});
+    document.getElementById('tfGroupBy').addEventListener('change',function(){toolFilter.groupBy=this.value;renderToolList();});
     document.getElementById('btnAddTool').addEventListener('click',openAddToolModal);
     document.getElementById('btnSaveNewTool').addEventListener('click',saveNewTool);
     document.getElementById('btnCancelNewTool').addEventListener('click',function(){document.getElementById('addToolModal').style.display='none';});
