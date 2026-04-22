@@ -388,6 +388,10 @@ th.sortable.sort-active { color: #D97757; }
 th.sortable.sort-active .sort-ind { opacity: 1; }
 th.sortable.sort-active .sort-ind::after { content: "\2191"; }
 th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
+
+.lock-hint { font-size: 10px; opacity: 0.6; margin-left: 2px; }
+.lock-note { font-size: 10px; color: #94A3B8; margin-top: 3px; font-style: italic; }
+select:disabled { background: #F8FAFC; color: #64748B; cursor: not-allowed; opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -504,8 +508,18 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
     'HR','IT','Integrator','Leadership','Logistics','Marketing','Operations','Planning',
     'Procurement','Procurement & Logistics','R&D','Warehouse'];
 
+  function isToolHidden(name){
+    if(!name) return false;
+    var k = name.toLowerCase();
+    // Catalogue tools: hidden via override flag. Custom tools: if they're deleted, they're gone from customToolInfo entirely.
+    var ov = toolOverrides[k];
+    if(ov && ov.deleted === true) return true;
+    // Also check override rows keyed by a renamed name (edge case)
+    for(var ok in toolOverrides){ if(toolOverrides[ok] && (toolOverrides[ok].name||'').toLowerCase() === k && toolOverrides[ok].deleted === true) return true; }
+    return false;
+  }
   function getAllTools(){
-    var cat=TOOL_CATALOGUE.map(function(t){return t.name;});
+    var cat=TOOL_CATALOGUE.map(function(t){return t.name;}).filter(function(n){return !isToolHidden(n);});
     var extra=customTools.filter(function(n){return !cat.find(function(c){return c.toLowerCase()===n.toLowerCase();});});
     return cat.concat(extra).sort(function(a,b){return a.toLowerCase().localeCompare(b.toLowerCase());});
   }
@@ -1433,7 +1447,7 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
         +'<td><select class="tool-status-sel '+stClass+'" data-status-tool="'+eh(name)+'" onclick="event.stopPropagation()">'+stOpts+'</select></td>'
         +'<td><select class="'+ownerCls+'" data-owner-tool="'+eh(name)+'" onclick="event.stopPropagation()" title="'+(!ownerMapped&&ownerVal?'Legacy value — pick a single owner':'')+'">'+ownerOpts+'</select></td>'
         +'<td><span class="cnt-link">'+userCount+'</span></td>'
-        +'<td><button class="abtn" data-edit-tool="'+eh(name)+'" onclick="event.stopPropagation()" title="Edit tool"><svg class="icon" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button></td>'
+        +'<td style="white-space:nowrap"><button class="abtn" data-edit-tool="'+eh(name)+'" onclick="event.stopPropagation()" title="Edit tool"><svg class="icon" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button><button class="abtn d" data-del-tool="'+eh(name)+'" onclick="event.stopPropagation()" title="Delete tool"><svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg></button></td>'
         +'</tr>';
     }
 
@@ -1471,6 +1485,9 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
     });
     el.querySelectorAll('[data-edit-tool]').forEach(function(b){
       b.addEventListener('click',function(e){e.stopPropagation();openToolEditModal(b.getAttribute('data-edit-tool'));});
+    });
+    el.querySelectorAll('[data-del-tool]').forEach(function(b){
+      b.addEventListener('click',function(e){e.stopPropagation();confirmDeleteTool(b.getAttribute('data-del-tool'));});
     });
     el.querySelectorAll('[data-status-tool]').forEach(function(sel){
       sel.addEventListener('change',function(e){
@@ -1683,6 +1700,126 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
     var ts = new Date().toISOString().slice(0,10);
     downloadCSV('cd_commerce_tools_selected_' + ts + '.csv', toCSV(rows, headers));
     showToast(rows.length + ' tool' + (rows.length!==1?'s':'') + ' exported to CSV');
+  }
+
+  // ── DELETE TOOL (with cascade to access + credentials) ──
+  function confirmDeleteTool(name){
+    if(!name) return;
+    var info = getToolInfo(name) || {};
+    var affectedAccess = access.filter(function(a){return a.tool_name === name;});
+    var affectedCreds = credentials.filter(function(c){return c.tool_name === name;});
+    var affectedMembers = {};
+    affectedAccess.forEach(function(a){ if(a.member_id) affectedMembers[a.member_id] = true; });
+    var memberCount = Object.keys(affectedMembers).length;
+
+    var lines = [];
+    lines.push('Delete "' + name + '"?');
+    lines.push('');
+    if(info.cost){
+      lines.push('Cost: ' + info.cost + (info.sub_model && info.sub_model !== '—' ? ' ' + info.sub_model : ''));
+    }
+    if(info.owner) lines.push('Owner: ' + info.owner);
+    lines.push('');
+    lines.push('This will ALSO permanently delete:');
+    lines.push('  - ' + affectedAccess.length + ' access entr' + (affectedAccess.length!==1?'ies':'y') + ' (affecting ' + memberCount + ' member' + (memberCount!==1?'s':'') + ')');
+    lines.push('  - ' + affectedCreds.length + ' credential' + (affectedCreds.length!==1?'s':''));
+    lines.push('');
+    lines.push('This cannot be undone. Continue?');
+
+    if(!confirm(lines.join('\n'))) return;
+
+    // High-impact guard: if 3+ members or 2+ credentials affected, require a second confirmation
+    if(memberCount >= 3 || affectedCreds.length >= 2){
+      var typed = prompt('This deletion affects ' + memberCount + ' member(s) and ' + affectedCreds.length + ' credential(s).\n\nType the tool name exactly to confirm: ' + name);
+      if(typed === null) return;
+      if(typed.trim() !== name){
+        showToast('Deletion cancelled — name did not match', 'warn');
+        return;
+      }
+    }
+
+    deleteTool(name, affectedAccess, affectedCreds);
+  }
+
+  function deleteTool(name, affectedAccess, affectedCreds){
+    setLoading(true);
+    var catalogueHit = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase() === name.toLowerCase();});
+    var customHit = findCustomForCurrentName(name);
+    var isCatalogue = !!catalogueHit && !customHit;
+
+    // Step 1: delete all access entries for this tool
+    var accessDeletes = affectedAccess.map(function(a){
+      return sbDelete('access_entries', a.id).catch(function(e){ console.error('access delete failed', e); return {_err:e}; });
+    });
+
+    // Step 2: delete all credentials for this tool
+    var credDeletes = affectedCreds.map(function(c){
+      return sbDelete('credentials', c.id).catch(function(e){ console.error('cred delete failed', e); return {_err:e}; });
+    });
+
+    Promise.all(accessDeletes.concat(credDeletes)).then(function(){
+      // Step 3: hide/delete the tool itself
+      if(isCatalogue){
+        // Catalogue tool: mark as hidden via tool_overrides flag (source data is hardcoded)
+        var existing = findOverrideForCurrentName(name);
+        var origName = name.toLowerCase();
+        var info = catalogueHit;
+        if(existing && existing.row && existing.row.id){
+          return sbUpdate('tool_overrides', existing.row.id, {deleted: true}).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {deleted: true});
+          });
+        } else {
+          // Full payload (avoid NOT NULL rejection)
+          var payload = {
+            id: uid(), original_name: origName,
+            name: info.name || name,
+            category: info.category || '',
+            dept: info.dept || '',
+            url: info.url || '',
+            paid_free: info.paid_free || '',
+            cost: info.cost || '',
+            sub_model: info.sub_model || '',
+            owner: info.owner || '',
+            status: info.status || 'Active',
+            notes: info.notes || '',
+            deleted: true
+          };
+          return sbInsert('tool_overrides', payload).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            if(saved && saved.error){ throw new Error(saved.message||'insert rejected'); }
+            toolOverrides[origName] = (saved && saved.id) ? saved : payload;
+          });
+        }
+      } else {
+        // Custom tool: true delete from DB
+        if(customHit && customHit.row && customHit.row.id){
+          return sbDelete('custom_tools', customHit.row.id).then(function(){
+            delete customToolInfo[customHit.key];
+            customTools = customTools.filter(function(n){return n.toLowerCase() !== name.toLowerCase();});
+          });
+        }
+        return Promise.resolve();
+      }
+    }).then(function(){
+      // Refresh state from server to be safe
+      return Promise.all([sbGet('access_entries'), sbGet('credentials')]);
+    }).then(function(r){
+      access = Array.isArray(r[0]) ? r[0] : [];
+      credentials = Array.isArray(r[1]) ? r[1] : [];
+      applyOverridesToCatalogue();
+      rebuildCustomTools();
+      // Clear selection if the deleted tool was selected
+      delete selectedTools[name.toLowerCase()];
+      setLoading(false);
+      renderToolList();
+      renderDashboard();
+      showToast('"' + name + '" deleted (' + affectedAccess.length + ' access, ' + affectedCreds.length + ' credentials removed)');
+    }).catch(function(err){
+      setLoading(false);
+      console.error('deleteTool failed:', err);
+      showToast('Delete failed — ' + ((err && err.message) ? err.message.slice(0,120) : 'check console'), 'warn');
+    });
   }
 
   function renderCredentialList(){
@@ -1902,15 +2039,15 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
     container.innerHTML=groupRows.map(function(row,idx){
       var toolCreds=row.toolName?credentials.filter(function(c){return c.tool_name===row.toolName;}).map(function(c){return'<option value="'+c.id+'" '+(row.credVal===c.id?'selected':'')+'>'+eh(c.username)+' ('+eh(c.type)+')</option>';}).join(''):'';
       var credOpts='<option value="">— Credential —</option>'+toolCreds+'<option value="own" '+(row.credVal==='own'?'selected':'')+'>Own login</option><option value="new" '+(row.credVal==='new'?'selected':'')+'>+ Add new</option>';
-      return '<div class="batch-row"><div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'+(groupRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove</button>':'')+'</div><div class="batch-row-fields"><div class="bfl"><label>Tool</label><select class="gr-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select></div><div class="bfl"><label>Access type</label><select class="gr-atype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div><div class="bfl"><label>Credential</label><select class="gr-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div></div>'+(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="gr-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Login for this tool"></div>':'')+(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username</label><input type="text" class="gr-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="gr-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')+'</div>';
+      return '<div class="batch-row"><div class="batch-row-hdr"><span class="batch-row-num">Tool '+(idx+1)+'</span>'+(groupRows.length>1?'<button class="batch-rm" data-rid="'+row.id+'"><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove</button>':'')+'</div><div class="batch-row-fields"><div class="bfl"><label>Tool</label><select class="gr-tool" data-rid="'+row.id+'"><option value="">— Tool —</option>'+tools.map(function(t){return'<option value="'+eh(t)+'" '+(row.toolName===t?'selected':'')+'>'+eh(t)+'</option>';}).join('')+'</select></div><div class="bfl"><label>Access type'+((row.credVal&&row.credVal!=='own'&&row.credVal!=='new')?' <span class="lock-hint" title="Inherited from credential"><svg class=\"icon icon-sm\" viewBox=\"0 0 24 24\" style=\"width:11px;height:11px;vertical-align:-1px;opacity:0.55\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span>':(row.credVal==='new'?' <span class="lock-hint" title="Matches new credential type"><svg class=\"icon icon-sm\" viewBox=\"0 0 24 24\" style=\"width:11px;height:11px;vertical-align:-1px;opacity:0.55\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span>':''))+'</label><select class="gr-atype" data-rid="'+row.id+'"'+((row.credVal&&row.credVal!=='own'&&row.credVal!=='new')?' disabled title="Inherited from credential"':(row.credVal==='new'?' disabled title="Matches new credential type"':''))+'><option value="individual" '+(row.accessType==='individual'?'selected':'')+'>Individual</option><option value="shared" '+(row.accessType==='shared'?'selected':'')+'>Shared</option></select>'+((row.credVal&&row.credVal!=='own'&&row.credVal!=='new')?'<div class="lock-note">Inherited from credential</div>':(row.credVal==='new'?'<div class="lock-note">Matches new credential type</div>':''))+'</div><div class="bfl"><label>Credential</label><select class="gr-cred" data-rid="'+row.id+'" '+(row.toolName?'':'disabled')+'>'+credOpts+'</select></div></div>'+(row.credVal==='own'?'<div class="bfl" style="margin-top:6px"><label>Own login</label><input type="text" class="gr-own" data-rid="'+row.id+'" value="'+eh(row.ownLogin)+'" placeholder="Login for this tool"></div>':'')+(row.credVal==='new'?'<div class="batch-new-cred"><div class="ibox" style="margin-bottom:8px">Will be saved to masterlist.</div><div class="batch-row-fields"><div class="bfl"><label>Username</label><input type="text" class="gr-newuser" data-rid="'+row.id+'" value="'+eh(row.newCredUser)+'" placeholder="e.g. team@cd-commerce.de"></div><div class="bfl"><label>Type</label><select class="gr-newtype" data-rid="'+row.id+'"><option value="individual">Individual</option><option value="shared">Shared</option></select></div></div></div>':'')+'</div>';
     }).join('');
     container.querySelectorAll('.batch-rm').forEach(function(b){b.addEventListener('click',function(){groupRows=groupRows.filter(function(r){return r.id!==b.getAttribute('data-rid');});renderGroupToolRows();});});
     container.querySelectorAll('.gr-tool').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r){r.toolName=s.value;r.credVal='';}renderGroupToolRows();});});
     container.querySelectorAll('.gr-atype').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.accessType=s.value;});});
-    container.querySelectorAll('.gr-cred').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.credVal=s.value;renderGroupToolRows();});});
+    container.querySelectorAll('.gr-cred').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(!r) return; r.credVal=s.value; if(s.value && s.value!=='own' && s.value!=='new'){var chosen=credentials.find(function(c){return c.id===s.value;}); if(chosen && chosen.type) r.accessType = chosen.type;} renderGroupToolRows();});});
     container.querySelectorAll('.gr-own').forEach(function(i){i.addEventListener('input',function(){var r=groupRows.find(function(r){return r.id===i.getAttribute('data-rid');});if(r)r.ownLogin=i.value;});});
     container.querySelectorAll('.gr-newuser').forEach(function(i){i.addEventListener('input',function(){var r=groupRows.find(function(r){return r.id===i.getAttribute('data-rid');});if(r)r.newCredUser=i.value;});});
-    container.querySelectorAll('.gr-newtype').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r)r.newCredType=s.value;});});
+    container.querySelectorAll('.gr-newtype').forEach(function(s){s.addEventListener('change',function(){var r=groupRows.find(function(r){return r.id===s.getAttribute('data-rid');});if(r){r.newCredType=s.value; r.accessType=s.value;}});});
   }
   function saveGroupAccess(){
     var dept=document.getElementById('groupDeptSel').value;
@@ -1988,11 +2125,22 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
           + '<select class="batch-cred-sel" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'" '+(row.toolName?'':'disabled')+'>'
           + credOpts
           + '</select></div>'
-          + '<div class="bfl"><label>Access type</label>'
-          + '<select class="batch-atype-sel" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'">'
-          + '<option value="individual" '+(cr.accessType==='individual'?'selected':'')+'>Individual</option>'
-          + '<option value="shared" '+(cr.accessType==='shared'?'selected':'')+'>Shared</option>'
-          + '</select></div>'
+          + (function(){
+              var lockedByCred = (cr.credVal && cr.credVal !== 'own' && cr.credVal !== 'new');
+              var lockedByNew = (cr.credVal === 'new');
+              var locked = lockedByCred || lockedByNew;
+              var hint = lockedByCred ? 'Inherited from credential' : (lockedByNew ? 'Matches new credential type' : '');
+              return '<div class="bfl"><label>Access type'
+                + (hint ? ' <span class="lock-hint" title="' + hint + '"><svg class=\"icon icon-sm\" viewBox=\"0 0 24 24\" style=\"width:11px;height:11px;vertical-align:-1px;opacity:0.55\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span>' : '')
+                + '</label>'
+                + '<select class="batch-atype-sel" data-row-id="'+row.id+'" data-cred-id="'+cr.id+'"'
+                + (locked ? ' disabled title="' + hint + '"' : '') + '>'
+                + '<option value="individual" '+(cr.accessType==='individual'?'selected':'')+'>Individual</option>'
+                + '<option value="shared" '+(cr.accessType==='shared'?'selected':'')+'>Shared</option>'
+                + '</select>'
+                + (hint ? '<div class="lock-note">'+hint+'</div>' : '')
+                + '</div>';
+            })()
           + '</div>'
           + (cr.credVal==='own'
             ? '<div class="bfl" style="margin-top:6px"><label>Own login username</label>'
@@ -2067,15 +2215,26 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
       b.addEventListener('click', function(){removeCredFromRow(b.getAttribute('data-row-id'), b.getAttribute('data-cred-id'));});
     });
 
-    // Wire credential selectors
+    // Wire credential selectors — auto-inherit access type from chosen credential
     container.querySelectorAll('.batch-cred-sel').forEach(function(sel){
       sel.addEventListener('change', function(){
         var row = batchRows.find(function(r){return r.id===sel.getAttribute('data-row-id');});
         if(!row) return;
         var cr = row.creds.find(function(c){return c.id===sel.getAttribute('data-cred-id');});
-        if(cr) cr.credVal = sel.value;
+        if(!cr) return;
+        cr.credVal = sel.value;
+        // If an existing (masterlist) credential is chosen, inherit its type automatically
+        if(sel.value && sel.value !== 'own' && sel.value !== 'new'){
+          var chosen = credentials.find(function(c){return c.id === sel.value;});
+          if(chosen && chosen.type) cr.accessType = chosen.type;
+        }
         renderBatchRows();
       });
+    });
+
+    // Wire new-cred type selector — keep accessType in sync with newCredType
+    container.querySelectorAll('.batch-newtype-sel').forEach(function(sel){
+      // no-op: actual sync happens in the main newtype handler below (we only add a shadowing behavior)
     });
 
     // Wire access type
@@ -2108,13 +2267,13 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
       });
     });
 
-    // Wire new cred type
+    // Wire new cred type — also mirror to accessType so they stay consistent
     container.querySelectorAll('.batch-newtype-sel').forEach(function(sel){
       sel.addEventListener('change', function(){
         var row = batchRows.find(function(r){return r.id===sel.getAttribute('data-row-id');});
         if(!row) return;
         var cr = row.creds.find(function(c){return c.id===sel.getAttribute('data-cred-id');});
-        if(cr) cr.newCredType = sel.value;
+        if(cr){ cr.newCredType = sel.value; cr.accessType = sel.value; }
       });
     });
   }
