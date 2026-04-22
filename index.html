@@ -331,6 +331,51 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
 .search-wrap { position: relative; flex: 1; min-width: 220px; }
 .search-wrap .icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #94A3B8; pointer-events: none; }
 .search-wrap input { padding-left: 34px; }
+
+/* ===== BULK SELECTION ===== */
+.bulk-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #FDF2EE 0%, #fff 100%);
+  border: 1px solid #F5DDD3;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(217, 119, 87, 0.08);
+  animation: bulkSlideIn 0.18s ease-out;
+}
+.bulk-bar.active { display: flex; }
+@keyframes bulkSlideIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.bulk-info { display: flex; align-items: center; gap: 14px; }
+.bulk-count { font-family: 'Inter', sans-serif; font-size: 13px; color: #0F172A; }
+.bulk-count strong { font-family: 'Poppins', sans-serif; color: #D97757; font-size: 16px; font-weight: 700; margin-right: 4px; }
+.bulk-clear { background: none; border: none; color: #64748B; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; padding: 4px 8px; border-radius: 6px; transition: all 0.12s; }
+.bulk-clear:hover { color: #D97757; background: rgba(217,119,87,0.08); }
+.bulk-actions { display: flex; align-items: center; gap: 8px; }
+.bulk-actions label { font-size: 12px; color: #64748B; font-weight: 500; font-family: 'Inter', sans-serif; }
+.bulk-actions select { min-width: 180px; border: 1.5px solid #E2E8F0; border-radius: 8px; padding: 7px 10px; font-size: 13px; font-family: 'Inter', sans-serif; color: #0F172A; background: #fff; outline: none; cursor: pointer; }
+.bulk-actions select:focus { border-color: #D97757; }
+.bulk-actions button.oacc { padding: 8px 16px; font-weight: 600; }
+.bulk-actions button.oacc:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Checkbox column */
+.chk-col { width: 36px; text-align: center; padding: 0 !important; }
+.chk-col input[type="checkbox"] { cursor: pointer; width: 15px; height: 15px; accent-color: #D97757; margin: 0; vertical-align: middle; }
+.tool-row.selected { background: #FDF2EE !important; }
+.tool-row.selected td { background: #FDF2EE !important; }
+.tool-row.selected:hover { background: #F5DDD3 !important; }
+
+.bulk-divider { width: 1px; height: 24px; background: #E2E8F0; margin: 0 4px; }
+.bulk-actions { flex-wrap: wrap; }
+#bulkActionSel { min-width: 150px; }
+#bulkValueSel { min-width: 180px; }
+@media (max-width: 820px) {
+  .bulk-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .bulk-actions { justify-content: flex-start; }
+  .bulk-divider { display: none; }
+}
 </style>
 </head>
 <body>
@@ -343,7 +388,7 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
 <div class="view" id="view_dashboard" style="display:block"><div class="metrics"><div class="mc accent"><div class="mc-l"><svg class="icon" viewBox="0 0 24 24"><path d="M4 10h12"/><path d="M4 14h9"/><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12a7.9 7.9 0 0 0 7.8 8 7.7 7.7 0 0 0 5.2-2"/></svg>Monthly Spend</div><div class="mc-v" id="dash_spend">€0</div><div class="mc-hint" id="dash_spend_hint">Active tools only</div></div><div class="mc risk"><div class="mc-l"><svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Access Risk</div><div class="mc-v" id="dash_risk">0</div><div class="mc-hint" id="dash_risk_hint">Offboarded w/ access</div></div><div class="mc warn"><div class="mc-l"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Unassigned Tools</div><div class="mc-v" id="dash_unassigned">0</div><div class="mc-hint" id="dash_unassigned_hint">No ownership gaps</div></div><div class="mc"><div class="mc-l"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Pending Decisions</div><div class="mc-v" id="dash_pending">0</div><div class="mc-hint" id="dash_pending_hint">Trial + Under review</div></div><div class="mc"><div class="mc-l"><svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Active Tools</div><div class="mc-v" id="dash_active_tools">0</div><div class="mc-hint" id="dash_active_tools_hint">of 0 total</div></div></div><div class="dash-tabs"><button class="dtab on" id="dtab_byMember">Per member</button><button class="dtab" id="dtab_byTool">Per tool</button><button class="dtab" id="dtab_byCred">Per Credential</button></div><div class="dpanel" id="dpanel_byMember"></div><div class="dpanel" id="dpanel_byTool" style="display:none"></div><div class="dpanel" id="dpanel_byCred" style="display:none"></div></div>
 <div class="view" id="view_access"><div class="sec-hdr"><h2>Access Entries</h2><div class="sec-hdr-right"><button class="oblue" id="btnGroupAccess"><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Group access</button><button class="oacc" id="btnAddAccess">+ Add access</button></div></div><div class="tbox"><table><thead><tr><th>Member</th><th>Tool</th><th>Credential</th><th>Access type</th><th>Added by</th><th></th></tr></thead><tbody id="accessTableBody"></tbody></table></div></div>
 <div class="view" id="view_members"><div class="sec-hdr"><h2>Team Members</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportMembers"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Import CSV</button><button class="oblue" id="btnExportMembersCSV"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> CSV</button><button class="oblue" id="btnExportMembersXLSX"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Excel</button><button class="oacc" id="btnAddMember">+ Add member</button></div></div><div class="filter-bar"><div class="search-wrap"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="mfSearch" placeholder="Search name, email, department..."></div><select id="mfDept"><option value="">All departments</option><option value="Admin">Admin</option><option value="B2B">B2B</option><option value="Compliance">Compliance</option><option value="Creatives">Creatives</option><option value="Customer Support">Customer Support</option><option value="Ecomm">Ecomm</option><option value="Finance">Finance</option><option value="HR">HR</option><option value="IT">IT</option><option value="Integrator">Integrator</option><option value="Leadership">Leadership</option><option value="Logistics">Logistics</option><option value="Marketing">Marketing</option><option value="Operations">Operations</option><option value="Planning">Planning</option><option value="Procurement">Procurement</option><option value="Procurement & Logistics">Procurement & Logistics</option><option value="R&D">R&D</option><option value="Warehouse">Warehouse</option></select><select id="mfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Offboarded">Offboarded</option></select></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Access</th><th>Actions</th></tr></thead><tbody id="memberTableBody"></tbody></table></div></div>
-<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> CSV</button><button class="oblue" id="btnExportToolsXLSX"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><div class="search-wrap"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="tfSearch" placeholder="Search tools, categories, notes..."></div><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select><select id="tfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select><select id="tfOwner"><option value="">All owners</option></select><select id="tfGroupBy"><option value="">No grouping</option><option value="owner">Group by Owner</option><option value="category">Group by Category</option><option value="status">Group by Status</option><option value="dept">Group by Department</option></select></div><div class="tbox"><table><thead><tr><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Status</th><th>Owner</th><th>Users</th><th></th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
+<div class="view" id="view_tools"><div class="sec-hdr"><h2>Tool Catalogue</h2><div class="sec-hdr-right"><button class="oblue" id="btnExportToolsCSV"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> CSV</button><button class="oblue" id="btnExportToolsXLSX"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Excel</button><button class="oacc" id="btnAddTool">+ Add tool</button></div></div><div class="filter-bar"><div class="search-wrap"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="tfSearch" placeholder="Search tools, categories, notes..."></div><select id="tfCategory"><option value="">All categories</option><option value="3D Modeling">3D Modeling</option><option value="AI API">AI API</option><option value="AI App Builder">AI App Builder</option><option value="AI Assistant">AI Assistant</option><option value="AI Code Editor">AI Code Editor</option><option value="AI Framework">AI Framework</option><option value="AI Image Generation">AI Image Generation</option><option value="AI Monitoring">AI Monitoring</option><option value="AI Prompt Management">AI Prompt Management</option><option value="API Layer">API Layer</option><option value="Accounting Software">Accounting Software</option><option value="Ad Research">Ad Research</option><option value="Amazon Analytics">Amazon Analytics</option><option value="Amazon Data Integration">Amazon Data Integration</option><option value="Amazon Design">Amazon Design</option><option value="Amazon Marketplace">Amazon Marketplace</option><option value="Amazon Price Tracking">Amazon Price Tracking</option><option value="Amazon Profitability">Amazon Profitability</option><option value="Amazon Research">Amazon Research</option><option value="B2B Marketplace">B2B Marketplace</option><option value="Backend Framework">Backend Framework</option><option value="Broadcasting Fee">Broadcasting Fee</option><option value="Build Tool">Build Tool</option><option value="Business Insurance">Business Insurance</option><option value="CAD Software">CAD Software</option><option value="CSS Framework">CSS Framework</option><option value="Chemical Reporting">Chemical Reporting</option><option value="China Sourcing">China Sourcing</option><option value="Cleaning Supplies">Cleaning Supplies</option><option value="Cloud Database">Cloud Database</option><option value="Cloud Telephony">Cloud Telephony</option><option value="Code Editor">Code Editor</option><option value="Code Repository">Code Repository</option><option value="Color Palette Tool">Color Palette Tool</option><option value="Containerization">Containerization</option><option value="Corporate Card">Corporate Card</option><option value="Currency Tool">Currency Tool</option><option value="Customer Messaging">Customer Messaging</option><option value="Customer Support Platform">Customer Support Platform</option><option value="Customs & HS Codes">Customs & HS Codes</option><option value="Data Collection">Data Collection</option><option value="Data Visualization">Data Visualization</option><option value="Database">Database</option><option value="Design Inspiration">Design Inspiration</option><option value="Design Software">Design Software</option><option value="Digital Sales">Digital Sales</option><option value="E-commerce Platform">E-commerce Platform</option><option value="E-commerce Service">E-commerce Service</option><option value="EPR Compliance">EPR Compliance</option><option value="ERP / E-commerce Ops">ERP / E-commerce Ops</option><option value="ERP / Finance">ERP / Finance</option><option value="Email Marketing">Email Marketing</option><option value="FBA Reimbursements">FBA Reimbursements</option><option value="Freelance Platform">Freelance Platform</option><option value="Freight Comparison">Freight Comparison</option><option value="Freight Services">Freight Services</option><option value="Frontend Framework">Frontend Framework</option><option value="Graphic Design">Graphic Design</option><option value="IT Automation">IT Automation</option><option value="Image Editing">Image Editing</option><option value="Image Optimization">Image Optimization</option><option value="International Transfers">International Transfers</option><option value="LMS / Training">LMS / Training</option><option value="Landing Page / QR">Landing Page / QR</option><option value="Marketing Analytics">Marketing Analytics</option><option value="Meeting Recorder">Meeting Recorder</option><option value="Messaging">Messaging</option><option value="Music Licensing">Music Licensing</option><option value="Office Marketplace">Office Marketplace</option><option value="Online Payments">Online Payments</option><option value="Operations Dashboard">Operations Dashboard</option><option value="Packaging Compliance">Packaging Compliance</option><option value="Packaging EPR">Packaging EPR</option><option value="Packaging Supplier">Packaging Supplier</option><option value="Paid Advertising">Paid Advertising</option><option value="Password Manager">Password Manager</option><option value="Patent / Trademark">Patent / Trademark</option><option value="Print Services">Print Services</option><option value="Process Documentation">Process Documentation</option><option value="Programming Language">Programming Language</option><option value="Project Management">Project Management</option><option value="QR Code Tracking">QR Code Tracking</option><option value="Quality Inspection">Quality Inspection</option><option value="Recruitment">Recruitment</option><option value="Recycling Compliance">Recycling Compliance</option><option value="Review Management">Review Management</option><option value="Runtime Environment">Runtime Environment</option><option value="Shipping Integration">Shipping Integration</option><option value="Shipping Portal">Shipping Portal</option><option value="Social Media">Social Media</option><option value="Social Security">Social Security</option><option value="Sourcing Training">Sourcing Training</option><option value="Stock Graphics">Stock Graphics</option><option value="Stock Media">Stock Media</option><option value="Stock Photography">Stock Photography</option><option value="Supplier Communication">Supplier Communication</option><option value="Supplier Portal">Supplier Portal</option><option value="Tag Debugging">Tag Debugging</option><option value="Tag Management">Tag Management</option><option value="Tax & Accounting">Tax & Accounting</option><option value="Team Communication">Team Communication</option><option value="Transcription">Transcription</option><option value="Translation">Translation</option><option value="Video Conferencing">Video Conferencing</option><option value="Video Editing">Video Editing</option><option value="Video Platform">Video Platform</option><option value="Video Recording">Video Recording</option><option value="Web Analytics">Web Analytics</option><option value="Web Automation">Web Automation</option><option value="Web Server">Web Server</option></select><select id="tfPaid"><option value="">All types</option><option value="Free">Free</option><option value="Paid">Paid</option><option value="Pay-per-use">Pay-per-use</option><option value="—">—</option></select><select id="tfStatus"><option value="">All statuses</option><option value="Active">Active</option><option value="Trial">Trial</option><option value="Under review">Under review</option><option value="Cancelled">Cancelled</option></select><select id="tfOwner"><option value="">All owners</option></select><select id="tfGroupBy"><option value="">No grouping</option><option value="owner">Group by Owner</option><option value="category">Group by Category</option><option value="status">Group by Status</option><option value="dept">Group by Department</option></select></div><div class="bulk-bar" id="bulkActionBar"><div class="bulk-info"><span class="bulk-count"><strong id="bulkCount">0</strong> tools selected</span><button class="bulk-clear" id="btnBulkClear">Clear</button></div><div class="bulk-actions"><select id="bulkActionSel" title="What to change"><option value="owner">Change owner</option><option value="status">Change status</option><option value="dept">Change department</option></select><select id="bulkValueSel"><option value="__NONE__">— Choose value —</option></select><button class="oacc" id="btnBulkApply" disabled>Apply</button><span class="bulk-divider"></span><button class="oblue" id="btnBulkExport" title="Export selected tools to CSV"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button></div></div><div class="tbox"><table><thead><tr><th class="chk-col"><input type="checkbox" id="chkSelectAll" title="Select all visible"></th><th>Tool</th><th>Category</th><th>Department</th><th>URL</th><th>Paid / Free</th><th>Status</th><th>Owner</th><th>Users</th><th></th></tr></thead><tbody id="toolTableBody"></tbody></table></div></div>
 <div class="view" id="view_credentials"><div class="sec-hdr"><h2>Credentials Masterlist</h2><div class="sec-hdr-right"><button class="oblue" id="btnImportCredentials"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Import CSV</button><button class="oblue" id="btnExportCredsCSV"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> CSV</button><button class="oblue" id="btnExportCredsXLSX"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Excel</button><button class="oacc" id="btnAddCred">+ Add credential</button></div></div><div class="tbox"><table><thead><tr><th>Tool / Username</th><th>Type</th><th>Owner / Shared by <span style="font-weight:400;color:rgba(255,255,255,0.5);font-size:10px">click to edit</span></th><th>Used by</th><th>Actions</th></tr></thead><tbody id="credTableBody"></tbody></table></div></div>
 <div class="view" id="view_users"><div class="sec-hdr"><div><h2>User Management</h2><p style="font-size:12px;color:#64748B;margin-top:3px">Only listed users can sign in.</p></div><button class="oacc" id="btnAddUser">+ Add user</button></div><div class="tbox"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
 </div>
@@ -441,6 +486,7 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
   var currentUser=null, batchRows=[], groupRows=[];
   var memberFilter={search:'',dept:'',status:''};
   var toolFilter={search:'',category:'',paid:'',status:'',owner:'',groupBy:''};
+  var selectedTools = {}; // keyed by name.toLowerCase() -> original name
 
   var DEPTS=['Admin','B2B','Compliance','Creatives','Customer Support','Ecomm','Finance',
     'HR','IT','Integrator','Leadership','Logistics','Marketing','Operations','Planning',
@@ -1301,7 +1347,7 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
       if(sortBy==='category')return(ia.category||'').localeCompare(ib.category||'');
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
-    if(!filtered.length){el.innerHTML='<tr><td colspan="9" class="empty">No tools match.</td></tr>';return;}
+    if(!filtered.length){el.innerHTML='<tr><td colspan="10" class="empty">No tools match.</td></tr>';return;}
 
     function renderRow(name){
       var info=getToolInfo(name)||{};
@@ -1316,7 +1362,10 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
       var ownerMapped=isOwnerMapped(ownerVal);
       var ownerCls='tool-owner-sel'+(!ownerVal?' empty':(!ownerMapped?' unmapped':''));
       var ownerOpts=buildOwnerOptions(ownerVal);
-      return '<tr class="'+rowClass+'" data-tool="'+eh(name)+'">'
+      var isSelected = !!selectedTools[name.toLowerCase()];
+      var selClass = isSelected ? ' selected' : '';
+      return '<tr class="'+rowClass+selClass+'" data-tool="'+eh(name)+'">'
+        +'<td class="chk-col"><input type="checkbox" class="row-select" data-tool="'+eh(name)+'" '+(isSelected?'checked':'')+' onclick="event.stopPropagation()"></td>'
         +'<td><div class="tool-name-link">'+eh(name)+'</div></td>'
         +'<td>'+eh(info.category||'—')+'</td>'
         +'<td>'+eh(info.dept||'—')+'</td>'
@@ -1351,7 +1400,7 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
       });
       el.innerHTML=keys.map(function(k){
         var n=groups[k].length;
-        return '<tr class="tool-group-hdr"><td colspan="9">'+eh(k)+'<span class="group-count">'+n+' tool'+(n!==1?'s':'')+'</span></td></tr>'
+        return '<tr class="tool-group-hdr"><td colspan="10">'+eh(k)+'<span class="group-count">'+n+' tool'+(n!==1?'s':'')+'</span></td></tr>'
           +groups[k].map(renderRow).join('');
       }).join('');
     } else {
@@ -1376,6 +1425,195 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
         saveToolOwner(sel.getAttribute('data-owner-tool'),sel.value);
       });
     });
+    // Bulk selection: per-row checkbox handlers
+    el.querySelectorAll('.row-select').forEach(function(cb){
+      cb.addEventListener('change',function(e){
+        e.stopPropagation();
+        var name = cb.getAttribute('data-tool');
+        var key = name.toLowerCase();
+        if(cb.checked) selectedTools[key] = name;
+        else delete selectedTools[key];
+        // update row highlight without full re-render
+        var row = cb.closest('tr');
+        if(row) row.classList.toggle('selected', cb.checked);
+        updateBulkBar(filtered);
+      });
+    });
+    // Track currently visible filtered list for select-all scoping
+    window.__visibleToolNames = filtered.slice();
+    updateBulkBar(filtered);
+  }
+
+
+  // ── BULK SELECTION HELPERS ──
+  function updateBulkBar(visibleNames){
+    var bar = document.getElementById('bulkActionBar');
+    var countEl = document.getElementById('bulkCount');
+    var selAll = document.getElementById('chkSelectAll');
+    if(!bar || !countEl) return;
+    var n = Object.keys(selectedTools).length;
+    countEl.textContent = n;
+    bar.classList.toggle('active', n > 0);
+
+    // Refresh the value dropdown based on selected action
+    var actionSel = document.getElementById('bulkActionSel');
+    var valueSel = document.getElementById('bulkValueSel');
+    if(actionSel && valueSel){
+      var action = actionSel.value;
+      var prevValue = valueSel.value;
+      var opts = '<option value="__NONE__">— Choose value —</option>';
+      if(action === 'owner'){
+        opts += '<option value="">— Remove owner (clear) —</option>';
+        opts += getActiveMembers().map(function(m){
+          return '<option value="'+eh(m.name)+'">'+eh(m.name)+'</option>';
+        }).join('');
+      } else if(action === 'status'){
+        ['Active','Trial','Under review','Cancelled'].forEach(function(s){
+          opts += '<option value="'+s+'">'+s+'</option>';
+        });
+      } else if(action === 'dept'){
+        // Distinct department values from existing tools, sorted
+        var seen = {};
+        getAllTools().forEach(function(n){
+          var d = (getToolInfo(n)||{}).dept || '';
+          if(d && !seen[d]) seen[d] = true;
+        });
+        var distinctDepts = Object.keys(seen).sort();
+        opts += '<option value="">— Clear department —</option>';
+        opts += distinctDepts.map(function(d){
+          return '<option value="'+eh(d)+'">'+eh(d)+'</option>';
+        }).join('');
+      }
+      valueSel.innerHTML = opts;
+      // Preserve previous value if still valid
+      if(prevValue && Array.prototype.slice.call(valueSel.options).some(function(o){return o.value === prevValue;})){
+        valueSel.value = prevValue;
+      }
+    }
+
+    // Sync select-all checkbox
+    if(selAll && Array.isArray(visibleNames)){
+      var visibleCount = visibleNames.length;
+      var selectedVisible = visibleNames.filter(function(nm){return !!selectedTools[nm.toLowerCase()];}).length;
+      selAll.checked = visibleCount > 0 && selectedVisible === visibleCount;
+      selAll.indeterminate = selectedVisible > 0 && selectedVisible < visibleCount;
+    }
+
+    // Apply button enabled only when a real value is selected
+    var applyBtn = document.getElementById('btnBulkApply');
+    if(applyBtn && valueSel){
+      applyBtn.disabled = n === 0 || valueSel.value === '__NONE__';
+    }
+  }
+
+  // Generic bulk update: field in {'owner','status','dept'}, newValue is the target string
+  function bulkSaveField(field, newValue){
+    var names = Object.keys(selectedTools).map(function(k){return selectedTools[k];});
+    if(!names.length) return;
+    if(typeof newValue === 'string') newValue = newValue.trim();
+    setLoading(true);
+
+    var promises = names.map(function(name){
+      var info = getToolInfo(name) || {};
+      var currentVal = (info[field]||'');
+      // Status defaults to 'Active' — compare against that baseline to avoid redundant writes
+      if(field === 'status' && !currentVal) currentVal = 'Active';
+      if(currentVal === newValue) return Promise.resolve({name:name, skipped:true});
+
+      var catalogueHit = TOOL_CATALOGUE.find(function(t){return t.name.toLowerCase()===name.toLowerCase();});
+      var customHit = findCustomForCurrentName(name);
+      var isCatalogue = !!catalogueHit && !customHit;
+
+      if(isCatalogue){
+        var existing = findOverrideForCurrentName(name);
+        if(existing && existing.row && existing.row.id){
+          var patch = {}; patch[field] = newValue;
+          return sbUpdate('tool_overrides', existing.row.id, patch).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            toolOverrides[existing.key] = saved || Object.assign({}, existing.row, patch);
+            return {name:name};
+          });
+        } else {
+          // Full payload for fresh override (avoids DB NOT NULL rejection)
+          var origName = name.toLowerCase();
+          var payload = {
+            id: uid(), original_name: origName,
+            name: info.name || name,
+            category: info.category || '',
+            dept: info.dept || '',
+            url: info.url || '',
+            paid_free: info.paid_free || '',
+            cost: info.cost || '',
+            sub_model: info.sub_model || '',
+            owner: info.owner || '',
+            status: info.status || 'Active',
+            notes: info.notes || ''
+          };
+          payload[field] = newValue; // overwrite the changed field
+          return sbInsert('tool_overrides', payload).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            if(saved && saved.error){ throw new Error(saved.message||'insert rejected'); }
+            toolOverrides[origName] = (saved && saved.id) ? saved : payload;
+            return {name:name};
+          });
+        }
+      } else {
+        if(customHit && customHit.row && customHit.row.id){
+          var cpatch = {}; cpatch[field] = newValue;
+          return sbUpdate('custom_tools', customHit.row.id, cpatch).then(function(data){
+            var saved = Array.isArray(data)?data[0]:data;
+            customToolInfo[customHit.key] = saved || Object.assign({}, customHit.row, cpatch);
+            return {name:name};
+          });
+        }
+        return Promise.resolve({name:name, skipped:true});
+      }
+    });
+
+    var fieldLabel = field === 'owner' ? 'Owner' : field === 'status' ? 'Status' : 'Department';
+
+    Promise.all(promises.map(function(p){return p.catch(function(e){ console.error('bulk save error:', e); return {_err:e}; });})).then(function(results){
+      var fail = results.filter(function(r){return r && r._err;}).length;
+      var skipped = results.filter(function(r){return r && r.skipped;}).length;
+      var ok = results.length - fail - skipped;
+      applyOverridesToCatalogue();
+      rebuildCustomTools();
+      selectedTools = {};
+      setLoading(false);
+      renderToolList();
+      renderDashboard();
+      var msg;
+      if(fail === 0 && skipped === 0) msg = fieldLabel + ' updated for ' + ok + ' tool' + (ok!==1?'s':'');
+      else if(fail === 0) msg = ok + ' updated · ' + skipped + ' already matched';
+      else msg = ok + ' updated · ' + fail + ' failed — check console';
+      showToast(msg);
+    });
+  }
+
+  function bulkExportSelectedCSV(){
+    var names = Object.keys(selectedTools).map(function(k){return selectedTools[k];});
+    if(!names.length){ showToast('No tools selected','warn'); return; }
+    var rows = names.map(function(name){
+      var info = getToolInfo(name) || {};
+      var userCount = access.filter(function(a){return a.tool_name === name;}).length;
+      return {
+        name: name,
+        category: info.category || '',
+        department: info.dept || '',
+        url: info.url || '',
+        paid_free: info.paid_free || '',
+        monthly_cost: info.cost || '',
+        subscription_model: info.sub_model || '',
+        owner: info.owner || '',
+        status: info.status || 'Active',
+        notes: info.notes || '',
+        users: userCount
+      };
+    });
+    var headers = ['name','category','department','url','paid_free','monthly_cost','subscription_model','owner','status','notes','users'];
+    var ts = new Date().toISOString().slice(0,10);
+    downloadCSV('cd_commerce_tools_selected_' + ts + '.csv', toCSV(rows, headers));
+    showToast(rows.length + ' tool' + (rows.length!==1?'s':'') + ' exported to CSV');
   }
 
   function renderCredentialList(){
@@ -2509,7 +2747,43 @@ body, .card input, .card button.primary, .hbtn, .main-tab, .dtab, input, select,
     document.getElementById('tfStatus').addEventListener('change',function(){toolFilter.status=this.value;renderToolList();});
     document.getElementById('tfOwner').addEventListener('change',function(){toolFilter.owner=this.value;renderToolList();});
     document.getElementById('tfGroupBy').addEventListener('change',function(){toolFilter.groupBy=this.value;renderToolList();});
-    document.getElementById('btnAddTool').addEventListener('click',openAddToolModal);
+    // Bulk selection handlers
+    document.getElementById('chkSelectAll').addEventListener('change', function(){
+      var on = this.checked;
+      var visible = (window.__visibleToolNames || []);
+      visible.forEach(function(name){
+        var key = name.toLowerCase();
+        if(on) selectedTools[key] = name;
+        else delete selectedTools[key];
+      });
+      renderToolList();
+    });
+    document.getElementById('btnBulkClear').addEventListener('click', function(){
+      selectedTools = {};
+      renderToolList();
+    });
+    document.getElementById('bulkActionSel').addEventListener('change', function(){
+      updateBulkBar(window.__visibleToolNames || []);
+    });
+    document.getElementById('bulkValueSel').addEventListener('change', function(){
+      updateBulkBar(window.__visibleToolNames || []);
+    });
+    document.getElementById('btnBulkApply').addEventListener('click', function(){
+      var actionSel = document.getElementById('bulkActionSel');
+      var valueSel = document.getElementById('bulkValueSel');
+      if(!actionSel || !valueSel || valueSel.value === '__NONE__') return;
+      var field = actionSel.value; // 'owner' | 'status' | 'dept'
+      var newValue = valueSel.value; // may be '' to clear (owner/dept)
+      var n = Object.keys(selectedTools).length;
+      var fieldLabel = field === 'owner' ? 'owner' : field === 'status' ? 'status' : 'department';
+      var valueLabel = newValue === '' ? 'clear the ' + fieldLabel + ' on' : ('set ' + fieldLabel + ' to "' + newValue + '" for');
+      if(!confirm('Are you sure you want to ' + valueLabel + ' ' + n + ' tool' + (n!==1?'s':'') + '?')) return;
+      bulkSaveField(field, newValue);
+    });
+    document.getElementById('btnBulkExport').addEventListener('click', function(){
+      bulkExportSelectedCSV();
+    });
+        document.getElementById('btnAddTool').addEventListener('click',openAddToolModal);
     document.getElementById('btnSaveNewTool').addEventListener('click',saveNewTool);
     document.getElementById('btnCancelNewTool').addEventListener('click',function(){document.getElementById('addToolModal').style.display='none';});
     document.getElementById('addToolModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none';});
