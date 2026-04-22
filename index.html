@@ -1935,11 +1935,24 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
           toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {status:newStatus});
         });
       } else {
-        // No override yet — create minimal one with just the status change.
-        // (applyOverridesToCatalogue merges with original, so we don't need to copy other fields.
-        //  Copying catalogueHit here was a bug — it pulled in access_type which the DB rejects.)
+        // No override yet — seed a full override row from current catalogue info + the status change.
+        // Mirrors the modal save path so DB NOT NULL / required columns are satisfied.
+        // (Avoids access_type, which the DB schema doesn't have.)
         var origName = toolName.toLowerCase();
-        var payload = {id:uid(), original_name:origName, status:newStatus};
+        var payload = {
+          id: uid(),
+          original_name: origName,
+          name: info.name || toolName,
+          category: info.category || '',
+          dept: info.dept || '',
+          url: info.url || '',
+          paid_free: info.paid_free || '',
+          cost: info.cost || '',
+          sub_model: info.sub_model || '',
+          owner: info.owner || '',
+          status: newStatus,
+          notes: info.notes || ''
+        };
         p = sbInsert('tool_overrides', payload).then(function(data){
           var saved = Array.isArray(data)?data[0]:data;
           if(saved && saved.error){ throw new Error(saved.message||'insert rejected'); }
@@ -1964,9 +1977,10 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
       renderToolList();
       renderDashboard();
       showToast('"'+toolName+'" marked '+newStatus);
-    }).catch(function(){
+    }).catch(function(err){
       setLoading(false);
-      showToast('Could not save status — check connection');
+      console.error('saveToolStatus failed:', err);
+      showToast('Could not save status — '+((err&&err.message)?err.message.slice(0,120):'check connection'));
       renderToolList(); // revert visual
     });
   }
@@ -1989,10 +2003,24 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
           toolOverrides[existing.key] = saved || Object.assign({}, existing.row, {owner:newOwner});
         });
       } else {
-        // Minimal override — only the changed field. Original catalogue values flow through
-        // via applyOverridesToCatalogue(). Avoids passing columns the DB doesn't have (e.g. access_type).
+        // No override yet — seed a full override row from current catalogue info + the owner change.
+        // Mirrors the modal save path so DB NOT NULL / required columns are satisfied.
+        // (Avoids access_type, which the DB schema doesn't have.)
         var origName = toolName.toLowerCase();
-        var payload = {id:uid(), original_name:origName, owner:newOwner};
+        var payload = {
+          id: uid(),
+          original_name: origName,
+          name: info.name || toolName,
+          category: info.category || '',
+          dept: info.dept || '',
+          url: info.url || '',
+          paid_free: info.paid_free || '',
+          cost: info.cost || '',
+          sub_model: info.sub_model || '',
+          owner: newOwner,
+          status: info.status || 'Active',
+          notes: info.notes || ''
+        };
         p = sbInsert('tool_overrides', payload).then(function(data){
           var saved = Array.isArray(data)?data[0]:data;
           if(saved && saved.error){ throw new Error(saved.message||'insert rejected'); }
@@ -2016,9 +2044,10 @@ tr.tool-group-hdr .group-count{font-weight:500;color:#94A3B8;text-transform:none
       renderToolList();
       renderDashboard();
       showToast(newOwner?('Owner set to '+newOwner+' for '+toolName):('Owner cleared for '+toolName));
-    }).catch(function(){
+    }).catch(function(err){
       setLoading(false);
-      showToast('Could not save owner — check connection');
+      console.error('saveToolOwner failed:', err);
+      showToast('Could not save owner — '+((err&&err.message)?err.message.slice(0,120):'check connection'));
       renderToolList();
     });
   }
