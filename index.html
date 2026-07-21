@@ -388,6 +388,27 @@ th.sortable.sort-active { color: #D97757; }
 th.sortable.sort-active .sort-ind { opacity: 1; }
 th.sortable.sort-active .sort-ind::after { content: "\2191"; }
 th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
+/* ── MEMBER ROLE LOCKDOWN (view-only) ── */
+body.role-member #btnAddAccess,
+body.role-member #btnGroupAccess,
+body.role-member #btnAddMember,
+body.role-member #btnImportMembers,
+body.role-member #btnAddTool,
+body.role-member #btnImportCredentials,
+body.role-member #btnAddCred,
+body.role-member #detailAddAccess,
+body.role-member #btnEditToolFromDetail,
+body.role-member #btnEditMemberFromDetail,
+body.role-member #btnOffboardFromDetail,
+body.role-member #bulkActionBar,
+body.role-member .abtn,
+body.role-member .chip-rm,
+body.role-member .add-access-btn,
+body.role-member .chk-col { display:none !important; }
+body.role-member .tool-status-sel,
+body.role-member .tool-owner-sel { pointer-events:none !important; opacity:0.75; }
+body.role-member .inline-edit-cell { pointer-events:none !important; cursor:default !important; }
+body.role-member .inline-edit-cell:hover .inline-val { background:none !important; }
 </style>
 </head>
 <body>
@@ -561,27 +582,9 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
 
   // ── ROLE PERMISSIONS (Members = view-only) ──
   function isAdmin(){return !!(currentUser && currentUser.role==='admin');}
-  var _roObserver=null;
-  function enforceReadOnlyUI(){
-    if(isAdmin())return;
-    var root=document.getElementById('app');
-    if(!root)return;
-    var hideSelectors=['#btnAddAccess','#btnGroupAccess','#btnAddMember','#btnImportMembers','#btnAddTool','#btnImportCredentials','#btnAddCred','#detailAddAccess','#btnEditToolFromDetail','#btnEditMemberFromDetail','#btnOffboardFromDetail','#bulkActionBar','.abtn','.chip-rm','.add-access-btn','.chk-col'];
-    hideSelectors.forEach(function(sel){
-      root.querySelectorAll(sel).forEach(function(el){el.style.display='none';});
-    });
-    root.querySelectorAll('.tool-status-sel,.tool-owner-sel').forEach(function(el){el.disabled=true;});
-    root.querySelectorAll('.inline-edit-cell').forEach(function(el){
-      el.style.pointerEvents='none';el.style.cursor='default';
-    });
-  }
-  function watchReadOnlyUI(){
-    if(isAdmin())return;
-    var root=document.getElementById('app');
-    if(!root||_roObserver)return;
-    _roObserver=new MutationObserver(function(){enforceReadOnlyUI();});
-    _roObserver.observe(root,{childList:true,subtree:true});
-    enforceReadOnlyUI();
+  function applyRolePermissions(){
+    document.body.classList.toggle('role-member', !!currentUser && currentUser.role!=='admin');
+    document.body.classList.toggle('role-admin', isAdmin());
   }
   function setLoading(on){var el=document.getElementById('loadingBar');if(el)el.style.display=on?'block':'none';}
   function ini(name){return(name||'').split(' ').map(function(w){return w.charAt(0)||'';}).join('').toUpperCase().slice(0,2);}
@@ -610,7 +613,7 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
           badge.textContent=currentUser.role==='admin'?'Admin':'Member';
           badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
           document.getElementById('tab_users').style.display=currentUser.role==='admin'?'inline-block':'none';
-          watchReadOnlyUI();
+          applyRolePermissions();
           loadAllData();return;
         }
       }
@@ -656,7 +659,7 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
       badge.textContent=currentUser.role==='admin'?'Admin':'Member';
       badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
       document.getElementById('tab_users').style.display=currentUser.role==='admin'?'inline-block':'none';
-      watchReadOnlyUI();
+      applyRolePermissions();
       loadAllData();
     }).catch(function(){setLoading(false);err.textContent='Connection error.';err.style.display='block';});
   }
