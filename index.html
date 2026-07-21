@@ -531,15 +531,21 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
   // ── SUPABASE ──
   function sbH(){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Prefer':'return=representation'};}
   function sbGet(t,qs){return fetch(SUPA_URL+'/rest/v1/'+t+'?order=created_at.asc'+(qs?'&'+qs:''),{method:'GET',headers:sbH()}).then(function(r){return r.json();});}
-  function sbInsert(t,d){return fetch(SUPA_URL+'/rest/v1/'+t,{method:'POST',headers:sbH(),body:JSON.stringify(d)}).then(function(r){
+  function sbInsert(t,d){
+    if(currentUser&&currentUser.role!=='admin'){showToast('Members have view-only access.','warn');return Promise.reject(new Error('Blocked: view-only member.'));}
+    return fetch(SUPA_URL+'/rest/v1/'+t,{method:'POST',headers:sbH(),body:JSON.stringify(d)}).then(function(r){
     if(!r.ok){return r.text().then(function(txt){console.error('sbInsert '+t+' failed:',r.status,txt);throw new Error('Insert failed ('+r.status+'): '+txt.slice(0,200));});}
     return r.json();
   });}
-  function sbUpdate(t,id,d){return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:sbH(),body:JSON.stringify(d)}).then(function(r){
+  function sbUpdate(t,id,d){
+    if(currentUser&&currentUser.role!=='admin'){showToast('Members have view-only access.','warn');return Promise.reject(new Error('Blocked: view-only member.'));}
+    return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:sbH(),body:JSON.stringify(d)}).then(function(r){
     if(!r.ok){return r.text().then(function(txt){console.error('sbUpdate '+t+' failed:',r.status,txt);throw new Error('Update failed ('+r.status+'): '+txt.slice(0,200));});}
     return r.json();
   });}
-  function sbDelete(t,id){return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'DELETE',headers:sbH()}).then(function(r){
+  function sbDelete(t,id){
+    if(currentUser&&currentUser.role!=='admin'){showToast('Members have view-only access.','warn');return Promise.reject(new Error('Blocked: view-only member.'));}
+    return fetch(SUPA_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'DELETE',headers:sbH()}).then(function(r){
     if(!r.ok){return r.text().then(function(txt){console.error('sbDelete '+t+' failed:',r.status,txt);throw new Error('Delete failed ('+r.status+')');});}
     return r;
   });}
@@ -552,6 +558,31 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
   function getCred(id){return credentials.find(function(c){return c.id===id;})||null;}
   function showErr(elId,msg){var e=document.getElementById(elId);if(e){e.textContent=msg;e.style.display=msg?'block':'none';}}
   function showToast(m,type){var t=document.getElementById('toast');t.textContent=m;t.className='toast '+(type||'');t.classList.add('on');setTimeout(function(){t.classList.remove('on');},2800);}
+
+  // ── ROLE PERMISSIONS (Members = view-only) ──
+  function isAdmin(){return !!(currentUser && currentUser.role==='admin');}
+  var _roObserver=null;
+  function enforceReadOnlyUI(){
+    if(isAdmin())return;
+    var root=document.getElementById('app');
+    if(!root)return;
+    var hideSelectors=['#btnAddAccess','#btnGroupAccess','#btnAddMember','#btnImportMembers','#btnAddTool','#btnImportCredentials','#btnAddCred','#detailAddAccess','#btnEditToolFromDetail','#btnEditMemberFromDetail','#btnOffboardFromDetail','#bulkActionBar','.abtn','.chip-rm','.add-access-btn','.chk-col'];
+    hideSelectors.forEach(function(sel){
+      root.querySelectorAll(sel).forEach(function(el){el.style.display='none';});
+    });
+    root.querySelectorAll('.tool-status-sel,.tool-owner-sel').forEach(function(el){el.disabled=true;});
+    root.querySelectorAll('.inline-edit-cell').forEach(function(el){
+      el.style.pointerEvents='none';el.style.cursor='default';
+    });
+  }
+  function watchReadOnlyUI(){
+    if(isAdmin())return;
+    var root=document.getElementById('app');
+    if(!root||_roObserver)return;
+    _roObserver=new MutationObserver(function(){enforceReadOnlyUI();});
+    _roObserver.observe(root,{childList:true,subtree:true});
+    enforceReadOnlyUI();
+  }
   function setLoading(on){var el=document.getElementById('loadingBar');if(el)el.style.display=on?'block':'none';}
   function ini(name){return(name||'').split(' ').map(function(w){return w.charAt(0)||'';}).join('').toUpperCase().slice(0,2);}
 
@@ -579,6 +610,7 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
           badge.textContent=currentUser.role==='admin'?'Admin':'Member';
           badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
           document.getElementById('tab_users').style.display=currentUser.role==='admin'?'inline-block':'none';
+          watchReadOnlyUI();
           loadAllData();return;
         }
       }
@@ -624,6 +656,7 @@ th.sortable.sort-active.sort-desc .sort-ind::after { content: "\2193"; }
       badge.textContent=currentUser.role==='admin'?'Admin':'Member';
       badge.className='role-badge '+(currentUser.role==='admin'?'admin':'member');
       document.getElementById('tab_users').style.display=currentUser.role==='admin'?'inline-block':'none';
+      watchReadOnlyUI();
       loadAllData();
     }).catch(function(){setLoading(false);err.textContent='Connection error.';err.style.display='block';});
   }
